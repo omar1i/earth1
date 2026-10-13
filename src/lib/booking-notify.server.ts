@@ -1,7 +1,7 @@
 // Server-only: sends a saved booking to the owner's Gmail through a Google Apps Script web app.
 // The webhook URL and secret come from server environment variables and must never be
 // imported into client code. Only load this file inside server function handlers.
-import { experiences, groupTrips } from "./content";
+import { experiences, groupTrips, privateDestinations } from "./content";
 import type { BookingInput } from "./booking-schema";
 
 const REQUEST_TIMEOUT_MS = 8000;
@@ -17,7 +17,7 @@ type NotifyOptions = {
 };
 
 function buildPayload(booking: BookingInput, secret: string) {
-  const experience = [...experiences, ...groupTrips].find((e) => e.id === booking.experience_id);
+  const experience = [...privateDestinations, ...experiences, ...groupTrips].find((e) => e.id === booking.experience_id);
   return {
     secret,
     reference: booking.submission_key,
