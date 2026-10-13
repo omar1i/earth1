@@ -1,75 +1,73 @@
-import type { CSSProperties } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { ArrowUpRight, Check, Compass, Globe, MessageCircle } from "lucide-react";
+import { ArrowUpRight, Compass, Globe, MessageCircle } from "lucide-react";
 import { ExperienceCard } from "@/components/experience-components";
 import { useLanguage } from "@/lib/language";
-import { images, internationalExperiences, omanExperiences, whatsapp } from "@/lib/content";
+import { internationalExperiences, omanExperiences, whatsapp } from "@/lib/content";
 
 type Region = "oman" | "international";
 
-// Two side-by-side choice boxes (Oman / International). The choice lives in the URL
-// (?trips=international) so it can be shared and the Back button works. The panel below is
-// re-mounted per region, which plays a CSS fade/slide-in (disabled for reduced-motion users).
-export function RegionChooser() {
+// The Oman / International choice lives in the URL (?trips=international) so it can be shared and
+// the Back button works. RegionPicker = the small buttons shown inside the hero (first screen);
+// RegionChooser = the trips panel below the hero, re-mounted per region to play a CSS fade-in.
+function useRegion() {
   const { t } = useLanguage();
   const { trips } = useSearch({ from: "/" });
   const region: Region = trips === "international" ? "international" : "oman";
   const navigate = useNavigate();
   const choose = (next: Region) => {
-    if (next === region) return;
-    void navigate({ to: "/", search: { trips: next }, replace: true, resetScroll: false });
+    if (next !== region) void navigate({ to: "/", search: { trips: next }, replace: true, resetScroll: false });
+    // The trips list is further down the page, so bring it into view after choosing.
+    window.setTimeout(() => {
+      document.getElementById("choose-trip")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 60);
   };
-
-  const boxes: { id: Region; title: string; text: string; bg: string; Icon: typeof Compass }[] = [
+  const boxes: { id: Region; title: string; text: string; Icon: typeof Compass }[] = [
     {
       id: "oman",
       title: t("Oman Trips", "رحلات عمان"),
-      text: t(
-        "Sea trips, Masirah, camping and land adventures",
-        "رحلات بحرية ومصيرة وتخييم ومغامرات برية",
-      ),
-      bg: `url(${images.coast})`,
+      text: t("Sea, Masirah, camping and land", "بحر ومصيرة وتخييم ومغامرات برية"),
       Icon: Compass,
     },
     {
       id: "international",
       title: t("International Trips", "رحلات دولية"),
-      text: t(
-        "Journeys beyond Oman. Tell us where you want to go.",
-        "رحلات خارج عُمان. أخبرنا إلى أين تريد أن تذهب.",
-      ),
-      bg: "linear-gradient(135deg, var(--primary), #0b3b4f)",
+      text: t("Journeys beyond Oman", "رحلات خارج عُمان"),
       Icon: Globe,
     },
   ];
+  return { t, region, choose, boxes };
+}
+
+export function RegionPicker() {
+  const { t, region, choose, boxes } = useRegion();
+  return (
+    <div className="region-mini" role="group" aria-label={t("Where do you want to go?", "إلى أين تريد أن تذهب؟")}>
+      {boxes.map(({ id, title, text, Icon }) => (
+        <button
+          key={id}
+          type="button"
+          className="region-mini-btn"
+          aria-pressed={region === id}
+          onClick={() => choose(id)}
+        >
+          <Icon size={20} aria-hidden="true" />
+          <span className="region-mini-text">
+            <strong>{title}</strong>
+            <small>{text}</small>
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export function RegionChooser() {
+  const { t, region, boxes } = useRegion();
   const list = region === "oman" ? omanExperiences.slice(0, 6) : internationalExperiences;
 
   return (
     <section className="section region-section" id="choose-trip">
       <div className="container">
-        <div className="region-heading">
-          <div className="eyebrow">{t("Choose your journey", "اختر رحلتك")}</div>
-          <h2 id="region-title">{t("Where do you want to go?", "إلى أين تريد أن تذهب؟")}</h2>
-        </div>
-        <div className="region-cards" role="group" aria-labelledby="region-title">
-          {boxes.map(({ id, title, text, bg, Icon }) => (
-            <button
-              key={id}
-              type="button"
-              className="region-card"
-              aria-pressed={region === id}
-              onClick={() => choose(id)}
-              style={{ "--region-bg": bg } as CSSProperties}
-            >
-              <span className="region-check" aria-hidden="true">
-                <Check size={15} />
-              </span>
-              <Icon className="region-icon" size={26} aria-hidden="true" />
-              <h3>{title}</h3>
-              <p>{text}</p>
-            </button>
-          ))}
-        </div>
         <div
           className="region-panel"
           key={region}
