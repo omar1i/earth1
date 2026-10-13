@@ -71,17 +71,18 @@
 
 /* Oman Trips heading: centred, green, all caps. "View all experiences" stays at the end of the row. */
 .region-panel-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:end}
-.region-panel-head h3{grid-column:2;text-align:center;text-transform:uppercase;color:var(--adventure)}
+.region-panel-head h3{grid-column:2;text-align:center;text-transform:uppercase;color:var(--adventure);font-size:46px;line-height:1.1}
 .region-panel-head .text-link{grid-column:3;justify-self:end}
 @media (max-width:720px){
   .region-panel-head{grid-template-columns:1fr;justify-items:center;row-gap:6px}
   .region-panel-head h3,.region-panel-head .text-link{grid-column:1;justify-self:center}
+  .region-panel-head h3{font-size:34px}
 }
 
 /* Private Trips title: blue, green dash beside it, bold intro text */
 .trip-part-head-private h3{display:flex;align-items:center;gap:12px;color:var(--primary)}
 .trip-part-head-private h3:before{content:'';flex:none;width:22px;height:2px;background:var(--adventure)}
-.trip-part-head-private p{font-weight:700}
+.trip-part-head.trip-part-head-private p{font-weight:700;color:#000}
 
 /* Private trip cards: equal height, "Contact Us" buttons all on the same line, white text.
    (The global `a{color:inherit}` rule beats the button's own text colour, so it is forced here.) */
