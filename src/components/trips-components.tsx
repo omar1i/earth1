@@ -9,8 +9,7 @@ export function PrivateTripsSection() {
   const { lang, t } = useLanguage();
   return (
     <section className="trip-part" aria-labelledby="private-trips-title">
-      <div className="trip-part-head">
-        <div className="eyebrow">{t('Private Trips', 'الرحلات الخاصة')}</div>
+      <div className="trip-part-head trip-part-head-private">
         <h3 id="private-trips-title">{privateTripsIntro.title[lang]}</h3>
         <p>{privateTripsIntro.text[lang]}</p>
       </div>
@@ -24,7 +23,7 @@ export function PrivateTripsSection() {
               <h3>{d.name[lang]}</h3>
               <p>{d.description[lang]}</p>
               <div className="experience-actions">
-                <Button asChild size="sm">
+                <Button asChild size="sm" className="contact-btn">
                   <a href={privateTripWhatsapp(d.name.en)} target="_blank" rel="noreferrer">
                     <MessageCircle size={15} />
                     {t('Contact Us', 'تواصل معنا')}
