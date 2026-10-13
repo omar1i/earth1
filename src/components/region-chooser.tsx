@@ -6,6 +6,10 @@ import { internationalExperiences, omanExperiences, whatsapp } from "@/lib/conte
 
 type Region = "oman" | "international";
 
+// Set to true when real international trips are ready; until then the international tab only
+// shows a short "coming soon + WhatsApp" message instead of the sample cards.
+const SHOW_INTERNATIONAL_TRIPS = false;
+
 // The Oman / International choice lives in the URL (?trips=international) so it can be shared and
 // the Back button works. RegionPicker = the small buttons shown inside the hero (first screen);
 // RegionChooser = the trips panel below the hero, re-mounted per region to play a CSS fade-in.
@@ -42,7 +46,7 @@ export function RegionPicker() {
   const { t, region, choose, boxes } = useRegion();
   return (
     <div className="region-mini" role="group" aria-label={t("Where do you want to go?", "إلى أين تريد أن تذهب؟")}>
-      {boxes.map(({ id, title, text, Icon }) => (
+      {boxes.map(({ id, title, Icon }) => (
         <button
           key={id}
           type="button"
@@ -50,11 +54,8 @@ export function RegionPicker() {
           aria-pressed={region === id}
           onClick={() => choose(id)}
         >
-          <Icon size={20} aria-hidden="true" />
-          <span className="region-mini-text">
-            <strong>{title}</strong>
-            <small>{text}</small>
-          </span>
+          <Icon size={16} aria-hidden="true" />
+          <span className="region-mini-text">{title}</span>
         </button>
       ))}
     </div>
@@ -90,11 +91,20 @@ export function RegionChooser() {
               </a>
             )}
           </div>
-          <div className="experience-grid">
-            {list.map((e) => (
-              <ExperienceCard key={e.id} experience={e} />
-            ))}
-          </div>
+          {region === "international" && !SHOW_INTERNATIONAL_TRIPS ? (
+            <p className="region-soon">
+              {t(
+                "International trips are coming soon. Tell us where you would like to go and we will arrange it.",
+                "الرحلات الدولية قريبًا. أخبرنا إلى أين تريد أن تذهب وسنرتب لك الرحلة.",
+              )}
+            </p>
+          ) : (
+            <div className="experience-grid">
+              {list.map((e) => (
+                <ExperienceCard key={e.id} experience={e} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

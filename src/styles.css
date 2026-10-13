@@ -39,14 +39,12 @@
 /* RTL: mirror every directional arrow (the lightbox keys/buttons, cards, links) */
 [dir=rtl] svg.lucide-arrow-right,[dir=rtl] svg.lucide-arrow-left,[dir=rtl] svg.lucide-arrow-up-right{transform:scaleX(-1)}
 
-/* Compact Oman / International picker inside the hero */
-.region-mini{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
-.region-mini-btn{display:inline-flex;align-items:center;gap:12px;min-height:56px;padding:9px 18px;border-radius:10px;border:1px solid color-mix(in oklch,#fff 40%,transparent);background:color-mix(in oklch,#0b2a3a 38%,transparent);backdrop-filter:blur(6px);color:#fff;cursor:pointer;text-align:start;transition:background .2s,border-color .2s,transform .2s}
-.region-mini-btn:hover{background:color-mix(in oklch,#0b2a3a 55%,transparent);transform:translateY(-2px)}
-.region-mini-btn[aria-pressed=true]{background:var(--primary);border-color:#fff}
-.region-mini-text{display:flex;flex-direction:column;line-height:1.25}
-.region-mini-text strong{font-size:14px;font-weight:700}
-.region-mini-text small{font-size:11px;opacity:.85}
+/* Compact Oman / International picker, centered at the top of the hero */
+.region-mini{position:absolute;top:22px;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:8px;padding:5px;border-radius:999px;background:color-mix(in oklch,#0b2a3a 45%,transparent);backdrop-filter:blur(8px);border:1px solid color-mix(in oklch,#fff 30%,transparent);white-space:nowrap}
+.region-mini-btn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 16px;border-radius:999px;border:0;background:transparent;color:#fff;cursor:pointer;font-size:13px;font-weight:650;transition:background .2s,color .2s}
+.region-mini-btn:hover{background:color-mix(in oklch,#fff 18%,transparent)}
+.region-mini-btn[aria-pressed=true]{background:var(--adventure);color:var(--foreground)}
+.region-mini-text{line-height:1}
 .region-section{padding-top:56px}
-@media(min-width:951px){.hero{min-height:680px}.hero-inner{padding-bottom:90px}}
-@media(max-width:600px){.region-mini{gap:8px;margin-top:20px}.region-mini-btn{min-height:48px;padding:7px 12px;gap:8px;flex:1 1 0}.region-mini-text strong{font-size:12px}.region-mini-text small{display:none}.hero{height:auto;min-height:650px}}
+.region-soon{padding:34px 28px;border-radius:10px;background:var(--secondary);color:var(--muted-foreground);font-size:15px;text-align:center}
+@media(max-width:600px){.region-mini{top:14px;gap:4px;padding:4px}.region-mini-btn{height:32px;padding:0 11px;font-size:12px;gap:5px}.hero-inner{padding-top:52px}}
