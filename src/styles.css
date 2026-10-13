@@ -135,3 +135,7 @@
 
 /* Group trip date on the booking form: shown, not editable */
 .booking-form input[readonly]{background:var(--secondary);cursor:not-allowed}
+
+/* Contact page "Request an adventure" button: white text on the blue button
+   (`.contact-option a{color:var(--primary)}` otherwise makes it blue-on-blue). */
+.contact-option a.contact-book-btn,.contact-option a.contact-book-btn:hover{color:#fff}
