@@ -132,3 +132,6 @@
 /* "Book an Adventure" / "احجز مغامرة" header button (desktop + mobile menu): white text.
    (The global `a{color:inherit}` rule otherwise overrides the button's own text colour.) */
 .site-header .header-book,.site-header .header-book:hover,.mobile-nav a[href="/book"],.mobile-nav a[href="/book"]:hover{color:#fff}
+
+/* Group trip date on the booking form: shown, not editable */
+.booking-form input[readonly]{background:var(--secondary);cursor:not-allowed}

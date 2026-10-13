@@ -13,5 +13,6 @@ describe('Booking inquiry validation',()=>{
  it('requires the terms to be accepted',()=>{expect(bookingSchema.safeParse({...input,terms_accepted:false}).success).toBe(false);const {terms_accepted:_omit,...without}=input;void _omit;expect(bookingSchema.safeParse(without).success).toBe(false)});
  it('rejects submissions that fill the hidden honeypot field',()=>expect(bookingSchema.safeParse({...input,company_url:'http://spam.example'}).success).toBe(false));
  it('accepts an empty honeypot field',()=>expect(bookingSchema.safeParse({...input,company_url:''}).success).toBe(true));
- it('accepts every trip listed in content.ts (keeps the booking list and the trip list in sync)',()=>{for(const e of [...experiences,...groupTrips,...privateDestinations])expect(bookingSchema.safeParse({...input,experience_id:e.id}).success,e.id).toBe(true)});
+ it('accepts every trip listed in content.ts (keeps the booking list and the trip list in sync)',()=>{for(const e of [...experiences,...privateDestinations])expect(bookingSchema.safeParse({...input,experience_id:e.id}).success,e.id).toBe(true)});
+ it('group trips: accept only the trip\'s own date',()=>{for(const g of groupTrips){expect(bookingSchema.safeParse({...input,experience_id:g.id,preferred_date:'2099-01-01'}).success,g.id+' wrong date').toBe(false);if(g.startDate>=muscatToday())expect(bookingSchema.safeParse({...input,experience_id:g.id,preferred_date:g.startDate}).success,g.id).toBe(true)}});
 });

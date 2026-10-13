@@ -9,6 +9,7 @@ describe('Oman trips content', () => {
     expect(groupTrips).toHaveLength(3);
     expect(new Set(groupTrips.map((t) => t.id)).size).toBe(3);
     for (const t of groupTrips) {
+      expect(t.startDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(t.itinerary.length).toBeGreaterThan(0);
       expect(t.inclusions.length).toBeGreaterThan(0);
       expect(t.terms.length).toBeGreaterThan(0);

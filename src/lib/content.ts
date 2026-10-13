@@ -77,6 +77,7 @@ export const privateTripWhatsapp=(name:string)=>`${whatsapp}?text=${encodeURICom
 export type GroupTrip = {
   id:string; name:Bilingual; description:Bilingual; image:string;
   location:Bilingual; duration:Bilingual; groupSize:Bilingual;
+  startDate:string; // ISO date (YYYY-MM-DD) the booking form uses; customers cannot pick another date
   date:Bilingual; price:Bilingual;
   itinerary:{title:Bilingual; text:Bilingual}[];
   inclusions:Bilingual[]; exclusions:Bilingual[]; terms:Bilingual[];
@@ -93,7 +94,7 @@ export const groupTrips: GroupTrip[] = [
   {id:'jabal-akhdar-trip', name:bi('Jabal Akhdar Trip','رحلة الجبل الأخضر'), image:mountains, sample:true,
    description:bi('Two days in the cool mountains: terraced villages, orchards, canyon viewpoints and a guided hike, travelling together with a small group.','يومان في الجبال المنعشة: قرى مدرجة وبساتين وإطلالات على الأخاديد ومسار مشي بصحبة مرشد، مع مجموعة صغيرة.'),
    location:bi('Jabal Akhdar, Oman','الجبل الأخضر، عُمان'), duration:bi('2 days / 1 night','يومان / ليلة واحدة'), groupSize:bi('Small group (sample: up to 14 travellers)','مجموعة صغيرة (تجريبي: حتى 14 مسافرًا)'),
-   date:bi('Sample date: 20–21 November 2026','تاريخ تجريبي: 20–21 نوفمبر 2026'), price:bi('Sample price: OMR 65 per person','سعر تجريبي: 65 ر.ع. للشخص'),
+   startDate:'2026-11-20', date:bi('Sample date: 20–21 November 2026','تاريخ تجريبي: 20–21 نوفمبر 2026'), price:bi('Sample price: OMR 65 per person','سعر تجريبي: 65 ر.ع. للشخص'),
    itinerary:[
     {title:bi('Day 1 · Muscat to the mountain','اليوم 1 · من مسقط إلى الجبل'), text:bi('Morning pick-up in Muscat and a scenic drive up to the plateau. Afternoon village walk through terraced orchards, then sunset at a canyon viewpoint.','انطلاق صباحي من مسقط وطريق جبلي إلى الهضبة. جولة بعد الظهر بين المدرجات الزراعية ثم غروب الشمس من أحد مواقع الإطلالة.')},
     {title:bi('Day 1 · Evening','اليوم 1 · المساء'), text:bi('Group dinner and an overnight stay on the mountain.','عشاء جماعي ومبيت في الجبل.')},
@@ -104,7 +105,7 @@ export const groupTrips: GroupTrip[] = [
   {id:'muscat-trip', name:bi('Muscat Trip','رحلة مسقط'), image:coast, sample:true,
    description:bi('A day exploring Muscat: the coast, the old quarters and the sea, with a small group and a local guide.','يوم لاستكشاف مسقط: الساحل والأحياء القديمة والبحر، مع مجموعة صغيرة ومرشد محلي.'),
    location:bi('Muscat, Oman','مسقط، عُمان'), duration:bi('1 day','يوم واحد'), groupSize:bi('Small group (sample: up to 14 travellers)','مجموعة صغيرة (تجريبي: حتى 14 مسافرًا)'),
-   date:bi('Sample date: 28 November 2026','تاريخ تجريبي: 28 نوفمبر 2026'), price:bi('Sample price: OMR 25 per person','سعر تجريبي: 25 ر.ع. للشخص'),
+   startDate:'2026-11-28', date:bi('Sample date: 28 November 2026','تاريخ تجريبي: 28 نوفمبر 2026'), price:bi('Sample price: OMR 25 per person','سعر تجريبي: 25 ر.ع. للشخص'),
    itinerary:[
     {title:bi('Morning','الصباح'), text:bi('Meet the group and start along the Muscat coast with the first stops and photo points.','لقاء المجموعة والانطلاق على طول ساحل مسقط مع أولى المحطات ونقاط التصوير.')},
     {title:bi('Midday','الظهيرة'), text:bi('Explore the old quarters and local markets, then lunch together.','استكشاف الأحياء القديمة والأسواق المحلية ثم غداء جماعي.')},
@@ -115,7 +116,7 @@ export const groupTrips: GroupTrip[] = [
   {id:'masirah-island-trip', name:bi('Masirah Island Trip','رحلة جزيرة مصيرة'), image:coast, sample:true,
    description:bi('Three days on Masirah: long beaches, clear water and island life, travelling together with a small group.','ثلاثة أيام في مصيرة: شواطئ طويلة ومياه صافية وحياة الجزيرة، مع مجموعة صغيرة.'),
    location:bi('Masirah Island, Oman','جزيرة مصيرة، عُمان'), duration:bi('3 days / 2 nights','3 أيام / ليلتان'), groupSize:bi('Small group (sample: up to 12 travellers)','مجموعة صغيرة (تجريبي: حتى 12 مسافرًا)'),
-   date:bi('Sample date: 11–13 December 2026','تاريخ تجريبي: 11–13 ديسمبر 2026'), price:bi('Sample price: OMR 110 per person','سعر تجريبي: 110 ر.ع. للشخص'),
+   startDate:'2026-12-11', date:bi('Sample date: 11–13 December 2026','تاريخ تجريبي: 11–13 ديسمبر 2026'), price:bi('Sample price: OMR 110 per person','سعر تجريبي: 110 ر.ع. للشخص'),
    itinerary:[
     {title:bi('Day 1 · Journey to the island','اليوم 1 · الرحلة إلى الجزيرة'), text:bi('Travel from Muscat to the departure point, cross to the island and settle in.','السفر من مسقط إلى نقطة العبور ثم الوصول إلى الجزيرة والاستقرار.')},
     {title:bi('Day 2 · Island day','اليوم 2 · يوم الجزيرة'), text:bi('Explore beaches and the coast, with time for the sea and an evening together.','استكشاف الشواطئ والساحل مع وقت للبحر وأمسية جماعية.')},
