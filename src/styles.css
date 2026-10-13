@@ -128,3 +128,7 @@
 .hero-swap{animation:hero-swap .6s cubic-bezier(.2,.7,.2,1) both}
 .region-panel{animation:region-in .6s cubic-bezier(.2,.7,.2,1) both}
 @media (prefers-reduced-motion:reduce){.hero-swap,.region-panel{animation:none}}
+
+/* "Book an Adventure" / "احجز مغامرة" header button (desktop + mobile menu): white text.
+   (The global `a{color:inherit}` rule otherwise overrides the button's own text colour.) */
+.site-header .header-book,.site-header .header-book:hover,.mobile-nav a[href="/book"],.mobile-nav a[href="/book"]:hover{color:#fff}
