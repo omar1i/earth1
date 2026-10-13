@@ -1,0 +1,99 @@
+import { Link } from '@tanstack/react-router';
+import { ArrowRight, ArrowUpRight, Clock, MapPin, MessageCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/lib/language';
+import { groupTrips, privateDestinations, privateTripsIntro, privateTripWhatsapp, whatsapp, type GroupTrip } from '@/lib/content';
+
+// Private Trips: inspiration cards only. One "Contact Us" button per card opens WhatsApp.
+export function PrivateTripsSection() {
+  const { lang, t } = useLanguage();
+  return (
+    <section className="trip-part" aria-labelledby="private-trips-title">
+      <div className="trip-part-head">
+        <div className="eyebrow">{t('Private Trips', 'الرحلات الخاصة')}</div>
+        <h3 id="private-trips-title">{privateTripsIntro.title[lang]}</h3>
+        <p>{privateTripsIntro.text[lang]}</p>
+      </div>
+      <div className="trip-grid-4">
+        {privateDestinations.map((d) => (
+          <article className="experience-card" key={d.id}>
+            <div className="experience-image">
+              <img src={d.image} alt={d.name[lang]} loading="lazy" width="600" height="400" />
+            </div>
+            <div className="experience-body">
+              <h3>{d.name[lang]}</h3>
+              <p>{d.description[lang]}</p>
+              <div className="experience-actions">
+                <Button asChild size="sm">
+                  <a href={privateTripWhatsapp(d.name.en)} target="_blank" rel="noreferrer">
+                    <MessageCircle size={15} />
+                    {t('Contact Us', 'تواصل معنا')}
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function GroupTripCard({ trip }: { trip: GroupTrip }) {
+  const { lang, t } = useLanguage();
+  return (
+    <article className="experience-card">
+      <Link className="experience-image" to="/group-trips/$trip" params={{ trip: trip.id }}>
+        <img src={trip.image} alt={trip.name[lang]} loading="lazy" width="600" height="400" />
+        <span className="experience-tag">{t('Group Trip', 'رحلة جماعية')}</span>
+      </Link>
+      <div className="experience-body">
+        <h3>
+          <Link to="/group-trips/$trip" params={{ trip: trip.id }}>{trip.name[lang]}</Link>
+        </h3>
+        <p>{trip.description[lang]}</p>
+        <div className="experience-meta">
+          <span><MapPin />{trip.location[lang]}</span>
+          <span><Clock />{trip.duration[lang]}</span>
+        </div>
+        <div className="experience-actions">
+          <Link className="text-link" to="/group-trips/$trip" params={{ trip: trip.id }}>
+            {t('View Details', 'عرض التفاصيل')}
+            <ArrowRight />
+          </Link>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+// Group Trips: scheduled trips guests can join; every trip has its own detail page.
+export function GroupTripsSection() {
+  const { t } = useLanguage();
+  return (
+    <section className="trip-part trip-part-group" aria-labelledby="group-trips-title">
+      <div className="trip-part-head">
+        <div className="eyebrow">{t('Group Trips', 'الرحلات الجماعية')}</div>
+        <h3 id="group-trips-title">{t('Join a scheduled group trip', 'انضم إلى رحلة جماعية مجدولة')}</h3>
+        <p>{t('Trips we announce on set dates. Pick one, read the full details and join the group.', 'رحلات نعلن عنها في مواعيد محددة. اختر رحلة واطلع على كل التفاصيل وانضم إلى المجموعة.')}</p>
+      </div>
+      <div className="experience-grid">
+        {groupTrips.map((trip) => (
+          <GroupTripCard key={trip.id} trip={trip} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function ContactTripLink({ message, label }: { message: string; label: string }) {
+  return (
+    <Button asChild size="lg">
+      <a href={`${whatsapp}?text=${encodeURIComponent(message)}`} target="_blank" rel="noreferrer">
+        <MessageCircle size={17} />
+        {label}
+        <ArrowUpRight size={17} />
+      </a>
+    </Button>
+  );
+}

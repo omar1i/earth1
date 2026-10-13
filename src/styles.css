@@ -48,3 +48,22 @@
 .region-section{padding-top:56px}
 .region-soon{padding:34px 28px;border-radius:10px;background:var(--secondary);color:var(--muted-foreground);font-size:15px;text-align:center}
 @media(max-width:600px){.region-mini{top:14px;gap:4px;padding:4px}.region-mini-btn{height:32px;padding:0 11px;font-size:12px;gap:5px}.hero-inner{padding-top:52px}}
+
+/* Oman Trips: Private Trips + Group Trips */
+.trip-part{margin-top:8px}.trip-part+.trip-part{margin-top:44px}
+.trip-part-head{max-width:640px;margin-bottom:26px}.trip-part-head h3{font-size:30px;margin:0 0 10px}.trip-part-head p{color:var(--muted-foreground);font-size:14px}
+.trip-part-group{background:var(--secondary);border-radius:14px;padding:38px 34px}
+.trip-grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.trip-grid-4 .experience-body{padding:18px}.trip-grid-4 .experience-body h3{font-size:18px}
+.trip-grid-4 .experience-body>p{min-height:0}
+.itinerary{list-style:none;margin:0;padding:0;border-inline-start:2px solid var(--border)}
+.itinerary li{position:relative;padding:0 0 22px 22px}.itinerary li:last-child{padding-bottom:0}
+[dir=rtl] .itinerary li{padding:0 22px 22px 0}
+.itinerary li:before{content:'';position:absolute;top:6px;inset-inline-start:-7px;width:12px;height:12px;border-radius:50%;background:var(--adventure);border:2px solid var(--background)}
+.itinerary strong{display:block;font-size:15px;margin-bottom:4px}.itinerary p{font-size:13px;color:var(--muted-foreground)}
+.aside-facts{list-style:none;margin:6px 0 22px;padding:0;display:grid;gap:16px}
+.aside-facts li{display:flex;gap:12px;align-items:flex-start;font-size:14px;font-weight:600}.aside-facts svg{color:var(--primary);margin-top:3px}
+.aside-facts small{display:block;font-size:11px;font-weight:500;color:var(--muted-foreground);margin-bottom:2px}
+.sample-notice{margin:0 0 30px}
+@media(max-width:1100px){.trip-grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.trip-grid-4{grid-template-columns:1fr}.trip-part-group{padding:26px 18px}.trip-part-head h3{font-size:25px}}

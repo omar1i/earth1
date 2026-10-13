@@ -1,8 +1,9 @@
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { ArrowUpRight, Compass, Globe, MessageCircle } from "lucide-react";
 import { ExperienceCard } from "@/components/experience-components";
+import { GroupTripsSection, PrivateTripsSection } from "@/components/trips-components";
 import { useLanguage } from "@/lib/language";
-import { internationalExperiences, omanExperiences, whatsapp } from "@/lib/content";
+import { internationalExperiences, whatsapp } from "@/lib/content";
 
 type Region = "oman" | "international";
 
@@ -64,7 +65,6 @@ export function RegionPicker() {
 
 export function RegionChooser() {
   const { t, region, boxes } = useRegion();
-  const list = region === "oman" ? omanExperiences.slice(0, 6) : internationalExperiences;
 
   return (
     <section className="section region-section" id="choose-trip">
@@ -91,7 +91,12 @@ export function RegionChooser() {
               </a>
             )}
           </div>
-          {region === "international" && !SHOW_INTERNATIONAL_TRIPS ? (
+          {region === "oman" ? (
+            <>
+              <PrivateTripsSection />
+              <GroupTripsSection />
+            </>
+          ) : !SHOW_INTERNATIONAL_TRIPS ? (
             <p className="region-soon">
               {t(
                 "International trips are coming soon. Tell us where you would like to go and we will arrange it.",
@@ -100,7 +105,7 @@ export function RegionChooser() {
             </p>
           ) : (
             <div className="experience-grid">
-              {list.map((e) => (
+              {internationalExperiences.map((e) => (
                 <ExperienceCard key={e.id} experience={e} />
               ))}
             </div>

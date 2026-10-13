@@ -1,6 +1,7 @@
 import coast from '@/assets/oman-coast.jpg';
 import camping from '@/assets/oman-camping.jpg';
 import wadi from '@/assets/oman-wadi.jpg';
+import mountains from '@/assets/oman-mountains.jpg';
 import type { Bilingual, Language } from './language';
 export const images = {coast, camping, wadi};
 export const whatsapp = 'https://wa.me/96891915594';
@@ -54,3 +55,72 @@ export const values: [Bilingual, Bilingual][] = [
  [bi('Naturally unforgettable','طبيعة لا تُنسى'),bi('Discover the beauty of Oman, from open sea to remarkable landscapes.','اكتشف جمال عُمان من البحر المفتوح إلى المناظر الطبيعية الرائعة.')],
 ];
 export function pageHead(lang: Language, title: Bilingual, description: Bilingual) {const full=`${title[lang]} | Earth Adventure ${lang==='ar'?'عُمان':'Oman'}`;const d=description[lang];return {meta:[{title:full},{name:'description',content:d},{property:'og:title',content:full},{property:'og:description',content:d},{property:'og:type',content:'website'},{property:'og:locale',content:lang==='ar'?'ar_OM':'en_US'},{name:'twitter:card',content:'summary_large_image'}]};}
+
+// ---------------------------------------------------------------------------------------------
+// Oman Trips: Private Trips (inspiration cards -> WhatsApp) and Group Trips (scheduled trips with
+// their own detail page). PHOTOS: the four destination photos below reuse the site's existing
+// pictures as stand-ins; drop real photos into src/assets, import them above and set `image`.
+// ---------------------------------------------------------------------------------------------
+export const privateTripsIntro = {
+  title: bi('Private Trips','الرحلات الخاصة'),
+  text: bi('Travel on your own or with friends, in a private group of up to 12 people. We design the trip around your interests and the places you want to see.','سافر وحدك أو مع أصدقائك في مجموعة خاصة تصل إلى 12 شخصًا. نصمم الرحلة حسب اهتماماتك والأماكن التي تحب زيارتها.'),
+};
+export type PrivateDestination = {id:string; name:Bilingual; description:Bilingual; image:string};
+export const privateDestinations: PrivateDestination[] = [
+  {id:'wadi-al-arbaeen', name:bi('Wadi Al Arbaeen','وادي العربيين'), image:wadi, description:bi('A hidden valley of rugged rock walls and natural pools. Hike, take a swim stop, and enjoy quiet time in nature with your group.','وادٍ مخفي بجدران صخرية وبرك طبيعية. امشِ في الوادي واستمتع بالسباحة وبالهدوء في الطبيعة مع مجموعتك.')},
+  {id:'jabal-akhdar', name:bi('Jabal Akhdar','الجبل الأخضر'), image:mountains, description:bi('Cool mountain air, terraced orchards and wide canyon viewpoints. Ideal for scenic hikes, village walks and a slower pace above the clouds.','هواء جبلي منعش ومدرجات زراعية وإطلالات واسعة على الأخاديد. مثالي للمشي في الطبيعة وجولات القرى وإيقاع أهدأ فوق الغيوم.')},
+  {id:'masirah-island', name:bi('Masirah Island','جزيرة مصيرة'), image:coast, description:bi('Long empty beaches, clear water and an easy island pace. Plan time for fishing, beach camping and watching the coast from the sea.','شواطئ طويلة هادئة ومياه صافية وإيقاع جزيرة مريح. خطط لوقت للصيد والتخييم على الشاطئ ومشاهدة الساحل من البحر.')},
+  {id:'salalah', name:bi('Salalah','صلالة'), image:camping, description:bi('Green hills, coastal scenery and a very different side of Oman, especially in the khareef season. Explore the coast and valleys at your own pace.','تلال خضراء ومناظر ساحلية وجانب مختلف تمامًا من عُمان، خصوصًا في موسم الخريف. استكشف الساحل والأودية بالوتيرة التي تناسبك.')},
+];
+export const privateTripWhatsapp=(name:string)=>`${whatsapp}?text=${encodeURIComponent('Hello! I would like to plan a private trip to '+name+'.')}`;
+
+export type GroupTrip = {
+  id:string; name:Bilingual; description:Bilingual; image:string;
+  location:Bilingual; duration:Bilingual; groupSize:Bilingual;
+  date:Bilingual; price:Bilingual;
+  itinerary:{title:Bilingual; text:Bilingual}[];
+  inclusions:Bilingual[]; exclusions:Bilingual[]; terms:Bilingual[];
+  sample:boolean; // true = the date, price and terms are placeholders, not real trip details
+};
+const sampleExclusions:Bilingual[]=[bi('Personal expenses and souvenirs','المصاريف الشخصية والهدايا التذكارية'),bi('Travel insurance','التأمين على السفر'),bi('Anything not listed under “What’s included”','أي شيء غير مذكور ضمن «ما يشمله السعر»')];
+const sampleTerms:Bilingual[]=[
+  bi('SAMPLE TERMS: to be replaced with Earth Adventure’s real terms before publishing.','شروط تجريبية: تُستبدل بشروط Earth Adventure الفعلية قبل النشر.'),
+  bi('A seat is confirmed once our team confirms availability and payment arrangements with you.','يتأكد المقعد بعد أن يؤكد فريقنا التوفر وترتيبات الدفع معك.'),
+  bi('Cancellation and refund terms are confirmed by our team before you pay.','يؤكد فريقنا شروط الإلغاء والاسترداد قبل الدفع.'),
+  bi('The programme may change because of weather, safety or local conditions. Please follow the guide’s instructions.','قد يتغير البرنامج بسبب الطقس أو السلامة أو الظروف المحلية. يرجى اتباع تعليمات المرشد.'),
+];
+export const groupTrips: GroupTrip[] = [
+  {id:'jabal-akhdar-trip', name:bi('Jabal Akhdar Trip','رحلة الجبل الأخضر'), image:mountains, sample:true,
+   description:bi('Two days in the cool mountains: terraced villages, orchards, canyon viewpoints and a guided hike, travelling together with a small group.','يومان في الجبال المنعشة: قرى مدرجة وبساتين وإطلالات على الأخاديد ومسار مشي بصحبة مرشد، مع مجموعة صغيرة.'),
+   location:bi('Jabal Akhdar, Oman','الجبل الأخضر، عُمان'), duration:bi('2 days / 1 night','يومان / ليلة واحدة'), groupSize:bi('Small group (sample: up to 14 travellers)','مجموعة صغيرة (تجريبي: حتى 14 مسافرًا)'),
+   date:bi('Sample date: 20–21 November 2026','تاريخ تجريبي: 20–21 نوفمبر 2026'), price:bi('Sample price: OMR 65 per person','سعر تجريبي: 65 ر.ع. للشخص'),
+   itinerary:[
+    {title:bi('Day 1 · Muscat to the mountain','اليوم 1 · من مسقط إلى الجبل'), text:bi('Morning pick-up in Muscat and a scenic drive up to the plateau. Afternoon village walk through terraced orchards, then sunset at a canyon viewpoint.','انطلاق صباحي من مسقط وطريق جبلي إلى الهضبة. جولة بعد الظهر بين المدرجات الزراعية ثم غروب الشمس من أحد مواقع الإطلالة.')},
+    {title:bi('Day 1 · Evening','اليوم 1 · المساء'), text:bi('Group dinner and an overnight stay on the mountain.','عشاء جماعي ومبيت في الجبل.')},
+    {title:bi('Day 2 · Hike and return','اليوم 2 · المشي والعودة'), text:bi('Early breakfast and a guided hike with views over the canyon. Lunch, free time, then the drive back to Muscat.','فطور مبكر ومسار مشي بصحبة مرشد مع إطلالات على الأخدود. غداء ووقت حر ثم العودة إلى مسقط.')},
+   ],
+   inclusions:[bi('Return transport from Muscat','النقل ذهابًا وإيابًا من مسقط'),bi('One night’s accommodation','إقامة ليلة واحدة'),bi('Meals mentioned in the itinerary','الوجبات المذكورة في البرنامج'),bi('Trip leader / local guide','قائد الرحلة / مرشد محلي')],
+   exclusions:sampleExclusions, terms:sampleTerms},
+  {id:'muscat-trip', name:bi('Muscat Trip','رحلة مسقط'), image:coast, sample:true,
+   description:bi('A day exploring Muscat: the coast, the old quarters and the sea, with a small group and a local guide.','يوم لاستكشاف مسقط: الساحل والأحياء القديمة والبحر، مع مجموعة صغيرة ومرشد محلي.'),
+   location:bi('Muscat, Oman','مسقط، عُمان'), duration:bi('1 day','يوم واحد'), groupSize:bi('Small group (sample: up to 14 travellers)','مجموعة صغيرة (تجريبي: حتى 14 مسافرًا)'),
+   date:bi('Sample date: 28 November 2026','تاريخ تجريبي: 28 نوفمبر 2026'), price:bi('Sample price: OMR 25 per person','سعر تجريبي: 25 ر.ع. للشخص'),
+   itinerary:[
+    {title:bi('Morning','الصباح'), text:bi('Meet the group and start along the Muscat coast with the first stops and photo points.','لقاء المجموعة والانطلاق على طول ساحل مسقط مع أولى المحطات ونقاط التصوير.')},
+    {title:bi('Midday','الظهيرة'), text:bi('Explore the old quarters and local markets, then lunch together.','استكشاف الأحياء القديمة والأسواق المحلية ثم غداء جماعي.')},
+    {title:bi('Afternoon','بعد الظهر'), text:bi('A relaxed time by the sea and a sunset stop before heading back.','وقت هادئ على البحر ومحطة لمشاهدة الغروب قبل العودة.')},
+   ],
+   inclusions:[bi('Local transport during the day','النقل المحلي خلال اليوم'),bi('Lunch (sample)','الغداء (تجريبي)'),bi('Trip leader / local guide','قائد الرحلة / مرشد محلي')],
+   exclusions:sampleExclusions, terms:sampleTerms},
+  {id:'masirah-island-trip', name:bi('Masirah Island Trip','رحلة جزيرة مصيرة'), image:coast, sample:true,
+   description:bi('Three days on Masirah: long beaches, clear water and island life, travelling together with a small group.','ثلاثة أيام في مصيرة: شواطئ طويلة ومياه صافية وحياة الجزيرة، مع مجموعة صغيرة.'),
+   location:bi('Masirah Island, Oman','جزيرة مصيرة، عُمان'), duration:bi('3 days / 2 nights','3 أيام / ليلتان'), groupSize:bi('Small group (sample: up to 12 travellers)','مجموعة صغيرة (تجريبي: حتى 12 مسافرًا)'),
+   date:bi('Sample date: 11–13 December 2026','تاريخ تجريبي: 11–13 ديسمبر 2026'), price:bi('Sample price: OMR 110 per person','سعر تجريبي: 110 ر.ع. للشخص'),
+   itinerary:[
+    {title:bi('Day 1 · Journey to the island','اليوم 1 · الرحلة إلى الجزيرة'), text:bi('Travel from Muscat to the departure point, cross to the island and settle in.','السفر من مسقط إلى نقطة العبور ثم الوصول إلى الجزيرة والاستقرار.')},
+    {title:bi('Day 2 · Island day','اليوم 2 · يوم الجزيرة'), text:bi('Explore beaches and the coast, with time for the sea and an evening together.','استكشاف الشواطئ والساحل مع وقت للبحر وأمسية جماعية.')},
+    {title:bi('Day 3 · Return','اليوم 3 · العودة'), text:bi('Morning on the beach, then the crossing and the journey back to Muscat.','صباح على الشاطئ ثم العبور والعودة إلى مسقط.')},
+   ],
+   inclusions:[bi('Transport from Muscat and the island crossing (sample)','النقل من مسقط وعبور الجزيرة (تجريبي)'),bi('Two nights’ accommodation','إقامة ليلتين'),bi('Meals mentioned in the itinerary','الوجبات المذكورة في البرنامج'),bi('Trip leader / local guide','قائد الرحلة / مرشد محلي')],
+   exclusions:sampleExclusions, terms:sampleTerms},
+];
