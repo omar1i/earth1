@@ -67,3 +67,5 @@ and English description, contact-for-price, using the photo I placed in src/asse
 price of trip Y". Do not let the agent change `booking-schema.ts` and `content.ts` out of sync.
 
 The original Lovable brief is kept in `docs/original-lovable-brief.md`.
+
+
