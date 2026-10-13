@@ -21,10 +21,6 @@ function useRegion() {
   const navigate = useNavigate();
   const choose = (next: Region) => {
     if (next !== region) void navigate({ to: "/", search: { trips: next }, replace: true, resetScroll: false });
-    // The trips list is further down the page, so bring it into view after choosing.
-    window.setTimeout(() => {
-      document.getElementById("choose-trip")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 60);
   };
   const boxes: { id: Region; title: string; text: string; Icon: typeof Compass }[] = [
     {

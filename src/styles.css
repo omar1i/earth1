@@ -122,3 +122,9 @@
   .group-trip-page .itinerary p{font-size:15px}
   .group-trip-page .aside-facts li{font-size:16px}
 }
+
+/* Oman / World switch: the hero text fades in again (keyed on the chosen region) and the page no longer jumps down. */
+@keyframes hero-swap{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.hero-swap{animation:hero-swap .6s cubic-bezier(.2,.7,.2,1) both}
+.region-panel{animation:region-in .6s cubic-bezier(.2,.7,.2,1) both}
+@media (prefers-reduced-motion:reduce){.hero-swap,.region-panel{animation:none}}
