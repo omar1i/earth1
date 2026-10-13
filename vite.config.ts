@@ -12,4 +12,18 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  nitro: {
+    cloudflare: {
+      wrangler: {
+        name: "earth1",
+        d1_databases: [
+          {
+            binding: "DB",
+            database_name: "earth-adventure",
+            database_id: "723c2801-0fd5-45a2-a807-9b99ca8784bf",
+          },
+        ],
+      },
+    },
+  },
 });
