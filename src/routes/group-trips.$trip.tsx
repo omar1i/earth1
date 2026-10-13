@@ -1,8 +1,9 @@
 import { createFileRoute, notFound, Link } from '@tanstack/react-router';
-import { CalendarDays, Clock, MapPin, Tag, Users } from 'lucide-react';
+import { ArrowUpRight, CalendarDays, Clock, MapPin, Tag, Users } from 'lucide-react';
 import { groupTrips, pageHead, bi } from '@/lib/content';
 import { useLanguage, headLang } from '@/lib/language';
-import { ContactTripLink, GroupTripCard } from '@/components/trips-components';
+import { Button } from '@/components/ui/button';
+import { GroupTripCard } from '@/components/trips-components';
 
 export const Route = createFileRoute('/group-trips/$trip')({
   loader: ({ params }) => {
@@ -25,7 +26,6 @@ function GroupTripDetail() {
   const { lang, t } = useLanguage();
   const trip = groupTrips.find((x) => x.id === id);
   if (!trip) return null;
-  const message = t('Hello! I would like to join the ', 'مرحبًا! أود الانضمام إلى ') + trip.name[lang];
   const lists = [
     [t('What’s included', 'ما يشمله السعر'), trip.inclusions],
     [t('What’s not included', 'ما لا يشمله السعر'), trip.exclusions],
@@ -41,7 +41,7 @@ function GroupTripDetail() {
           <h1>{trip.name[lang]}</h1>
         </div>
       </section>
-      <section className="section">
+      <section className="section group-trip-page">
         <div className="container">
           <div className="breadcrumbs">
             <Link to="/" search={{ trips: 'oman' }}>{t('Oman Trips', 'رحلات عمان')}</Link>
@@ -83,7 +83,7 @@ function GroupTripDetail() {
               ))}
               <div className="detail-section">
                 <h2>{t('How to join', 'طريقة الانضمام')}</h2>
-                <p>{t('Message our team on WhatsApp to ask about availability and to reserve your seat. Payment and trip details are agreed directly with our team.', 'راسل فريقنا عبر واتساب للاستفسار عن التوفر وحجز مقعدك. يتم الاتفاق على الدفع وتفاصيل الرحلة مباشرة مع فريقنا.')}</p>
+                <p>{t('Press Book Now to send your booking request and reserve your seat. Payment and trip details are agreed directly with our team.', 'اضغط احجز الآن لإرسال طلب الحجز وحجز مقعدك. يتم الاتفاق على الدفع وتفاصيل الرحلة مباشرة مع فريقنا.')}</p>
               </div>
             </div>
             <aside className="booking-aside">
@@ -93,7 +93,12 @@ function GroupTripDetail() {
                 <li><Tag size={16} /><span><small>{t('Price', 'السعر')}</small>{trip.price[lang]}</span></li>
                 <li><Clock size={16} /><span><small>{t('Duration', 'المدة')}</small>{trip.duration[lang]}</span></li>
               </ul>
-              <ContactTripLink message={message} label={t('Contact Us to Join', 'تواصل معنا للانضمام')} />
+              <Button asChild size="lg" className="book-btn">
+                <Link to="/book" search={{ experience: trip.id }}>
+                  {t('Book Now', 'احجز الآن')}
+                  <ArrowUpRight size={17} />
+                </Link>
+              </Button>
             </aside>
           </div>
         </div>

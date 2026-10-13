@@ -1,5 +1,5 @@
 import { z } from 'zod';
-export const experienceIds=['sea-fishing','private-boat','camping-escape','private-camping','outdoor-exploration','mountain-adventure','masirah-island','intl-sample-1','intl-sample-2','intl-sample-3'] as const; // keep in sync with src/lib/content.ts (a test enforces it)
+export const experienceIds=['sea-fishing','private-boat','camping-escape','private-camping','outdoor-exploration','mountain-adventure','masirah-island','intl-sample-1','intl-sample-2','intl-sample-3','jabal-akhdar-trip','muscat-trip','masirah-island-trip'] as const; // keep in sync with src/lib/content.ts (a test enforces it)
 export function muscatToday(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Muscat',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
 export const bookingSchema=z.object({
  submission_key:z.string().uuid(),

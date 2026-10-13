@@ -96,3 +96,29 @@
 .trip-part-group .experience-card{display:flex;flex-direction:column}
 .trip-part-group .experience-body{flex:1;display:flex;flex-direction:column}
 .trip-part-group .experience-actions{margin-top:auto;padding-top:15px}
+
+/* Group trip detail page: larger text + white "Book Now" button.
+   (Scoped to .group-trip-page so the other detail pages are not affected.) */
+.group-trip-page .breadcrumbs{font-size:14px}
+.group-trip-page .notice{font-size:15px;padding:18px 22px}
+.group-trip-page .detail-copy h2{font-size:34px}
+.group-trip-page .detail-copy p,.group-trip-page .detail-section ul{font-size:18px;line-height:1.8}
+.group-trip-page .experience-meta{font-size:15px;gap:18px}
+.group-trip-page .experience-meta svg{width:17px;height:17px}
+.group-trip-page .itinerary strong{font-size:20px;margin-bottom:6px}
+.group-trip-page .itinerary p{font-size:17px;line-height:1.7}
+.group-trip-page .booking-aside{padding:32px}
+.group-trip-page .booking-aside .eyebrow{font-size:12px}
+.group-trip-page .aside-facts{gap:20px}
+.group-trip-page .aside-facts li{font-size:18px}
+.group-trip-page .aside-facts small{font-size:14px}
+.group-trip-page .aside-facts svg{width:20px;height:20px}
+.group-trip-page .booking-aside .book-btn{height:52px;font-size:17px;color:#fff}
+.group-trip-page .booking-aside .book-btn:hover{color:#fff}
+@media (max-width:600px){
+  .group-trip-page .detail-copy h2{font-size:27px}
+  .group-trip-page .detail-copy p,.group-trip-page .detail-section ul{font-size:16px}
+  .group-trip-page .itinerary strong{font-size:18px}
+  .group-trip-page .itinerary p{font-size:15px}
+  .group-trip-page .aside-facts li{font-size:16px}
+}
