@@ -75,8 +75,8 @@ export function RegionChooser() {
           <div className="region-panel-head">
             <h3>{boxes.find((b) => b.id === region)?.title}</h3>
             {region === "oman" ? (
-              <Link className="text-link" to="/experiences">
-                {t("View all experiences", "عرض جميع التجارب")}
+              <Link className="text-link" to="/destinations">
+                {t("View all trips", "عرض كل الرحلات")}
                 <ArrowUpRight />
               </Link>
             ) : (

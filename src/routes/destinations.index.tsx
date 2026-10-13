@@ -1,7 +1,41 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowUpRight } from 'lucide-react';
-import { destinations, pageHead,bi } from '@/lib/content';
+import { createFileRoute } from '@tanstack/react-router';
+import { pageHead, bi } from '@/lib/content';
 import { useLanguage, headLang } from '@/lib/language';
 import { PageHeading } from '@/components/experience-components';
-export const Route=createFileRoute('/destinations/')({head:({matches})=>pageHead(headLang(matches),bi('Discover Oman’s Landscapes','اكتشف مناظر عُمان الطبيعية'),bi('Explore Oman’s coastal scenery, islands, desert environments, mountains and wadis. Find inspiration and discuss possible destinations with Earth Adventure.','استكشف سواحل عُمان وجزرها وصحاريها وجبالها وأوديتها، واستلهم وجهتك وناقش الخيارات الممكنة مع Earth Adventure.')),component:Destinations});
-function Destinations(){const {lang,t}=useLanguage();return <><PageHeading title={t('Extraordinary, by nature','استثنائية بطبيعتها')} description={t('A coastline that keeps unfolding. Deserts that seem to last forever. Mountains with stories of their own. This is Oman.','ساحل يكشف جماله باستمرار. صحارى بلا نهاية. جبال تحمل حكاياتها الخاصة. هذه عُمان.')} eyebrow={t('Discover the landscapes of Oman','اكتشف طبيعة عُمان')}/><section className="section"><div className="container"><div className="destination-grid">{destinations.map(d=><article className="destination-card" key={d.id}><Link className="category-card" to="/destinations/$destination" params={{destination:d.id}}><img src={d.image} alt={d.name[lang]} width="700" height="450" loading="lazy"/><div className="category-card-content"><h3>{d.name[lang]}</h3><div className="category-bottom"><span>{d.subtitle[lang]}</span><ArrowUpRight/></div></div></Link><p>{d.description[lang]}</p></article>)}</div><p className="notice">{t('These landscapes offer inspiration, not a confirmed list of operating locations. Our team will advise which destinations can be arranged for your request.','هذه المناظر للإلهام وليست قائمة مؤكدة بمواقع التشغيل. سيخبرك فريقنا بالوجهات التي يمكن ترتيبها لطلبك.')}</p></div></section></>}
+import { GroupTripsSection, PrivateTripsSection } from '@/components/trips-components';
+
+export const Route = createFileRoute('/destinations/')({
+  head: ({ matches }) =>
+    pageHead(
+      headLang(matches),
+      bi('Private & Group Trips', 'الرحلات الخاصة والجماعية'),
+      bi(
+        'Plan a private trip around your interests or join a scheduled group trip in Oman with Earth Adventure.',
+        'خطط لرحلة خاصة حسب اهتماماتك أو انضم إلى رحلة جماعية مجدولة في عُمان مع Earth Adventure.',
+      ),
+    ),
+  component: Destinations,
+});
+
+// Destinations = the private trips and the group trips, shown together on one page.
+function Destinations() {
+  const { t } = useLanguage();
+  return (
+    <>
+      <PageHeading
+        title={t('Private & Group Trips', 'الرحلات الخاصة والجماعية')}
+        description={t(
+          'Plan your own private trip, or join a group trip on set dates.',
+          'خطط رحلتك الخاصة، أو انضم إلى رحلة جماعية في مواعيد محددة.',
+        )}
+        eyebrow={t('Destinations', 'الوجهات')}
+      />
+      <section className="section">
+        <div className="container">
+          <PrivateTripsSection />
+          <GroupTripsSection />
+        </div>
+      </section>
+    </>
+  );
+}

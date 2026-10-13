@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import { Compass } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { PageHeading, ExperienceCard } from '@/components/experience-components';
-import { categories, experiences, pageHead,bi } from '@/lib/content';
-import { useLanguage, headLang } from '@/lib/language';
-export const Route=createFileRoute('/experiences/')({head:({matches})=>pageHead(headLang(matches),bi('Adventure Experiences','تجارب المغامرة'),bi('Discover sea and fishing trips, camping and overnight escapes, and land adventures in Oman. Explore experiences and book online.','اكتشف رحلات البحر والصيد والتخييم والمبيت والمغامرات البرية في عُمان، واحجز تجربتك عبر الإنترنت.')),component:Experiences});
-function Experiences(){const {lang,t}=useLanguage();const [filter,setFilter]=useState('all');const list=experiences.filter(e=>filter==='all'||e.category===filter);return <><PageHeading title={t('Find your next adventure','اكتشف مغامرتك القادمة')} description={t('Sea, sky, and wide-open landscapes. Choose what calls to you — every journey starts with a conversation.','بحر وسماء ومناظر واسعة. اختر ما يلهمك — كل رحلة تبدأ بمحادثة.')} eyebrow={t('Explore experiences','استكشف التجارب')}/><section className="section"><div className="container"><div className="filter-bar" aria-label={t('Experience categories','فئات التجارب')}><Button variant="outline" aria-pressed={filter==='all'} onClick={()=>setFilter('all')}>{t('All Experiences','جميع التجارب')}</Button>{categories.map(c=><Button key={c.id} variant="outline" aria-pressed={filter===c.id} onClick={()=>setFilter(c.id)}>{c.title[lang]}</Button>)}</div><p className="results-count">{list.length} {t('experiences to inspire your next escape','تجارب تلهم رحلتك القادمة')}</p>{list.length?<div className="experience-grid">{list.map(e=><ExperienceCard key={e.id} experience={e}/>)}</div>:<div className="empty-state"><Compass className="mx-auto"/><h3>{t('No experiences found','لم يتم العثور على تجارب')}</h3><p>{t('Try another category.','جرّب فئة أخرى.')}</p><Button onClick={()=>setFilter('all')}>{t('Clear filters','إزالة الفلاتر')}</Button></div>}<p className="notice">{t('Experiences are available to inquire about. Locations, schedules, inclusions, and availability are confirmed with our team before booking.','يمكن إرسال استفسار عن التجارب. تُؤكد المواقع والمواعيد والمشمولات والتوفر مع فريقنا قبل الحجز.')}</p></div></section></>}
+import { createFileRoute, redirect } from '@tanstack/react-router';
+
+// The separate Experiences page was removed: old links to /experiences now land on Destinations,
+// which shows the private and group trips together.
+export const Route = createFileRoute('/experiences/')({
+  beforeLoad: () => {
+    throw redirect({ to: '/destinations' });
+  },
+});
