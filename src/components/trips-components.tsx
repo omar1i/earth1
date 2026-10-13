@@ -9,7 +9,7 @@ export function PrivateTripsSection() {
   const { lang, t } = useLanguage();
   return (
     <section className="trip-part" aria-labelledby="private-trips-title">
-      <div className="trip-part-head trip-part-head-private">
+      <div className="trip-part-head trip-part-head-main">
         <h3 id="private-trips-title">{privateTripsIntro.title[lang]}</h3>
         <p>{privateTripsIntro.text[lang]}</p>
       </div>
@@ -71,9 +71,8 @@ export function GroupTripsSection() {
   const { t } = useLanguage();
   return (
     <section className="trip-part trip-part-group" aria-labelledby="group-trips-title">
-      <div className="trip-part-head">
-        <div className="eyebrow">{t('Group Trips', 'الرحلات الجماعية')}</div>
-        <h3 id="group-trips-title">{t('Join a scheduled group trip', 'انضم إلى رحلة جماعية مجدولة')}</h3>
+      <div className="trip-part-head trip-part-head-main">
+        <h3 id="group-trips-title">{t('Group Trips', 'الرحلات الجماعية')}</h3>
         <p>{t('Trips we announce on set dates. Pick one, read the full details and join the group.', 'رحلات نعلن عنها في مواعيد محددة. اختر رحلة واطلع على كل التفاصيل وانضم إلى المجموعة.')}</p>
       </div>
       <div className="experience-grid">

@@ -79,10 +79,10 @@
   .region-panel-head h3{font-size:34px}
 }
 
-/* Private Trips title: blue, green dash beside it, bold intro text */
-.trip-part-head-private h3{display:flex;align-items:center;gap:12px;color:var(--primary)}
-.trip-part-head-private h3:before{content:'';flex:none;width:22px;height:2px;background:var(--adventure)}
-.trip-part-head.trip-part-head-private p{font-weight:700;color:#000}
+/* Private Trips + Group Trips titles: blue, green dash beside it, bold intro text */
+.trip-part-head-main h3{display:flex;align-items:center;gap:12px;color:var(--primary)}
+.trip-part-head-main h3:before{content:'';flex:none;width:22px;height:2px;background:var(--adventure)}
+.trip-part-head.trip-part-head-main p{font-weight:700;color:#000}
 
 /* Private trip cards: equal height, "Contact Us" buttons all on the same line, white text.
    (The global `a{color:inherit}` rule beats the button's own text colour, so it is forced here.) */
@@ -90,3 +90,9 @@
 .trip-grid-4 .experience-body{flex:1;display:flex;flex-direction:column}
 .trip-grid-4 .experience-actions{margin-top:auto;padding-top:15px}
 .experience-actions .contact-btn,.experience-actions .contact-btn a{color:#fff}
+
+/* Group Trips: no grey frame, same look as Private Trips; cards equal height with "View Details" on one line */
+.trip-part-group{background:none;border-radius:0;padding:0}
+.trip-part-group .experience-card{display:flex;flex-direction:column}
+.trip-part-group .experience-body{flex:1;display:flex;flex-direction:column}
+.trip-part-group .experience-actions{margin-top:auto;padding-top:15px}
