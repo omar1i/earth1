@@ -1,7 +1,6 @@
 import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/react-start";
 
 import { renderErrorPage } from "./lib/error-page";
-import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
@@ -26,6 +25,7 @@ const csrfMiddleware = createCsrfMiddleware({
 });
 
 export const startInstance = createStart(() => ({
-  functionMiddleware: [attachSupabaseAuth],
+  // No Supabase auth middleware: this site uses Cloudflare D1, and the Supabase browser client throws
+  // "Missing Supabase environment variable(s)" before every server-function call when it is not configured.
   requestMiddleware: [errorMiddleware, csrfMiddleware],
 }));
