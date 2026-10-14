@@ -44,9 +44,27 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+// Admin dashboard, its JSON API and uploaded images are answered here, before the website renders.
+function isAdminPath(pathname: string): boolean {
+  return (
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/") ||
+    pathname.startsWith("/api/admin/") ||
+    pathname.startsWith("/api/images/")
+  );
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      // Make the Worker bindings (D1 "DB") and secrets reachable from server functions.
+      const { rememberEnv } = await import("./lib/db.server");
+      rememberEnv(env);
+      if (isAdminPath(new URL(request.url).pathname)) {
+        const { handleAdminRequest } = await import("./lib/admin-api.server");
+        const adminResponse = await handleAdminRequest(request);
+        if (adminResponse) return adminResponse;
+      }
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
