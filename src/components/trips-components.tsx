@@ -2,11 +2,14 @@ import { Link } from '@tanstack/react-router';
 import { ArrowRight, ArrowUpRight, Clock, MapPin, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/language';
-import { groupTrips, privateDestinations, privateTripsIntro, privateTripWhatsapp, whatsapp, type GroupTrip } from '@/lib/content';
+import { privateTripsIntro, privateTripWhatsapp, whatsapp, type GroupTrip, type PrivateDestination } from '@/lib/content';
+import { useCatalog } from '@/lib/catalog-context';
 
 // Private Trips: inspiration cards only. One "Contact Us" button per card opens WhatsApp.
-export function PrivateTripsSection() {
+export function PrivateTripsSection({ destinations }: { destinations?: PrivateDestination[] } = {}) {
   const { lang, t } = useLanguage();
+  const catalog = useCatalog();
+  const privateDestinations = destinations ?? catalog.privateDestinations;
   return (
     <section className="trip-part" aria-labelledby="private-trips-title">
       <div className="trip-part-head trip-part-head-main">
@@ -40,6 +43,7 @@ export function PrivateTripsSection() {
 
 export function GroupTripCard({ trip }: { trip: GroupTrip }) {
   const { lang, t } = useLanguage();
+  const soldOut = !!trip.schedules && trip.schedules.length > 0 && trip.schedules.every((s) => s.soldOut);
   return (
     <article className="experience-card">
       <Link className="experience-image" to="/group-trips/$trip" params={{ trip: trip.id }}>
@@ -54,6 +58,7 @@ export function GroupTripCard({ trip }: { trip: GroupTrip }) {
         <div className="experience-meta">
           <span><MapPin />{trip.location[lang]}</span>
           <span><Clock />{trip.duration[lang]}</span>
+          {soldOut && <span>{t('Fully booked', 'محجوز بالكامل')}</span>}
         </div>
         <div className="experience-actions">
           <Link className="text-link" to="/group-trips/$trip" params={{ trip: trip.id }}>
@@ -67,8 +72,10 @@ export function GroupTripCard({ trip }: { trip: GroupTrip }) {
 }
 
 // Group Trips: scheduled trips guests can join; every trip has its own detail page.
-export function GroupTripsSection() {
+export function GroupTripsSection({ trips }: { trips?: GroupTrip[] } = {}) {
   const { t } = useLanguage();
+  const catalog = useCatalog();
+  const groupTrips = trips ?? catalog.groupTrips;
   return (
     <section className="trip-part trip-part-group" aria-labelledby="group-trips-title">
       <div className="trip-part-head trip-part-head-main">

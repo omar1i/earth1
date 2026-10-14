@@ -3,7 +3,8 @@ import { ArrowUpRight, Compass, Globe, MessageCircle } from "lucide-react";
 import { ExperienceCard } from "@/components/experience-components";
 import { GroupTripsSection, PrivateTripsSection } from "@/components/trips-components";
 import { useLanguage } from "@/lib/language";
-import { internationalExperiences, whatsapp } from "@/lib/content";
+import { whatsapp } from "@/lib/content";
+import { useCatalog } from "@/lib/catalog-context";
 
 type Region = "oman" | "international";
 
@@ -61,6 +62,7 @@ export function RegionPicker() {
 
 export function RegionChooser() {
   const { t, region, boxes } = useRegion();
+  const { internationalExperiences, groupTrips, privateDestinations } = useCatalog();
 
   return (
     <section className="section region-section" id="choose-trip">
@@ -89,8 +91,8 @@ export function RegionChooser() {
           </div>
           {region === "oman" ? (
             <>
-              <PrivateTripsSection />
-              <GroupTripsSection />
+              <PrivateTripsSection destinations={privateDestinations} />
+              <GroupTripsSection trips={groupTrips} />
             </>
           ) : !SHOW_INTERNATIONAL_TRIPS ? (
             <p className="region-soon">
