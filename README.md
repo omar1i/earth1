@@ -1,7 +1,8 @@
 # Earth Adventure website
 
 Bilingual (English / Arabic, RTL) adventure-tourism site. Stack: TanStack Start (React 19, SSR),
-TypeScript, Tailwind v4. Bookings are delivered by email through a Google Apps Script.
+TypeScript, Tailwind v4. Trips, prices, images, departures and bookings live in a Cloudflare D1 database managed from `/admin`;
+booking notifications are e-mailed through a Google Apps Script. See `DEPLOY.txt` to set it up.
 
 ## Run it
 
@@ -19,32 +20,27 @@ them in the host's environment-variable settings. Never commit secrets.
 |---|---|---|
 | `BOOKING_WEBHOOK_URL` | **Yes** | Apps Script web-app URL that emails each booking to you |
 | `BOOKING_WEBHOOK_SECRET` | **Yes** | Shared secret, same value as the script's `WEBHOOK_SECRET` |
-| `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | No | Optional database backup copy of each booking |
+| `ADMIN_SETUP_TOKEN` | **Yes (once)** | Lets you create the first administrator at `/admin` |
+| D1 binding `DB` | **Yes** | Configured in `wrangler.jsonc` (database `earth-adventure`) |
+| `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | No | No longer used by bookings (D1 replaced the optional Supabase backup) |
 | `VITE_SUPABASE_*` | No | Only used by the optional Supabase client |
 
 ## How a booking works
 
 1. The visitor fills in `/book` and accepts the Terms & Conditions.
-2. The server sends it to your Apps Script, which emails you (and, if you set `BANK_DETAILS`,
-   emails the customer the bank-transfer details). **The customer sees the success screen only if
-   that email was delivered**; otherwise they see an error with the WhatsApp option and can retry
-   safely (same reference, no duplicates).
-3. If Supabase is configured, a backup copy is stored too.
+2. The server validates it, saves it in D1 (seat capacity is enforced by the database, so a departure can
+   never be overbooked; a retry reuses the same reference and cannot create a duplicate), then sends the
+   existing Apps Script e-mail. If the e-mail fails the booking is still saved and flagged in the dashboard,
+   where you can press "Resend e-mail".
+3. If no D1 database is connected, the site falls back to the old e-mail-only behaviour.
 
 Setup steps for the script: `integrations/google-apps-script/SETUP.md`.
 
 ## Add, change or remove a trip
 
-Trips live in `src/lib/content.ts` (`experiences`). Each trip needs:
-`id`, `category`, `region` (`'oman'` or `'international'`), bilingual `name` and `description`,
-`price` (`null` = "Contact for Price") and `priceType`; `image` is optional.
-
-1. Add the object to `experiences` (copy an existing one).
-2. Add its `id` to `experienceIds` in `src/lib/booking-schema.ts`. `npm test` fails if the two lists
-   drift apart, so a trip can never appear in the form but be un-bookable.
-3. Photo: put the file in `src/assets/`, import it at the top of `content.ts`, set `image`. A trip
-   without `image` shows a neutral placeholder.
-4. Remove a trip by deleting its object (and its id from `experienceIds`).
+Use the admin dashboard at `/admin` (Trips). `src/lib/content.ts` now only holds the fixed texts
+(categories, FAQs, ...) and the original trips, which are used as a fallback until D1 is connected and as
+the source of `migrations/0002_seed_existing_content.sql`. Do not edit trips in `content.ts` any more.
 
 ## Before you publish: checklist
 
