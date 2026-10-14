@@ -222,8 +222,7 @@
   .hero h1,.hero-description,.landscape-content h2,.image-hero h1{text-shadow:0 2px 20px oklch(.15 .05 245 / .45)}
   .image-hero .eyebrow,.landscape-band .eyebrow{color:var(--primary-foreground)}
 
-  /* A8. White text on every blue button (brand look). Beats the global `a{color:inherit}`. */
-  a[class*="bg-primary"]{color:var(--primary-foreground)}
+  /* A8 (white text on blue buttons) moved to the global fixes block at the end of this file. */
 
   /* A9. Long uppercase headings can no longer push the page sideways on 320-360px phones. */
   .region-panel-head h3{font-size:clamp(26px,8.2vw,34px);overflow-wrap:anywhere}
@@ -325,3 +324,20 @@
 @keyframes m-kenburns{from{scale:1.12}to{scale:1}}
 @keyframes m-drop{from{opacity:0;translate:0 -12px}to{opacity:1;translate:0 0}}
 @keyframes m-pulse{0%{transform:scale(1);opacity:.75}100%{transform:scale(1.6);opacity:0}}
+
+
+/* =====================================================================================
+   GLOBAL FIXES (all screen sizes)
+   ===================================================================================== */
+
+/* G1. Every blue button gets white text. The global `a{color:inherit}` rule was beating the
+   button's own colour, so buttons rendered with dark text unless patched one by one
+   (e.g. "Let's plan your adventure" on the About page, "Book Now" on trip pages). */
+a[class*="bg-primary"],a[class*="bg-primary"]:hover{color:var(--primary-foreground)}
+
+/* G2. Arabic footer / contact: phone number and Instagram handle sit right-aligned in the same
+   column (number directly above the handle), and "@earthadventure_" no longer flips to
+   "_earthadventure@" (bidi). */
+a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
+[dir=rtl] .footer-grid>div>a[href*="instagram"]{justify-content:flex-end}
+[dir=rtl] .footer-grid>div>a[dir=ltr]{flex-direction:row-reverse;justify-content:flex-start}
