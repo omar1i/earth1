@@ -139,3 +139,189 @@
 /* Contact page "Request an adventure" button: white text on the blue button
    (`.contact-option a{color:var(--primary)}` otherwise makes it blue-on-blue). */
 .contact-option a.contact-book-btn,.contact-option a.contact-book-btn:hover{color:#fff}
+
+
+/* =====================================================================================
+   MOBILE ONLY  (<= 950px: phones, phones in landscape, small tablets)
+   Everything below is wrapped in media queries, so desktop (> 950px) is untouched.
+   Part A = bug fixes.  Part B = professional motion / polish (driven by mobile-effects.tsx).
+   ===================================================================================== */
+
+/* ---------- A. FIXES ---------- */
+@media (max-width:950px){
+  html{scroll-padding-top:88px;-webkit-text-size-adjust:100%}
+  body{-webkit-tap-highlight-color:transparent;overflow-x:clip}
+
+  /* A1. iOS Safari zooms the page when a field is < 16px. Keep 16px + comfortable height. */
+  .field input,.field select,.field textarea{font-size:16px;min-height:48px;border-radius:8px}
+  .field textarea{min-height:112px}
+  .field label{font-size:13px}
+  .field label span,.field-error,.form-disclaimer{font-size:12px}
+  .terms-check label{font-size:14px}
+  .terms-check input[type=checkbox]{width:22px;height:22px;margin-top:1px}
+  .form-submit{height:52px;font-size:15px;border-radius:10px}
+
+  /* A2. Minimum readable text sizes (was 9-11px). */
+  .eyebrow,.hero .eyebrow{font-size:11px;letter-spacing:1.6px}
+  .hero-description{font-size:14.5px;max-width:380px}
+  .hero-whatsapp{font-size:12.5px}
+  .hero-bottom{font-size:11px}
+  .experience-tag{font-size:11px}
+  .experience-body>p{font-size:13px}
+  .experience-meta{font-size:12px}
+  .experience-actions a{font-size:13px}
+  .category-card p{font-size:13px}
+  .category-bottom{font-size:12px}
+  .section-intro{font-size:14px}
+  .values-grid h3{font-size:15px}
+  .values-grid p{font-size:12.5px}
+  .steps-grid p{font-size:14px}
+  .faq-list summary{font-size:14.5px}
+  .faq-list details p{font-size:14px}
+  .contact-option p{font-size:14px}
+  .breadcrumbs{font-size:12px}
+  .detail-copy p{font-size:15px}
+  .notice{font-size:13px}
+  .text-link{font-size:13px}
+  .booking-aside small{font-size:12px}
+  .gallery-item span{font-size:12px}
+  .filter-bar button{font-size:12px;height:40px;padding-inline:14px}
+  .footer-brand p{font-size:13px}
+  .footer-grid h3{font-size:13px}
+  .footer-grid>div>a{font-size:13px;padding:6px 0;margin:2px 0}
+  .footer-bottom{font-size:12px}
+  .footer-bottom{padding-bottom:92px} /* keeps text clear of the floating WhatsApp button */
+
+  /* A3. Touch targets ~44px. */
+  .mobile-menu-button{width:44px;height:44px}
+  .mobile-menu-button svg{width:24px;height:24px}
+  .language-switch button{min-width:38px;height:40px;padding:0 6px;font-size:12px}
+  .mobile-nav>a{min-height:48px;padding:12px 10px;font-size:16px}
+  .social-links a{display:grid;place-items:center;width:44px;height:44px;margin:-8px}
+
+  /* A4. One column from 950px down (was 600px): landscape phones got two cramped columns. */
+  .detail-layout,.form-layout{grid-template-columns:1fr;gap:35px}
+  .booking-aside{position:static}
+
+  /* A5. Mobile menu: scrollable when taller than the screen (landscape), with room for the CTA. */
+  .mobile-nav{max-height:calc(100dvh - 78px);overflow-y:auto;overscroll-behavior:contain;border-top:1px solid var(--border)}
+  .mobile-nav>a[class*="bg-primary"]{justify-content:center;height:50px;margin-top:6px;border-radius:10px;font-size:15px;font-weight:650}
+
+  /* A6. Hero grows with its content instead of clipping it on short screens. */
+  .hero{height:auto;max-height:none;min-height:clamp(540px,calc(100svh - 128px),780px)}
+  .hero-inner{padding-top:84px;padding-bottom:84px}
+  .hero-bottom{bottom:18px}
+  .hero-rail{height:auto;min-height:76px;padding-block:12px}
+  .rail-inner{gap:8px}
+  .rail-item{flex:1 1 0;flex-direction:column;justify-content:center;text-align:center;gap:6px;max-width:none;font-size:11.5px;line-height:1.3}
+  .rail-item svg{width:22px;height:22px}
+
+  /* A7. Text legibility over photos: vertical overlay instead of a left-to-right one. */
+  .hero:after,[dir=rtl] .hero:after{background:linear-gradient(180deg,oklch(.2 .055 245 / .58) 0%,oklch(.2 .055 245 / .42) 42%,oklch(.17 .05 245 / .82) 100%)}
+  .landscape-band:after{background:linear-gradient(180deg,oklch(.2 .055 245 / .55),oklch(.18 .05 245 / .8))}
+  .hero h1,.hero-description,.landscape-content h2,.image-hero h1{text-shadow:0 2px 20px oklch(.15 .05 245 / .45)}
+  .image-hero .eyebrow,.landscape-band .eyebrow{color:var(--primary-foreground)}
+
+  /* A8. White text on every blue button (brand look). Beats the global `a{color:inherit}`. */
+  a[class*="bg-primary"]{color:var(--primary-foreground)}
+
+  /* A9. Long uppercase headings can no longer push the page sideways on 320-360px phones. */
+  .region-panel-head h3{font-size:clamp(26px,8.2vw,34px);overflow-wrap:anywhere}
+
+  /* A10. Floating WhatsApp: never on top of the booking form / success box. */
+  body:has(.booking-form) .whatsapp-float,body:has(.success-box) .whatsapp-float{display:none}
+
+  /* A11. Image dialog (gallery): fits the screen, scrolls if needed, big close button, RTL-safe. */
+  [role=dialog]{max-height:calc(100dvh - 24px);overflow-y:auto;width:calc(100% - 24px);padding:16px;border-radius:14px}
+  [role=dialog] h2{padding-inline-end:48px}
+  [role=dialog]>button:last-child{top:8px;right:8px;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;opacity:1;background:color-mix(in oklch,var(--background) 88%,transparent)}
+  [role=dialog]>button:last-child svg{width:20px;height:20px}
+  [dir=rtl] [role=dialog]>button:last-child{right:auto;left:8px}
+  .lightbox-image{border-radius:8px}
+}
+@media (max-width:950px) and (max-height:500px) and (orientation:landscape){
+  .lightbox-image{max-height:50svh}
+  .hero-inner{padding-top:72px;padding-bottom:72px}
+}
+@media (max-width:600px){
+  .hero-actions a{height:48px;font-size:12.5px}
+  .category-card h3{font-size:24px}
+}
+@media (max-width:380px){
+  .brand-logo{width:116px;height:44px}
+  .language-switch svg{display:none}
+  .container{padding-inline:18px}
+}
+
+/* ---------- B. PROFESSIONAL MOTION & POLISH ---------- */
+@media (max-width:950px){
+  /* Card & surface polish */
+  .experience-card,.category-card{border-radius:14px}
+  .experience-card{box-shadow:var(--shadow-soft)}
+  .booking-form{border-radius:14px}
+  .field input,.field select,.field textarea{transition:border-color .2s,box-shadow .2s}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px color-mix(in oklch,var(--primary) 16%,transparent)}
+
+  /* Header: glass + shadow after scrolling, thin reading-progress line */
+  .site-header{transition:box-shadow .3s,background-color .3s}
+  .site-header[data-scrolled=true]{background:color-mix(in oklch,var(--background) 90%,transparent);-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px);box-shadow:0 6px 24px oklch(.28 .05 245 / .10)}
+  .site-header:after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:3px;transform-origin:left center;transform:scaleX(var(--scroll,0));background:linear-gradient(90deg,var(--primary),var(--adventure));pointer-events:none}
+  [dir=rtl] .site-header:after{transform-origin:right center}
+
+  /* Menu: slides open, links cascade, icon pops */
+  .mobile-nav{animation:m-menu-in .3s cubic-bezier(.2,.7,.2,1) both}
+  .mobile-nav>*{animation:m-menu-item .45s cubic-bezier(.2,.7,.2,1) both}
+  .mobile-nav>*:nth-child(1){animation-delay:.04s}.mobile-nav>*:nth-child(2){animation-delay:.08s}
+  .mobile-nav>*:nth-child(3){animation-delay:.12s}.mobile-nav>*:nth-child(4){animation-delay:.16s}
+  .mobile-nav>*:nth-child(5){animation-delay:.2s}.mobile-nav>*:nth-child(6){animation-delay:.26s}
+  .mobile-menu-button svg{animation:m-icon-pop .32s cubic-bezier(.3,1.6,.5,1) both}
+
+  /* Hero: slow cinematic zoom + parallax, staggered entrance */
+  .hero>img{top:-14%;bottom:auto;height:128%;transform:translate3d(0,calc(var(--hero-y,0) * 1px),0);will-change:transform;animation:m-kenburns 18s ease-out both}
+  .region-mini{animation:m-drop .7s .1s cubic-bezier(.2,.7,.2,1) both}
+  .hero-actions{animation:reveal .8s .28s cubic-bezier(.2,.7,.2,1) both}
+  .hero-whatsapp{animation:reveal .8s .42s cubic-bezier(.2,.7,.2,1) both}
+  .hero-bottom{animation:reveal .8s .6s cubic-bezier(.2,.7,.2,1) both}
+
+  /* Touch feedback (a press feels physical) */
+  a[class*="bg-primary"],button{transition:transform .15s,background .2s,color .2s}
+  a[class*="bg-primary"]:active,button:active{transform:scale(.97)}
+  .category-card,.experience-card{transition:transform .2s,box-shadow .3s}
+  .category-card:active,.experience-card:active{transform:scale(.985)}
+
+  /* Floating WhatsApp: soft pulse ring, tucks away while scrolling down */
+  .whatsapp-float{width:54px;height:54px;transition:translate .35s cubic-bezier(.2,.7,.2,1),opacity .3s,transform .2s}
+  .whatsapp-float:before{content:'';position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--adventure);animation:m-pulse 2.8s ease-out infinite;pointer-events:none}
+  html[data-scroll-dir=down] .whatsapp-float{translate:0 110px;opacity:0;pointer-events:none}
+
+  /* Smooth in-page scrolling */
+  html{scroll-behavior:smooth}
+}
+
+/* No sticky hover on touch screens */
+@media (hover:none) and (max-width:950px){
+  .experience-card:hover{transform:none;box-shadow:var(--shadow-soft)}
+  .category-card:hover>img,.experience-card:hover img{transform:none}
+}
+
+/* Scroll-reveal (only once JS has confirmed it is running, so content never stays hidden) */
+@media (max-width:950px) and (prefers-reduced-motion:no-preference){
+  html.js-reveal [data-reveal]{transition:opacity .8s cubic-bezier(.2,.7,.2,1) var(--rd,0ms),translate .8s cubic-bezier(.2,.7,.2,1) var(--rd,0ms),box-shadow .3s,transform .2s}
+  html.js-reveal [data-reveal=out]{opacity:0;translate:0 28px}
+  html.js-reveal [data-reveal=done]{--rd:0ms!important}
+  /* photos settle in, icons pop */
+  html.js-reveal .category-card>img,html.js-reveal .experience-image img{transition:transform .7s,scale 1.4s cubic-bezier(.2,.7,.2,1)}
+  html.js-reveal .category-card[data-reveal=out]>img,html.js-reveal .experience-card[data-reveal=out] .experience-image img{scale:1.14}
+  html.js-reveal .value-icon{transition:scale .7s cubic-bezier(.3,1.6,.5,1) .15s}
+  html.js-reveal [data-reveal=out] .value-icon{scale:.55}
+  html.js-reveal .step-number:after{transform-origin:left center;transition:transform .9s cubic-bezier(.2,.7,.2,1) .2s}
+  html.js-reveal [dir=rtl] .step-number:after{transform-origin:right center}
+  html.js-reveal [data-reveal=out] .step-number:after{transform:scaleX(0)}
+}
+
+@keyframes m-menu-in{from{opacity:0;translate:0 -10px}to{opacity:1;translate:0 0}}
+@keyframes m-menu-item{from{opacity:0;translate:0 -8px}to{opacity:1;translate:0 0}}
+@keyframes m-icon-pop{from{opacity:0;rotate:-80deg;scale:.5}to{opacity:1;rotate:0deg;scale:1}}
+@keyframes m-kenburns{from{scale:1.12}to{scale:1}}
+@keyframes m-drop{from{opacity:0;translate:0 -12px}to{opacity:1;translate:0 0}}
+@keyframes m-pulse{0%{transform:scale(1);opacity:.75}100%{transform:scale(1.6);opacity:0}}
