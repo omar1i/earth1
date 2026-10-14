@@ -1,10 +1,12 @@
 import { z } from 'zod';
-import { groupTrips } from './content';
-export const experienceIds=['sea-fishing','private-boat','camping-escape','private-camping','outdoor-exploration','mountain-adventure','masirah-island','intl-sample-1','intl-sample-2','intl-sample-3','jabal-akhdar-trip','muscat-trip','masirah-island-trip','wadi-al-arbaeen','jabal-akhdar','salalah'] as const; // keep in sync with src/lib/content.ts (a test enforces it)
 export function muscatToday(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Muscat',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
+// Which trips exist (and which departure a group trip uses) is decided on the server from the database,
+// so the schema only checks the shape of the request. See src/lib/bookings.server.ts.
 export const bookingSchema=z.object({
  submission_key:z.string().uuid(),
- experience_id:z.enum(experienceIds),
+ experience_id:z.string().trim().min(1).max(100).regex(/^[a-z0-9-]+$/),
+ // Group trips: the chosen departure. Optional when the trip has a single departure.
+ schedule_id:z.number().int().positive().optional(),
  customer_name:z.string().trim().min(2).max(100),
  contact_number:z.string().trim().regex(/^\+[0-9 ()-]{7,24}$/),
  email:z.union([z.string().trim().email().max(255),z.literal('')]).optional(),
@@ -16,9 +18,5 @@ export const bookingSchema=z.object({
  terms_accepted:z.literal(true),
  // Honeypot: hidden from people, so any value means an automated submission.
  company_url:z.string().max(0).optional(),
-}).superRefine((d,ctx)=>{
- // Group trips run on a fixed date: the customer cannot choose another one.
- const trip=groupTrips.find(g=>g.id===d.experience_id);
- if(trip&&d.preferred_date!==trip.startDate)ctx.addIssue({code:z.ZodIssueCode.custom,path:['preferred_date'],message:'Group trips have a fixed date.'});
 });
 export type BookingInput=z.infer<typeof bookingSchema>;

@@ -4,6 +4,8 @@ import wadi from '@/assets/oman-wadi.jpg';
 import mountains from '@/assets/oman-mountains.jpg';
 import type { Bilingual, Language } from './language';
 export const images = {coast, camping, wadi};
+// Pictures that ship with the site. The database refers to them as asset:<name>; trips can also use an uploaded image or any https URL.
+export const assetImages: Record<string,string> = {coast, camping, wadi, mountains};
 export const whatsapp = 'https://wa.me/96891915594';
 export const instagram = 'https://www.instagram.com/earthadventure_/';
 export const bi = (en: string, ar: string): Bilingual => ({en, ar});
@@ -82,7 +84,10 @@ export type GroupTrip = {
   itinerary:{title:Bilingual; text:Bilingual}[];
   inclusions:Bilingual[]; exclusions:Bilingual[]; terms:Bilingual[];
   sample:boolean; // true = the date, price and terms are placeholders, not real trip details
+  schedules?:Schedule[]; // departures with seat availability (present when the trip comes from the database)
 };
+// One departure of a group trip. seatsLeft = capacity minus seats already booked.
+export type Schedule = {id:number; date:string; time:string|null; label:Bilingual; capacity:number; seatsLeft:number; bookable:boolean; soldOut:boolean};
 const sampleExclusions:Bilingual[]=[bi('Personal expenses and souvenirs','المصاريف الشخصية والهدايا التذكارية'),bi('Travel insurance','التأمين على السفر'),bi('Anything not listed under “What’s included”','أي شيء غير مذكور ضمن «ما يشمله السعر»')];
 const sampleTerms:Bilingual[]=[
   bi('SAMPLE TERMS: to be replaced with Earth Adventure’s real terms before publishing.','شروط تجريبية: تُستبدل بشروط Earth Adventure الفعلية قبل النشر.'),

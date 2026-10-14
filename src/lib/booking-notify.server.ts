@@ -3,6 +3,7 @@
 // imported into client code. Only load this file inside server function handlers.
 import { experiences, groupTrips, privateDestinations } from "./content";
 import type { BookingInput } from "./booking-schema";
+import { getRuntimeEnv } from "./db.server";
 
 const REQUEST_TIMEOUT_MS = 8000;
 const RETRY_DELAY_MS = 750;
@@ -14,15 +15,20 @@ type NotifyOptions = {
   env?: Record<string, string | undefined>;
   fetchImpl?: typeof fetch;
   retryDelayMs?: number;
+  /** Trip name from the database; used in the e-mail instead of the built-in content lookup. */
+  tripName?: string;
+  /** Human-readable departure (group trips), e.g. "20-21 November 2026 08:00". */
+  departure?: string;
 };
 
-function buildPayload(booking: BookingInput, secret: string) {
+function buildPayload(booking: BookingInput, secret: string, options: NotifyOptions = {}) {
   const experience = [...privateDestinations, ...experiences, ...groupTrips].find((e) => e.id === booking.experience_id);
   return {
     secret,
     reference: booking.submission_key,
     experience_id: booking.experience_id,
-    experience_name: experience?.name.en ?? booking.experience_id,
+    experience_name: options.tripName ?? experience?.name.en ?? booking.experience_id,
+    departure: options.departure ?? "",
     customer_name: booking.customer_name,
     contact_number: booking.contact_number,
     email: booking.email || "",
@@ -73,7 +79,7 @@ export async function notifyBooking(
   booking: BookingInput,
   options: NotifyOptions = {},
 ): Promise<NotifyResult> {
-  const env = options.env ?? process.env;
+  const env = options.env ?? (await getRuntimeEnv());
   const fetchImpl = options.fetchImpl ?? fetch;
   const url = env["BOOKING_WEBHOOK_URL"];
   const secret = env["BOOKING_WEBHOOK_SECRET"];
@@ -85,7 +91,7 @@ export async function notifyBooking(
     return { sent: false, reason: "not_configured" };
   }
 
-  const body = JSON.stringify(buildPayload(booking, secret));
+  const body = JSON.stringify(buildPayload(booking, secret, options));
   let result = await attempt(url, body, fetchImpl);
 
   // One retry for transient failures. The Apps Script de-duplicates by reference,
