@@ -1,0 +1,16 @@
+{
+  // Cloudflare Worker settings. Nitro (the build target of this TanStack Start project) merges this file
+  // into the generated deploy config and adds the entry point and static-asset settings itself.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "earth1",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "earth-adventure",
+      "database_id": "723c2801-0fd5-45a2-a807-9b99ca8784bf",
+      "migrations_dir": "migrations"
+    }
+  ]
+}
