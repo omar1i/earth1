@@ -1,18 +1,21 @@
 import { createFileRoute, notFound, Link } from '@tanstack/react-router';
 import { ArrowUpRight, CalendarDays, Clock, MapPin, Tag, Users } from 'lucide-react';
-import { groupTrips, pageHead, bi } from '@/lib/content';
+import { pageHead, bi } from '@/lib/content';
+import { loadCatalog } from '@/lib/catalog.functions';
+import { useCatalog } from '@/lib/catalog-context';
 import { useLanguage, headLang } from '@/lib/language';
 import { Button } from '@/components/ui/button';
 import { GroupTripCard } from '@/components/trips-components';
 
 export const Route = createFileRoute('/group-trips/$trip')({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
+    const { groupTrips } = await loadCatalog();
     const trip = groupTrips.find((x) => x.id === params.trip);
     if (!trip) throw notFound();
-    return trip.id;
+    return trip;
   },
   head: ({ loaderData, matches }) => {
-    const trip = groupTrips.find((x) => x.id === loaderData);
+    const trip = loaderData;
     const l = headLang(matches);
     return trip
       ? pageHead(l, trip.name, trip.description)
@@ -22,10 +25,14 @@ export const Route = createFileRoute('/group-trips/$trip')({
 });
 
 function GroupTripDetail() {
-  const { trip: id } = Route.useParams();
+  const trip = Route.useLoaderData();
+  const { groupTrips } = useCatalog();
   const { lang, t } = useLanguage();
-  const trip = groupTrips.find((x) => x.id === id);
   if (!trip) return null;
+  const upcoming = (trip.schedules ?? []).filter((s) => s.bookable || s.soldOut);
+  const hasSchedules = !!trip.schedules;
+  const canBook = !hasSchedules || (trip.schedules ?? []).some((s) => s.bookable);
+  const fullyBooked = hasSchedules && !canBook && (trip.schedules ?? []).length > 0 && (trip.schedules ?? []).every((s) => s.soldOut);
   const lists = [
     [t('What’s included', 'ما يشمله السعر'), trip.inclusions],
     [t('What’s not included', 'ما لا يشمله السعر'), trip.exclusions],
@@ -89,16 +96,22 @@ function GroupTripDetail() {
             <aside className="booking-aside">
               <div className="eyebrow">{t('Trip details', 'تفاصيل الرحلة')}</div>
               <ul className="aside-facts">
-                <li><CalendarDays size={16} /><span><small>{t('Trip date', 'تاريخ الرحلة')}</small>{trip.date[lang]}</span></li>
+                <li><CalendarDays size={16} /><span><small>{t('Trip date', 'تاريخ الرحلة')}</small>{upcoming.length > 0 ? upcoming.map((s) => (<span key={s.id} style={{ display: 'block' }}>{s.label[lang]} · {s.soldOut ? t('Fully booked', 'محجوز بالكامل') : t(`${s.seatsLeft} seats left`, `المقاعد المتبقية: ${s.seatsLeft}`)}</span>)) : trip.date[lang]}</span></li>
                 <li><Tag size={16} /><span><small>{t('Price', 'السعر')}</small>{trip.price[lang]}</span></li>
                 <li><Clock size={16} /><span><small>{t('Duration', 'المدة')}</small>{trip.duration[lang]}</span></li>
               </ul>
-              <Button asChild size="lg" className="book-btn">
-                <Link to="/book" search={{ experience: trip.id }}>
-                  {t('Book Now', 'احجز الآن')}
-                  <ArrowUpRight size={17} />
-                </Link>
-              </Button>
+              {canBook ? (
+                <Button asChild size="lg" className="book-btn">
+                  <Link to="/book" search={{ experience: trip.id }}>
+                    {t('Book Now', 'احجز الآن')}
+                    <ArrowUpRight size={17} />
+                  </Link>
+                </Button>
+              ) : (
+                <Button size="lg" className="book-btn" disabled>
+                  {fullyBooked ? t('Fully booked', 'محجوز بالكامل') : t('No open departures', 'لا توجد مواعيد متاحة حاليًا')}
+                </Button>
+              )}
             </aside>
           </div>
         </div>

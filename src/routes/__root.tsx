@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LanguageProvider, useLanguage } from "@/lib/language";
 import { detectLanguage } from "@/lib/lang-detect";
+import { loadCatalog } from "@/lib/catalog.functions";
 import { SiteShell } from "@/components/site-shell";
 import { Button } from "@/components/ui/button";
 
@@ -99,7 +100,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Manrope:wght@400;500;600;650;700;750;800&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" },
     ],
   }),
-  loader: () => ({ lang: detectLanguage() }),
+  // Trips, prices, images and departures come from the D1 database (built-in content if D1 is not connected).
+  loader: async () => ({ lang: detectLanguage(), catalog: await loadCatalog() }),
+  staleTime: 30_000,
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
