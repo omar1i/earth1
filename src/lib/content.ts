@@ -147,3 +147,59 @@ export const cancellationPolicy = {
   ] as Bilingual[],
   note: bi('Earth Adventure’s cancellation and refund policy is subject to applicable laws and regulations and relevant consumer protection requirements.','تخضع سياسة الإلغاء والاسترداد لدى شركة Earth Adventure للقوانين واللوائح المعمول بها ومتطلبات حماية المستهلك ذات الصلة.'),
 };
+
+// Terms & Conditions for short international trips (shown on /terms under the general terms).
+export type TermsBlock =
+  | {kind:'p'; text:Bilingual}
+  | {kind:'sub'; text:Bilingual}
+  | {kind:'ul'; items:Bilingual[]};
+export type TermsSection = {title:Bilingual; blocks:TermsBlock[]};
+const tp = (en:string, ar:string): TermsBlock => ({kind:'p', text:bi(en,ar)});
+const tsub = (en:string, ar:string): TermsBlock => ({kind:'sub', text:bi(en,ar)});
+const tul = (...items:[string,string][]): TermsBlock => ({kind:'ul', items:items.map(([en,ar])=>bi(en,ar))});
+export const shortTripTerms: {title:Bilingual; sections:TermsSection[]} = {
+  title: bi('Terms & Conditions for Short International Trips','شروط وأحكام الرحلات الدولية القصيرة'),
+  sections: [
+    {title: bi('Required documents','الوثائق المطلوبة على المشارك'), blocks:[
+      tul(
+        ['A copy of a passport valid for 6 months.','نسخة من جواز السفر صالحة لمدة 6 أشهر.'],
+        ['Participants must be at least 18 years old.','أن يكون المشارك لا يقل عمره عن 18 عامًا.'],
+      ),
+    ]},
+    {title: bi('Booking confirmation','عملية تأكيد الحجز'), blocks:[
+      tul(
+        ['A deposit of OMR 150 (non-refundable) is paid to secure the booking.','دفع العربون لضمان الحجز - بقيمة 150 ريالًا (غير قابل للاسترجاع).'],
+        ['The amount is transferred to the company’s bank account (IBAN).','سيتم تحويل المبلغ إلى حساب الشركة المصرفي (رقم الآيبان).'],
+        ['After you agree to the terms above and the trip itinerary, we will send the liability waiver and the payment and cancellation terms.','بعد الموافقة على البنود المذكورة ومسار الرحلة، سنرسل عقد إخلاء المسؤولية وشروط الدفع والإلغاء.'],
+      ),
+    ]},
+    {title: bi('Cancellation policy','سياسة الإلغاء'), blocks:[
+      tsub('If you cancel','إذا تم الإلغاء من قبلك'),
+      tp('You must send us your cancellation request via WhatsApp. We calculate the refund amount as of the day we receive your cancellation message. The OMR 150 deposit is non-refundable and is separate from cancellation fees. Please see the cancellation rules below for each activity.','يجب عليك إرسال طلب الإلغاء إلينا عبر واتساب، حيث نقوم بحساب مبلغ الاسترداد في اليوم الذي نتلقى فيه رسالة الإلغاء. مبلغ العربون 150 ريالًا غير قابل للاسترداد وهو منفصل عن رسوم الإلغاء، يرجى الاطلاع على قواعد الإلغاء أدناه لكل نشاط.'),
+      tp('If you cancel your trip with Earth Adventure due to any circumstances, such as (COVID-19 / “flu-like symptoms” / being late to arrive / a flight delay or cancellation / a death or any emergency), no refund will be given, except under the following conditions only:','إذا قمت بإلغاء رحلتك مع Earth Adventure بسبب أي ظروف مثل (ظهور COVID-19 / “أعراض تشبه أعراض الإنفلونزا” / التأخر عن الحضور / تأخير الطيران أو إلغاؤه / حالة وفاة أو أي ظرف طارئ)، فلن يتم استرداد المبلغ، إلا في حال تطبيق الشروط التالية فقط:'),
+      tul(
+        ['30 days or more: Earth Adventure refunds you 50% of the amount paid, excluding the deposit.','30 يومًا أو أكثر: تعيد لك Earth Adventure 50% من المبلغ المدفوع بدون العربون.'],
+        ['29 days or less: Earth Adventure retains 100% of the amount paid as a cancellation fee, or you may bring a replacement person to take your place.','29 يومًا أو أقل: تحتفظ Earth Adventure بنسبة 100% من المبلغ المدفوع كرسوم إلغاء، أو تقوم بإحضار شخص بديل يحل مكانك.'],
+        ['No-show: if you simply do not show up, Earth Adventure retains 100% of the amount paid.','عدم الظهور: إذا لم تظهر ببساطة، فستحتفظ Earth Adventure بنسبة 100% من المبلغ المدفوع.'],
+        ['Refunds for unused services while travelling: no amount is refunded for any service not used after the trip starts or during the tour.','استرداد الخدمات غير المستخدمة أثناء السفر: لن يتم استرجاع أي مبلغ مقابل أي خدمة غير مستخدمة بعد بدء الرحلة أو أثناء الجولة.'],
+      ),
+    ]},
+    {title: bi('Credit','رصيد دائن (Credit)'), blocks:[
+      tp('Any credit resulting from your cancellation may be applied to any trip Earth Adventure offers in the same country you booked. To clarify, if you cancel a trip in Oman and a credit is granted, that credit can only be used in Oman. Likewise, a credit issued for a trip in any other country cannot be used for a trip in Oman. This credit is non-transferable and cannot be refunded in cash.','قد يتم تطبيق أي رصيد ناتج عن الإلغاء من جانبك على أي رحلة تقدمها Earth Adventure في نفس البلد الذي حجزته. للتوضيح، إذا قمت بإلغاء رحلة في عمان وتم منح رصيد، فلا يمكن استخدام هذا الرصيد إلا في عمان. وبالمثل مع أي دولة، إذا كان لديك رصيد تم إصداره لرحلة في أي بلد، فلا يمكن استخدامه لرحلة في عمان. هذا الرصيد غير قابل للتحويل أو الاسترداد نقدًا.'),
+    ]},
+    {title: bi('Cancellation by Earth Adventure','الإلغاء بواسطة Earth Adventure'), blocks:[
+      tp('Earth Adventure reserves the right to cancel activities, and we will notify you of any such cancellation. In that case, Earth Adventure will offer you alternative arrangements, and if the alternative booking costs less than the original booking, we will refund you the difference. If you do not accept the alternative arrangements, we will refund 100% of the funds paid for that trip, minus any non-refundable costs incurred by Earth Adventure. We will not be liable under any circumstances for any claims you make for additional costs on your part.','تحتفظ Earth Adventure بالحق في إلغاء الأنشطة وسنقوم بإبلاغكم بمثل هذه الإلغاءات. في هذه الحالة، ستقدم لك Earth Adventure ترتيبات بديلة، وإذا كان سعر الحجز البديل أقل قيمة من الحجز الأصلي، فسنقوم برد الفرق إليك. إذا لم تقبل الترتيبات البديلة، فسنقوم برد 100% من الأموال المدفوعة لهذه الرحلة، مخصومًا منها أي تكاليف غير قابلة للاسترداد تكبدتها Earth Adventure، لكننا لن نكون مسؤولين تحت أي ظرف من الظروف عن أي مطالبات تقدمها عن أي تكاليف إضافية من قبلكم.'),
+      tp('Earth Adventure is not responsible for any delay, change or cancellation of any activities or experiences due to force majeure. Force majeure means circumstances beyond Earth Adventure’s reasonable control and includes, without limitation, war, the threat of war, riot, civil war, terrorist activity, industrial dispute, illness, industrial or nuclear disasters, airline delays, bad weather, fires and strikes. If Earth Adventure cancels a booking as a result of force majeure or government advice, it will offer you alternative arrangements. If the alternative booking costs less than the original booking, we will refund you the difference. If you do not accept the alternative arrangements, we will issue you a credit note for the full amount paid, minus any non-refundable costs. Earth Adventure will not be responsible for any additional costs on your part.','لن تكون Earth Adventure مسؤولة عن أي تأخير أو تغيير أو إلغاء لأي أنشطة أو تجارب بسبب القوة القاهرة. القوة القاهرة تعني الظروف الخارجة عن السيطرة المعقولة لشركة Earth Adventure وتشمل على سبيل المثال لا الحصر الحرب أو التهديد بالحرب أو الشغب أو الحرب الأهلية أو النشاط الإرهابي أو النزاع الصناعي أو المرض أو الكوارث الصناعية أو النووية أو تأخيرات شركات الطيران أو الظروف الجوية السيئة أو الحرائق والإضرابات. إذا قامت Earth Adventure بإلغاء حجز نتيجة للقوة القاهرة أو نصيحة حكومية، ستقدم لك Earth Adventure ترتيبات بديلة. إذا كان سعر الحجز البديل أقل قيمة من الحجز الأصلي، فسنقوم برد الفرق إليك. إذا لم تقبل الترتيبات البديلة، سنصدر لك إشعارًا دائنًا بكامل الأموال المدفوعة ناقصًا أي تكاليف غير قابلة للاسترداد. لن تكون Earth Adventure مسؤولة عن أي تكاليف إضافية من قبلكم.'),
+    ]},
+    {title: bi('Cancellation or postponement due to insufficient numbers','إلغاء أو تأجيل الرحلة لعدم اكتمال العدد'), blocks:[
+      tp('Earth Adventure reserves the right to cancel or postpone the trip if the required number of participants is not reached, in order to preserve the quality of the experience and organise the trip properly. If the trip is cancelled, the participant will be notified sufficiently before the trip date, and the amount paid will be refunded in full or transferred to another date, according to the participant’s preference.','تحتفظ Earth Adventure بحقها في إلغاء أو تأجيل الرحلة في حال عدم اكتمال العدد المطلوب من المشاركين، وذلك حفاظًا على جودة التجربة وتنظيم الرحلة بالشكل المناسب. وفي حال تم الإلغاء، سيتم إبلاغ المشارك بذلك قبل موعد الرحلة بوقت كافٍ، وسيتم إعادة المبلغ المدفوع بالكامل أو تحويله إلى موعد آخر حسب رغبة المشارك.'),
+    ]},
+    {title: bi('Changes to the trip','تغييرات في الرحلة'), blocks:[
+      tp('Changes may occur due to force majeure, poor road conditions, weather, availability of transport, vehicle breakdowns, or other circumstances beyond Earth Adventure’s control. You accept that such changes may occur.','قد تحدث التغييرات بسبب القوة القاهرة، أو ظروف الطريق السيئة، أو الطقس، أو توفر وسائل النقل، أو أعطال المركبات، أو بسبب ظروف أخرى خارجة عن سيطرة Earth Adventure. أنت تقبل أن مثل هذه التغييرات قد تحدث.'),
+      tp('When changes occur, we will, where practical, inform you of them. Earth Adventure accepts no liability for loss of enjoyment, delay or compensation resulting from changes due to force majeure or any reasons beyond Earth Adventure’s control.','عند حدوث التغييرات، سنقوم، حيثما كان ذلك عمليًا، بإبلاغك بهذه التغييرات. لا تتحمل Earth Adventure أي مسؤولية عن فقدان الاستمتاع أو التأخير أو التعويض الناتج عن التغييرات بسبب القوة القاهرة أو أي أسباب خارجة عن سيطرة Earth Adventure.'),
+    ]},
+    {title: bi('Leader’s authority','موافقة القيادة'), blocks:[
+      tp('During all activities, the decision of the Earth Adventure leader, guide or representative is final on all matters likely to affect the safety and wellbeing of the experience or activity. You must at all times strictly comply with the laws, customs, guidelines and drug regulations in all places visited. If you fail to comply with the above, or if you interfere with the wellbeing of the group, the trip leader, guide or company representative reserves the right to ask you to leave the trip or activity immediately, with no right to a refund. Any travel arrangements after that will be at your own expense.','خلال جميع الأنشطة، سيكون قرار قائد Earth Adventure أو المرشد أو الممثل نهائيًا بشأن جميع الأمور التي من المحتمل أن تؤثر على سلامة ورفاهية التجربة أو النشاط. يجب عليك، في جميع الأوقات، الالتزام الصارم بالقوانين أو العادات أو الإرشادات أو لوائح الأدوية في جميع الأماكن التي تمت زيارتها. إذا فشلت في الامتثال لما ورد أعلاه، أو إذا كنت تتدخل في رفاهية المجموعة، فإن قائد الرحلة أو المرشد أو ممثل الشركة يحتفظ بالحق في أن يطلب منك ترك الرحلة أو النشاط على الفور دون أي حق في استرداد الأموال. سيكون أي ترتيب سفر بعد ذلك على نفقتك الخاصة.'),
+    ]},
+  ],
+};
