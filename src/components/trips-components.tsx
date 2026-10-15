@@ -1,9 +1,10 @@
 import { Link } from '@tanstack/react-router';
-import { ArrowRight, ArrowUpRight, Clock, MapPin, MessageCircle } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, CalendarDays, Clock, MapPin, MessageCircle, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/language';
 import { privateTripsIntro, privateTripWhatsapp, whatsapp, type GroupTrip, type PrivateDestination } from '@/lib/content';
 import { useCatalog } from '@/lib/catalog-context';
+import { seatStatus } from '@/lib/catalog';
 
 // Private Trips: inspiration cards only. One "Contact Us" button per card opens WhatsApp.
 export function PrivateTripsSection({ destinations }: { destinations?: PrivateDestination[] } = {}) {
@@ -43,12 +44,26 @@ export function PrivateTripsSection({ destinations }: { destinations?: PrivateDe
 
 export function GroupTripCard({ trip }: { trip: GroupTrip }) {
   const { lang, t } = useLanguage();
-  const soldOut = !!trip.schedules && trip.schedules.length > 0 && trip.schedules.every((s) => s.soldOut);
+  const seats = seatStatus(trip.schedules);
+  const seatText = !seats
+    ? ''
+    : seats.tone === 'full'
+      ? t('Fully booked', 'مكتملة')
+      : seats.tone === 'closed'
+        ? t('Booking closed', 'الحجز مغلق')
+        : lang === 'ar'
+          ? seats.left === 1 ? 'بقي مقعد واحد' : seats.left === 2 ? 'بقي مقعدان' : seats.left <= 10 ? `بقي ${seats.left} مقاعد` : `بقي ${seats.left} مقعدًا`
+          : `${seats.left} ${seats.left === 1 ? 'seat' : 'seats'} left`;
   return (
     <article className="experience-card">
       <Link className="experience-image" to="/group-trips/$trip" params={{ trip: trip.id }}>
         <img src={trip.image} alt={trip.name[lang]} loading="lazy" width="600" height="400" />
         <span className="experience-tag">{t('Group Trip', 'رحلة جماعية')}</span>
+        {seats && <span className={`trip-seats trip-seats-${seats.tone}`}>{seatText}</span>}
+        <div className="trip-overlay">
+          <span className="trip-overlay-date"><CalendarDays aria-hidden="true" />{trip.date[lang]}</span>
+          <span className="trip-overlay-price"><Tag aria-hidden="true" />{trip.price[lang]}</span>
+        </div>
       </Link>
       <div className="experience-body">
         <h3>
@@ -58,7 +73,6 @@ export function GroupTripCard({ trip }: { trip: GroupTrip }) {
         <div className="experience-meta">
           <span><MapPin />{trip.location[lang]}</span>
           <span><Clock />{trip.duration[lang]}</span>
-          {soldOut && <span>{t('Fully booked', 'محجوز بالكامل')}</span>}
         </div>
         <div className="experience-actions">
           <Link className="text-link" to="/group-trips/$trip" params={{ trip: trip.id }}>

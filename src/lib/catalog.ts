@@ -165,3 +165,17 @@ export function staticCatalog(): Catalog {
 
 /** Departures a visitor can still book (open, in the future, with seats left). */
 export const bookableSchedules = (t: GroupTrip): Schedule[] => (t.schedules ?? []).filter((s) => s.bookable);
+
+/**
+ * Seat status shown on a group-trip card, taken from the next departure a visitor can book.
+ * ok = plenty left, low = 3 or fewer, full = every departure is sold out, closed = no departure is
+ * open (closed or already past). null = the trip has no departures yet, so no label is shown.
+ */
+export type SeatStatus = { tone: 'ok' | 'low' | 'full' | 'closed'; left: number };
+export function seatStatus(schedules: Schedule[] | undefined): SeatStatus | null {
+  const list = schedules ?? [];
+  if (list.length === 0) return null;
+  const open = list.find((s) => s.bookable);
+  if (open) return { tone: open.seatsLeft <= 3 ? 'low' : 'ok', left: open.seatsLeft };
+  return { tone: list.some((s) => s.soldOut) ? 'full' : 'closed', left: 0 };
+}

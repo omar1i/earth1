@@ -341,3 +341,15 @@ a[class*="bg-primary"],a[class*="bg-primary"]:hover{color:var(--primary-foregrou
 a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 [dir=rtl] .footer-grid>div>a[href*="instagram"]{justify-content:flex-end}
 [dir=rtl] .footer-grid>div>a[dir=ltr]{flex-direction:row-reverse;justify-content:flex-start}
+
+/* Group trip cards: seat label (top corner) and date + price over the photo (bottom) */
+.trip-seats{position:absolute;top:15px;right:15px;z-index:2;font-size:12px;font-weight:700;line-height:1;padding:7px 11px;border-radius:999px;color:#fff;background:#15803d;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+[dir=rtl] .trip-seats{right:auto;left:15px}
+.trip-seats-low{background:#c2410c}
+.trip-seats-full{background:#b91c1c}
+.trip-seats-closed{background:#4b5563}
+.trip-overlay{position:absolute;left:0;right:0;bottom:0;z-index:1;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:4px 14px;padding:42px 16px 12px;color:#fff;font-size:13px;font-weight:600;line-height:1.35;background:linear-gradient(to top,rgba(0,0,0,.78),rgba(0,0,0,.45) 55%,rgba(0,0,0,0));text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.trip-overlay span{display:inline-flex;align-items:center;gap:6px}
+.trip-overlay svg{width:15px;height:15px;flex:none}
+.trip-overlay-price{font-size:15px;font-weight:800}
+@media(max-width:600px){.trip-overlay{padding:34px 12px 10px;font-size:12px}.trip-overlay-price{font-size:14px}.trip-seats{top:12px;right:12px;font-size:11px}[dir=rtl] .trip-seats{right:auto;left:12px}}
