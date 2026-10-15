@@ -5,6 +5,7 @@ import { useLanguage } from '@/lib/language';
 import { privateTripsIntro, privateTripWhatsapp, whatsapp, type GroupTrip, type PrivateDestination } from '@/lib/content';
 import { useCatalog } from '@/lib/catalog-context';
 import { seatStatus } from '@/lib/catalog';
+import { ImageSlider } from '@/components/image-slider';
 
 // Private Trips: inspiration cards only. One "Contact Us" button per card opens WhatsApp.
 export function PrivateTripsSection({ destinations }: { destinations?: PrivateDestination[] } = {}) {
@@ -45,6 +46,7 @@ export function PrivateTripsSection({ destinations }: { destinations?: PrivateDe
 export function GroupTripCard({ trip }: { trip: GroupTrip }) {
   const { lang, t } = useLanguage();
   const seats = seatStatus(trip.schedules);
+  const photos = trip.gallery && trip.gallery.length > 0 ? trip.gallery : [trip.image];
   const seatText = !seats
     ? ''
     : seats.tone === 'full'
@@ -56,15 +58,36 @@ export function GroupTripCard({ trip }: { trip: GroupTrip }) {
           : `${seats.left} ${seats.left === 1 ? 'seat' : 'seats'} left`;
   return (
     <article className="experience-card">
-      <Link className="experience-image" to="/group-trips/$trip" params={{ trip: trip.id }}>
-        <img src={trip.image} alt={trip.name[lang]} loading="lazy" width="600" height="400" />
-        <span className="experience-tag">{t('Group Trip', 'رحلة جماعية')}</span>
-        {seats && <span className={`trip-seats trip-seats-${seats.tone}`}>{seatText}</span>}
-        <div className="trip-overlay">
-          <span className="trip-overlay-date"><CalendarDays aria-hidden="true" />{trip.date[lang]}</span>
-          <span className="trip-overlay-price"><Tag aria-hidden="true" />{trip.price[lang]}</span>
+      {photos.length > 1 ? (
+        // Several photos: a swipeable slideshow. Each photo is still a link to the trip page.
+        <div className="experience-image has-slider">
+          <ImageSlider
+            images={photos}
+            alt={trip.name[lang]}
+            renderSlide={(img, active) => (
+              <Link className="slider-link" to="/group-trips/$trip" params={{ trip: trip.id }} tabIndex={active ? 0 : -1}>
+                {img}
+              </Link>
+            )}
+          />
+          <span className="experience-tag">{t('Group Trip', 'رحلة جماعية')}</span>
+          {seats && <span className={`trip-seats trip-seats-${seats.tone}`}>{seatText}</span>}
+          <div className="trip-overlay">
+            <span className="trip-overlay-date"><CalendarDays aria-hidden="true" />{trip.date[lang]}</span>
+            <span className="trip-overlay-price"><Tag aria-hidden="true" />{trip.price[lang]}</span>
+          </div>
         </div>
-      </Link>
+      ) : (
+        <Link className="experience-image" to="/group-trips/$trip" params={{ trip: trip.id }}>
+          <img src={trip.image} alt={trip.name[lang]} loading="lazy" width="600" height="400" />
+          <span className="experience-tag">{t('Group Trip', 'رحلة جماعية')}</span>
+          {seats && <span className={`trip-seats trip-seats-${seats.tone}`}>{seatText}</span>}
+          <div className="trip-overlay">
+            <span className="trip-overlay-date"><CalendarDays aria-hidden="true" />{trip.date[lang]}</span>
+            <span className="trip-overlay-price"><Tag aria-hidden="true" />{trip.price[lang]}</span>
+          </div>
+        </Link>
+      )}
       <div className="experience-body">
         <h3>
           <Link to="/group-trips/$trip" params={{ trip: trip.id }}>{trip.name[lang]}</Link>

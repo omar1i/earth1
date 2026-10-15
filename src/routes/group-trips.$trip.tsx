@@ -6,6 +6,7 @@ import { useCatalog } from '@/lib/catalog-context';
 import { useLanguage, headLang } from '@/lib/language';
 import { Button } from '@/components/ui/button';
 import { GroupTripCard } from '@/components/trips-components';
+import { ImageSlider } from '@/components/image-slider';
 
 export const Route = createFileRoute('/group-trips/$trip')({
   loader: async ({ params }) => {
@@ -29,6 +30,7 @@ function GroupTripDetail() {
   const { groupTrips } = useCatalog();
   const { lang, t } = useLanguage();
   if (!trip) return null;
+  const photos = trip.gallery && trip.gallery.length > 0 ? trip.gallery : [trip.image];
   const upcoming = (trip.schedules ?? []).filter((s) => s.bookable || s.soldOut);
   const hasSchedules = !!trip.schedules;
   const canBook = !hasSchedules || (trip.schedules ?? []).some((s) => s.bookable);
@@ -41,8 +43,12 @@ function GroupTripDetail() {
 
   return (
     <>
-      <section className="image-hero">
-        <img src={trip.image} alt={trip.name[lang]} width="1440" height="1024" fetchPriority="high" />
+      <section className={photos.length > 1 ? 'image-hero has-slider' : 'image-hero'}>
+        {photos.length > 1 ? (
+          <ImageSlider images={photos} alt={trip.name[lang]} eager dots="bottom" />
+        ) : (
+          <img src={trip.image} alt={trip.name[lang]} width="1440" height="1024" fetchPriority="high" />
+        )}
         <div className="container image-hero-content">
           <div className="eyebrow text-primary-foreground">{t('Group Trip', 'رحلة جماعية')}</div>
           <h1>{trip.name[lang]}</h1>

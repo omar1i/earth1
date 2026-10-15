@@ -225,6 +225,40 @@ function imagePicker(initial){
   var box=h('div',null,h('label',null,'Image'),h('div',{class:'row'},preview,h('div',{style:'flex:1;min-width:220px'},h('div',null,'Upload a photo (JPG, PNG or WebP): ',file),h('div',{class:'row mt'},sel,clear),h('div',{class:'row mt'},urlIn,useUrl))),status);
   box.get=function(){return value||null};refresh();return box;
 }
+/* extra photos for a group trip: several uploads, reorder, remove (shown as a slideshow on the website) */
+function galleryPicker(initial){
+  var list=(initial||[]).filter(function(x){return typeof x==='string'&&x});
+  var grid=h('div',{class:'row mt',style:'align-items:flex-start'});
+  var status=h('p',{class:'hint'});var urlIn=h('input',{placeholder:'https://… (optional)'});
+  function src(v){return v.indexOf('asset:')===0?'':v}
+  function move(i,d){var j=i+d;if(j<0||j>=list.length)return;var x=list[i];list[i]=list[j];list[j]=x;refresh()}
+  function refresh(){
+    grid.textContent='';
+    list.forEach(function(v,i){
+      var im=h('img',{class:'thumb',alt:'',style:'width:110px;height:76px'});if(src(v))im.src=src(v);
+      grid.appendChild(h('div',{style:'text-align:center'},im,
+        h('div',{class:'row',style:'justify-content:center;gap:4px;margin-top:4px'},
+          h('button',{class:'btn sec sm',type:'button',title:'Move earlier',on:{click:function(){move(i,-1)}}},'◀'),
+          h('button',{class:'btn sec sm',type:'button',title:'Move later',on:{click:function(){move(i,1)}}},'▶'),
+          h('button',{class:'btn bad sm',type:'button',title:'Remove',on:{click:function(){list.splice(i,1);refresh()}}},'✕'))));
+    });
+    status.textContent=list.length?list.length+' extra photo(s). The main image above is always the first one shown.':'No extra photos yet. Add some to turn the trip into a slideshow.';
+  }
+  var file=h('input',{type:'file',multiple:true,accept:'image/jpeg,image/png,image/webp',on:{change:function(){
+    var files=Array.prototype.slice.call(file.files||[]);if(!files.length)return;
+    var room=12-list.length;if(files.length>room){files=files.slice(0,Math.max(0,room));toast('Up to 12 extra photos. The rest were skipped.')}
+    var done=0;status.textContent='Uploading 0/'+files.length+'…';
+    files.reduce(function(chain,f){return chain.then(function(){
+      return shrink(f).then(function(blob){return api('POST','/images',undefined,{body:blob,type:blob.type})}).then(function(r){list.push(r.url);done++;status.textContent='Uploading '+done+'/'+files.length+'…';refresh()});
+    })},Promise.resolve()).then(function(){file.value='';refresh();toast(done+' photo(s) uploaded. Remember to save the trip.')})
+      .catch(function(e){file.value='';refresh();status.appendChild(errBox(e))});
+  }}});
+  var useUrl=h('button',{class:'btn sec sm',type:'button',on:{click:function(){var v=urlIn.value.trim();if(!v)return;if(!/^https:\/\//.test(v)){status.textContent='Use an address starting with https://';return}if(list.length>=12){status.textContent='Up to 12 extra photos.';return}list.push(v);urlIn.value='';refresh()}}},'Add address');
+  var box=h('div',{class:'mt'},h('label',null,'Extra photos (slideshow)'),
+    h('div',null,'Add several photos at once (JPG, PNG or WebP): ',file),
+    grid,h('div',{class:'row mt'},urlIn,useUrl),status);
+  box.get=function(){return list.slice()};refresh();return box;
+}
 /* shrink big photos in the browser so they fit comfortably in the database */
 function shrink(file){
   return new Promise(function(resolve,reject){
@@ -257,6 +291,7 @@ function editor(main,t,schedules,bookingCount,isNew){
   var name=biField('Trip name *',t.name_en,t.name_ar,false);
   var desc=biField('Description',t.description_en,t.description_ar,true);
   var img=imagePicker(t.image);
+  var gallery=kind==='group'?galleryPicker(parseJson(t.images)):null;
   var price=h('input',{type:'number',min:'0',step:'0.001',value:t.price===null||t.price===undefined?'':t.price});
   var ptype=h('select',null,[['contact','Contact for price (no price shown)'],['person','Per person'],['group','Per group'],['fixed','Fixed price']].map(function(o){return h('option',{value:o[0],selected:t.price_type===o[0]},o[1])}));
   var active=h('input',{type:'checkbox',checked:!!t.is_active});
@@ -282,6 +317,7 @@ function editor(main,t,schedules,bookingCount,isNew){
       category:kind==='experience'?cat.value:null,
       location_en:l.en,location_ar:l.ar,duration_en:du.en,duration_ar:du.ar,group_size_en:sz.en,group_size_ar:sz.ar,accommodation_en:ac.en,accommodation_ar:ac.ar,
       max_group:maxg.value===''?null:Number(maxg.value),itinerary:itin.get(),inclusions:inc.get(),exclusions:exc.get(),requirements:req.get(),terms:terms.get()};
+    if(gallery)body.images=gallery.get();
     if(kind==='experience'&&body.category==='international')body.region='international';
     if(isNew&&slug.value.trim())body.slug=slug.value.trim().toLowerCase();
     api(isNew?'POST':'PUT','/trips'+(isNew?'':'/'+t.id),body).then(function(r){
@@ -294,7 +330,7 @@ function editor(main,t,schedules,bookingCount,isNew){
     if(confirm(m))api('DELETE','/trips/'+t.id).then(function(){toast('Trip deleted.');go('trips')}).catch(function(e){err.appendChild(errBox(e))})}}},'Delete trip'):null;
 
   out.appendChild(h('div',{class:'row'},h('button',{class:'btn sec sm',type:'button',on:{click:function(){go('trips')}}},'← All trips'),h('h1',{style:'margin:0'},(isNew?'New ':'Edit ')+KIND[kind].toLowerCase())));
-  out.appendChild(h('div',{class:'card'},name,desc,img,
+  out.appendChild(h('div',{class:'card'},name,desc,img,gallery,
     h('div',{class:'grid g3'},
       kind==='experience'?field('Section',cat):null,
       field('Price (OMR)',price,'Leave empty to show “Contact for Price”.'),field('Price applies',ptype),

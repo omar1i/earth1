@@ -78,6 +78,7 @@ export const privateTripWhatsapp=(name:string)=>`${whatsapp}?text=${encodeURICom
 
 export type GroupTrip = {
   id:string; name:Bilingual; description:Bilingual; image:string;
+  gallery?:string[]; // cover first, then the extra photos added in the admin (slideshow on the card and trip page)
   location:Bilingual; duration:Bilingual; groupSize:Bilingual;
   startDate:string; // ISO date (YYYY-MM-DD) the booking form uses; customers cannot pick another date
   date:Bilingual; price:Bilingual;

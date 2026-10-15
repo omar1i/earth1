@@ -11,6 +11,7 @@ export type TripRow = {
   id: number; slug: string; kind: 'group' | 'private' | 'experience';
   category: string | null; region: 'oman' | 'international'; destination: string | null;
   name_en: string; name_ar: string; description_en: string; description_ar: string; image: string | null;
+  images?: string | null; // JSON list of extra photo references (group-trip slideshow); absent on older databases
   location_en: string | null; location_ar: string | null; duration_en: string | null; duration_ar: string | null;
   group_size_en: string | null; group_size_ar: string | null; max_group: number | null;
   accommodation_en: string | null; accommodation_ar: string | null;
@@ -111,8 +112,12 @@ export function buildCatalog(rows: CatalogRows): Catalog {
       const loc = optBi(t.location_en, t.location_ar);
       const dur = optBi(t.duration_en, t.duration_ar);
       const size = optBi(t.group_size_en, t.group_size_ar);
+      const cover = image ?? assetImages['coast']!;
+      const extra = parseList<unknown>(t.images)
+        .map((x) => (typeof x === 'string' ? resolveImage(x) : undefined))
+        .filter((x): x is string => !!x && x !== cover);
       groupTrips.push({
-        id: t.slug, name, description, image: image ?? assetImages['coast']!,
+        id: t.slug, name, description, image: cover, gallery: [cover, ...new Set(extra)],
         location: loc?.v ?? bi('', ''), duration: dur?.v ?? bi('', ''), groupSize: size?.v ?? bi('', ''),
         startDate: next?.date ?? '',
         date: next ? bi((sample ? 'Sample date: ' : '') + next.label.en, (sample ? 'تاريخ تجريبي: ' : '') + next.label.ar) : bi('Date to be announced', 'سيُعلن عن الموعد لاحقًا'),
