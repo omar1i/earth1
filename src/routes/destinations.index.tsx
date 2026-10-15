@@ -8,7 +8,7 @@ export const Route = createFileRoute('/destinations/')({
   head: ({ matches }) =>
     pageHead(
       headLang(matches),
-      bi('Private & Group Trips', 'الرحلات الخاصة والجماعية'),
+      bi('Group & Private Trips', 'الرحلات الجماعية والخاصة'),
       bi(
         'Plan a private trip around your interests or join a scheduled group trip in Oman with Earth Adventure.',
         'خطط لرحلة خاصة حسب اهتماماتك أو انضم إلى رحلة جماعية مجدولة في عُمان مع Earth Adventure.',
@@ -17,23 +17,23 @@ export const Route = createFileRoute('/destinations/')({
   component: Destinations,
 });
 
-// Destinations = the private trips and the group trips, shown together on one page.
+// Destinations = the group trips first, then the private trips, shown together on one page.
 function Destinations() {
   const { t } = useLanguage();
   return (
     <>
       <PageHeading
-        title={t('Private & Group Trips', 'الرحلات الخاصة والجماعية')}
+        title={t('Group & Private Trips', 'الرحلات الجماعية والخاصة')}
         description={t(
-          'Plan your own private trip, or join a group trip on set dates.',
-          'خطط رحلتك الخاصة، أو انضم إلى رحلة جماعية في مواعيد محددة.',
+          'Join a group trip on set dates, or plan your own private trip.',
+          'انضم إلى رحلة جماعية في مواعيد محددة، أو خطط رحلتك الخاصة.',
         )}
         eyebrow={t('Destinations', 'الوجهات')}
       />
       <section className="section">
         <div className="container">
-          <PrivateTripsSection />
           <GroupTripsSection />
+          <PrivateTripsSection />
         </div>
       </section>
     </>

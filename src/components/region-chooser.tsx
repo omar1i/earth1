@@ -91,8 +91,8 @@ export function RegionChooser() {
           </div>
           {region === "oman" ? (
             <>
-              <PrivateTripsSection destinations={privateDestinations} />
               <GroupTripsSection trips={groupTrips} />
+              <PrivateTripsSection destinations={privateDestinations} />
             </>
           ) : !SHOW_INTERNATIONAL_TRIPS ? (
             <p className="region-soon">
