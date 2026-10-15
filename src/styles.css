@@ -408,3 +408,9 @@ a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 .legal-content ul{list-style:disc;padding-inline-start:22px;color:var(--muted-foreground);margin:12px 0}
 .legal-content li{margin:8px 0}
 .legal-content li::marker{color:var(--primary)}
+
+/* Terms (blue) and Privacy (green) links on the booking form */
+.legal-link{font-weight:600;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
+.legal-link-blue{color:#2a6fd6}
+.legal-link-green{color:#2f7d1f}
+.legal-link:hover{opacity:.8}
