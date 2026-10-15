@@ -402,7 +402,7 @@ a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 .detail-section ul.policy-list{list-style:disc}
 .detail-section .policy-list li::marker{color:var(--primary)}
 .policy-note{margin-top:18px;font-size:15px;color:var(--muted-foreground)}
-.terms-intl{margin-top:55px;padding-top:10px;border-top:1px solid var(--border)}
+.terms-intl{margin-top:0}
 .legal-content h3{font-size:19px;margin:30px 0 10px}
 .legal-content h4{font-size:16px;margin:20px 0 6px}
 .legal-content ul{list-style:disc;padding-inline-start:22px;color:var(--muted-foreground);margin:12px 0}

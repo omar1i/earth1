@@ -148,7 +148,7 @@ export const cancellationPolicy = {
   note: bi('Earth Adventure’s cancellation and refund policy is subject to applicable laws and regulations and relevant consumer protection requirements.','تخضع سياسة الإلغاء والاسترداد لدى شركة Earth Adventure للقوانين واللوائح المعمول بها ومتطلبات حماية المستهلك ذات الصلة.'),
 };
 
-// Terms & Conditions for short international trips (shown on /terms under the general terms).
+// Terms & Conditions for international trips (shown on /terms).
 export type TermsBlock =
   | {kind:'p'; text:Bilingual}
   | {kind:'sub'; text:Bilingual}
@@ -158,7 +158,7 @@ const tp = (en:string, ar:string): TermsBlock => ({kind:'p', text:bi(en,ar)});
 const tsub = (en:string, ar:string): TermsBlock => ({kind:'sub', text:bi(en,ar)});
 const tul = (...items:[string,string][]): TermsBlock => ({kind:'ul', items:items.map(([en,ar])=>bi(en,ar))});
 export const shortTripTerms: {title:Bilingual; sections:TermsSection[]} = {
-  title: bi('Terms & Conditions for Short International Trips','شروط وأحكام الرحلات الدولية القصيرة'),
+  title: bi('Terms & Conditions for International Trips','شروط وأحكام الرحلات الدولية'),
   sections: [
     {title: bi('Required documents','الوثائق المطلوبة على المشارك'), blocks:[
       tul(
