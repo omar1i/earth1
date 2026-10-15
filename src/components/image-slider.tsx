@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from 'react';
+import { useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/lib/language';
 
@@ -15,12 +15,14 @@ export function ImageSlider({
   renderSlide,
   eager = false,
   dots = 'top',
+  fit = 'cover',
 }: {
   images: string[];
   alt: string;
   renderSlide?: (img: ReactNode, active: boolean) => ReactNode;
   eager?: boolean;
   dots?: 'top' | 'bottom';
+  fit?: 'cover' | 'contain';
 }) {
   const { lang, t } = useLanguage();
   const trackRef = useRef<HTMLDivElement>(null);
@@ -47,7 +49,7 @@ export function ImageSlider({
   const NextIcon = rtl ? ChevronLeft : ChevronRight;
 
   return (
-    <div className="slider" role="group" aria-roledescription="carousel" aria-label={alt}>
+    <div className={fit === 'contain' ? 'slider slider-contain' : 'slider'} role="group" aria-roledescription="carousel" aria-label={alt}>
       <div className="slider-track" ref={trackRef} onScroll={onScroll}>
         {images.map((src, i) => {
           const img = (
@@ -62,7 +64,7 @@ export function ImageSlider({
             />
           );
           return (
-            <div className="slider-slide" key={src + i} aria-hidden={i !== index}>
+            <div className="slider-slide" key={src + i} aria-hidden={i !== index} style={fit === 'contain' ? ({ '--bg': `url("${src}")` } as CSSProperties) : undefined}>
               {renderSlide ? renderSlide(img, i === index) : img}
             </div>
           );

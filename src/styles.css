@@ -386,8 +386,10 @@ a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 .experience-image.has-slider .trip-overlay{pointer-events:none}
 .experience-image.has-slider .experience-tag{z-index:2}
 
-/* Trip page: the big top picture is the slideshow; the text on top must not block swiping. */
-.image-hero.has-slider:after{pointer-events:none}
-.image-hero.has-slider .image-hero-content{pointer-events:none}
-.image-hero.has-slider .slider-btn{width:42px;height:42px}
-@media (hover:none){.image-hero.has-slider .slider-btn{width:36px;height:36px}}
+/* Trip page: photo gallery block (whole photo visible, never cropped) */
+.trip-gallery{position:relative;aspect-ratio:3/2;max-height:560px;border-radius:12px;overflow:hidden;background:#0b2a3a}
+.slider-contain .slider-slide{position:relative;background:#0b2a3a}
+.slider-contain .slider-slide::before{content:'';position:absolute;inset:-24px;background:var(--bg) center/cover no-repeat;filter:blur(22px) brightness(.65);transform:scale(1.1)}
+.slider-contain .slider-slide img{position:relative;object-fit:contain}
+/* top picture of the trip page: keep faces in view */
+.group-hero>img{object-position:50% 30%}

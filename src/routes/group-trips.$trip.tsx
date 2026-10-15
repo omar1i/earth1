@@ -43,12 +43,8 @@ function GroupTripDetail() {
 
   return (
     <>
-      <section className={photos.length > 1 ? 'image-hero has-slider' : 'image-hero'}>
-        {photos.length > 1 ? (
-          <ImageSlider images={photos} alt={trip.name[lang]} eager dots="bottom" />
-        ) : (
-          <img src={trip.image} alt={trip.name[lang]} width="1440" height="1024" fetchPriority="high" />
-        )}
+      <section className="image-hero group-hero">
+        <img src={trip.image} alt={trip.name[lang]} width="1440" height="1024" fetchPriority="high" />
         <div className="container image-hero-content">
           <div className="eyebrow text-primary-foreground">{t('Group Trip', 'رحلة جماعية')}</div>
           <h1>{trip.name[lang]}</h1>
@@ -68,6 +64,14 @@ function GroupTripDetail() {
           )}
           <div className="detail-layout">
             <div className="detail-copy">
+              {photos.length > 1 && (
+                <div className="detail-section">
+                  <h2>{t('Trip photos', 'صور الرحلة')}</h2>
+                  <div className="trip-gallery">
+                    <ImageSlider images={photos} alt={trip.name[lang]} fit="contain" dots="bottom" />
+                  </div>
+                </div>
+              )}
               <div className="detail-section">
                 <h2>{t('About this trip', 'نبذة عن الرحلة')}</h2>
                 <p>{trip.description[lang]}</p>
