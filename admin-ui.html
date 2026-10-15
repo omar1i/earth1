@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Earth Adventure · Admin</title>
+<link rel="icon" href="/favicon.png" type="image/png">
+<style>
+:root{--bg:#f4f6f5;--card:#fff;--ink:#17302b;--muted:#5d716c;--line:#dbe3e0;--brand:#0f5c4d;--brand-d:#0a4439;--warn:#b45309;--bad:#b42318;--ok:#067647;--soft:#e8f1ee}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+h1,h2,h3{margin:0 0 .5em;line-height:1.25}h1{font-size:1.5rem}h2{font-size:1.2rem}h3{font-size:1rem}
+a{color:var(--brand)}button,input,select,textarea{font:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:16px}
+header.top{background:var(--brand);color:#fff}header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px}
+header.top strong{font-size:1.05rem}header.top nav{display:flex;gap:6px;flex-wrap:wrap;margin-inline-start:12px}
+header.top nav button{background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;padding:6px 12px;border-radius:8px;cursor:pointer}
+header.top nav button[aria-current=true]{background:#fff;color:var(--brand)}
+header.top .sp{flex:1}header.top .who{opacity:.85;font-size:.9rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.grid{display:grid;gap:12px}.g2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.stat{background:var(--soft);border-radius:10px;padding:12px}.stat b{display:block;font-size:1.6rem}
+label{display:block;font-weight:600;margin:10px 0 4px;font-size:.9rem}label small{font-weight:400;color:var(--muted)}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+textarea{min-height:84px;resize:vertical}input[type=checkbox]{width:auto}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{background:var(--brand);color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600}.btn:hover{background:var(--brand-d)}
+.btn.sec{background:#fff;color:var(--brand);border:1px solid var(--brand)}.btn.bad{background:var(--bad)}.btn.sm{padding:4px 9px;font-size:.85rem}.btn[disabled]{opacity:.55;cursor:wait}
+table{width:100%;border-collapse:collapse;font-size:.92rem}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:start;vertical-align:top}th{background:var(--soft);white-space:nowrap}
+.scroll{overflow-x:auto}
+.badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.78rem;font-weight:700;background:var(--soft);color:var(--brand)}
+.badge.pending{background:#fff4d6;color:#8a5a00}.badge.contacted{background:#e0ecff;color:#1c4fa3}.badge.confirmed{background:#dcf5e6;color:var(--ok)}.badge.cancelled{background:#fde4e1;color:var(--bad)}.badge.off{background:#eee;color:#555}.badge.warn{background:#fde9d3;color:var(--warn)}
+.msg{padding:10px 12px;border-radius:8px;margin:10px 0}.msg.err{background:#fde4e1;color:var(--bad)}.msg.ok{background:#dcf5e6;color:var(--ok)}.msg.info{background:var(--soft)}
+.muted{color:var(--muted)}.hint{font-size:.85rem;color:var(--muted);margin:2px 0 0}
+.bi{display:grid;grid-template-columns:1fr 1fr;gap:10px}.bi [dir=rtl]{text-align:right}
+@media(max-width:700px){.bi{grid-template-columns:1fr}}
+.list-item{border:1px solid var(--line);border-radius:8px;padding:10px;margin:8px 0;background:#fbfcfb}
+.thumb{width:140px;height:92px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#eee}
+.login{max-width:420px;margin:8vh auto}
+.toast{position:fixed;bottom:16px;inset-inline-end:16px;background:#17302b;color:#fff;padding:10px 14px;border-radius:8px;z-index:50;max-width:80vw}
+.center{text-align:center}.mt{margin-top:12px}
+</style>
+</head>
+<body>
+<div id="app"><p class="wrap muted">Loading…</p></div>
+<script>
+(function(){
+'use strict';
+var app=document.getElementById('app');
+var state={session:null,view:'dashboard',trips:null,tripId:null,filters:{q:'',status:'',trip:'',from:'',to:'',email:'',offset:0},toast:null};
+
+/* ---------- tiny DOM helper: text is always set with textContent, never as HTML ---------- */
+function h(tag,attrs){
+  var el=document.createElement(tag);
+  if(attrs)Object.keys(attrs).forEach(function(k){
+    var v=attrs[k];
+    if(v===null||v===undefined||v===false)return;
+    if(k==='class')el.className=v;
+    else if(k==='on')Object.keys(v).forEach(function(ev){el.addEventListener(ev,v[ev])});
+    else if(k==='value')el.value=v;
+    else if(k==='checked')el.checked=!!v;
+    else if(k==='selected')el.selected=!!v;
+    else if(k==='disabled')el.disabled=!!v;
+    else el.setAttribute(k,v===true?'':String(v));
+  });
+  for(var i=2;i<arguments.length;i++)add(el,arguments[i]);
+  return el;
+}
+function add(el,c){
+  if(c===null||c===undefined||c===false)return;
+  if(Array.isArray(c)){c.forEach(function(x){add(el,x)});return}
+  el.appendChild(typeof c==='object'&&c.nodeType?c:document.createTextNode(String(c)));
+}
+function show(node){app.textContent='';app.appendChild(node)}
+function toast(msg){
+  state.toast=msg;var t=h('div',{class:'toast',role:'status'},msg);document.body.appendChild(t);
+  setTimeout(function(){t.remove()},3500);
+}
+
+/* ---------- API ---------- */
+function api(method,path,body,raw){
+  var opts={method:method,credentials:'same-origin',headers:{'X-Requested-With':'ea-admin'}};
+  if(raw){opts.body=raw.body;opts.headers['Content-Type']=raw.type}
+  else if(body!==undefined){opts.body=JSON.stringify(body);opts.headers['Content-Type']='application/json'}
+  return fetch('/api/admin'+path,opts).then(function(r){
+    return r.json().catch(function(){return{}}).then(function(d){
+      if(r.status===401&&path!=='/login'&&path!=='/setup'){state.session=null;boot();throw new Error('Please log in again.')}
+      if(!r.ok)throw new Error(d.error||('Request failed ('+r.status+')'));
+      return d;
+    });
+  });
+}
+function errBox(e){return h('div',{class:'msg err',role:'alert'},e&&e.message?e.message:String(e))}
+
+/* ---------- boot / auth ---------- */
+function boot(){
+  fetch('/api/admin/session',{credentials:'same-origin'}).then(function(r){return r.json()}).then(function(s){
+    state.session=s;
+    if(!s.dbConnected)return show(h('div',{class:'wrap login card'},h('h1',null,'Database not ready'),
+      h('p',null,'The D1 database is not connected or has not been migrated yet. Follow DEPLOY.txt (steps 1–4), then reload this page.')));
+    if(s.needsSetup)return setupView();
+    if(!s.authenticated)return loginView();
+    renderShell();
+  }).catch(function(e){show(h('div',{class:'wrap'},errBox(e)))});
+}
+function loginView(){
+  var err=h('div');var u=h('input',{id:'u',autocomplete:'username',required:true});var p=h('input',{id:'p',type:'password',autocomplete:'current-password',required:true});
+  var btn=h('button',{class:'btn',type:'submit'},'Log in');
+  var form=h('form',{on:{submit:function(ev){ev.preventDefault();btn.disabled=true;err.textContent='';
+    api('POST','/login',{username:u.value,password:p.value}).then(boot).catch(function(e){err.appendChild(errBox(e));btn.disabled=false})}}},
+    h('label',{for:'u'},'Username'),u,h('label',{for:'p'},'Password'),p,err,h('div',{class:'mt'},btn));
+  show(h('div',{class:'wrap login card'},h('h1',null,'Earth Adventure admin'),h('p',{class:'muted'},'Administrator login'),form));
+  u.focus();
+}
+function setupView(){
+  var err=h('div');var t=h('input',{id:'t',type:'password',autocomplete:'off',required:true});var u=h('input',{id:'u',autocomplete:'username',required:true});var p=h('input',{id:'p',type:'password',autocomplete:'new-password',required:true});
+  var btn=h('button',{class:'btn',type:'submit'},'Create administrator');
+  var form=h('form',{on:{submit:function(ev){ev.preventDefault();btn.disabled=true;err.textContent='';
+    api('POST','/setup',{token:t.value,username:u.value,password:p.value}).then(boot).catch(function(e){err.appendChild(errBox(e));btn.disabled=false})}}},
+    h('label',{for:'t'},'Setup token ',h('small',null,'(the ADMIN_SETUP_TOKEN secret you set in Cloudflare)')),t,
+    h('label',{for:'u'},'Choose a username'),u,
+    h('label',{for:'p'},'Choose a password ',h('small',null,'(at least 10 characters, letters and numbers)')),p,err,h('div',{class:'mt'},btn));
+  show(h('div',{class:'wrap login card'},h('h1',null,'First-time setup'),h('p',{class:'muted'},'Create the administrator account. This screen only works while no administrator exists.'),form));
+}
+function logout(){api('POST','/logout',{}).finally(boot)}
+
+/* ---------- shell ---------- */
+function renderShell(){
+  var views=[['dashboard','Overview'],['trips','Trips'],['bookings','Bookings'],['account','Account']];
+  var nav=h('nav',null,views.map(function(v){return h('button',{type:'button','aria-current':state.view===v[0]||(v[0]==='trips'&&state.view==='trip'),on:{click:function(){go(v[0])}}},v[1])}));
+  var main=h('div',{class:'wrap',id:'main'});
+  show(h('div',null,h('header',{class:'top'},h('div',{class:'wrap'},h('strong',null,'Earth Adventure admin'),nav,h('span',{class:'sp'}),h('a',{href:'/',target:'_blank',rel:'noopener',style:'color:#fff'},'View website'),h('span',{class:'who'},state.session.username),h('button',{class:'btn sec sm',type:'button',on:{click:logout}},'Log out'))),main));
+  ({dashboard:dashboardView,trips:tripsView,trip:tripView,bookings:bookingsView,account:accountView})[state.view](main);
+}
+function go(view,extra){state.view=view;if(extra)Object.keys(extra).forEach(function(k){state[k]=extra[k]});renderShell()}
+function loading(main){main.textContent='';main.appendChild(h('p',{class:'muted'},'Loading…'))}
+function fmtDate(d){return d||''}
+function fmtDateTime(iso){try{return new Date(iso).toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Muscat'})}catch(e){return iso}}
+function badge(status){return h('span',{class:'badge '+status},status)}
+
+/* ---------- dashboard ---------- */
+function dashboardView(main){
+  loading(main);
+  api('GET','/summary').then(function(d){
+    var counts={};d.byStatus.forEach(function(r){counts[r.status]=r.n});
+    main.textContent='';
+    main.appendChild(h('h1',null,'Overview'));
+    main.appendChild(h('div',{class:'grid g3'},
+      ['pending','contacted','confirmed','cancelled'].map(function(s){return h('div',{class:'stat'},h('b',null,counts[s]||0),h('span',null,s+' bookings'))}),
+      h('div',{class:'stat'},h('b',null,d.counts.active_trips||0),h('span',null,'trips shown on website ('+(d.counts.trips||0)+' total)'))));
+    if(d.counts.email_unsent>0)main.appendChild(h('div',{class:'msg info mt'},d.counts.email_unsent+' booking(s) were saved but the notification e-mail was not delivered. ',h('a',{href:'#',on:{click:function(e){e.preventDefault();state.filters=Object.assign({},state.filters,{email:'unsent',offset:0});go('bookings')}}},'Show them'),' and use “Resend e-mail”.'));
+    main.appendChild(h('div',{class:'card mt'},h('h2',null,'Upcoming departures'),
+      d.upcoming.length?h('div',{class:'scroll'},h('table',null,h('thead',null,h('tr',null,['Trip','Date','Time','Seats booked','Status'].map(function(x){return h('th',null,x)}))),
+        h('tbody',null,d.upcoming.map(function(s){return h('tr',null,h('td',null,s.trip_name),h('td',null,s.departure_date),h('td',null,s.departure_time||'—'),h('td',null,s.seats_booked+' / '+s.capacity),h('td',null,s.status==='open'?(s.seats_booked>=s.capacity?badge('cancelled'):badge('confirmed')):badge('off')))})))):h('p',{class:'muted'},'No upcoming departures. Add one from Trips → a group trip.')));
+  }).catch(function(e){main.textContent='';main.appendChild(errBox(e))});
+}
+
+/* ---------- trips list ---------- */
+var KIND={group:'Group trip',private:'Private trip',experience:'Experience'};
+function tripsView(main){
+  loading(main);
+  api('GET','/trips').then(function(d){
+    state.trips=d.trips;main.textContent='';
+    main.appendChild(h('div',{class:'row'},h('h1',{style:'flex:1'},'Trips'),
+      h('button',{class:'btn',type:'button',on:{click:function(){go('trip',{tripId:'new:group'})}}},'+ Group trip'),
+      h('button',{class:'btn sec',type:'button',on:{click:function(){go('trip',{tripId:'new:private'})}}},'+ Private trip'),
+      h('button',{class:'btn sec',type:'button',on:{click:function(){go('trip',{tripId:'new:experience'})}}},'+ Experience')));
+    main.appendChild(h('p',{class:'muted'},'Group trips have dates and seats. Private trips and experiences are request-style trips (the customer picks a date). Hidden trips stay in the list but are not shown on the website.'));
+    var t=h('table',null,h('thead',null,h('tr',null,['Name','Type','Price','Departures','Bookings','Visible',''].map(function(x){return h('th',null,x)}))),
+      h('tbody',null,d.trips.map(function(r){
+        return h('tr',null,h('td',null,h('strong',null,r.name_en),h('div',{class:'muted',dir:'rtl'},r.name_ar)),
+          h('td',null,KIND[r.kind]+(r.region==='international'?' · intl':'')+(r.is_sample?' · sample':'')),
+          h('td',null,priceText(r)),h('td',null,r.kind==='group'?r.schedule_count:'—'),h('td',null,r.booking_count),
+          h('td',null,r.is_active?badge('confirmed'):badge('off')),
+          h('td',null,h('button',{class:'btn sm',type:'button',on:{click:function(){go('trip',{tripId:r.id})}}},'Edit')));
+      })));
+    main.appendChild(h('div',{class:'card scroll'},t));
+  }).catch(function(e){main.textContent='';main.appendChild(errBox(e))});
+}
+function priceText(r){if(r.price===null||r.price_type==='contact')return 'Contact for price';return 'OMR '+r.price+(r.price_type==='person'?' / person':r.price_type==='group'?' / group':'')}
+
+/* ---------- trip editor ---------- */
+var CATS=[['sea-fishing','Sea & Fishing'],['camping-overnight','Camping & Overnight'],['land-adventures','Land Adventures'],['international','International']];
+var ASSETS=[['asset:coast','Built-in: coast'],['asset:camping','Built-in: camping'],['asset:wadi','Built-in: wadi'],['asset:mountains','Built-in: mountains']];
+function field(label,input,hint){return h('div',null,h('label',null,label),input,hint?h('p',{class:'hint'},hint):null)}
+function biField(label,en,ar,multiline,hint){
+  var mk=function(v,dir,ph){return h(multiline?'textarea':'input',{value:v||'',dir:dir,placeholder:ph})};
+  var a=mk(en,'ltr','English'),b=mk(ar,'rtl','العربية');
+  var box=h('div',null,h('label',null,label),h('div',{class:'bi'},a,b),hint?h('p',{class:'hint'},hint):null);
+  box.get=function(){return{en:a.value,ar:b.value}};return box;
+}
+function listEditor(title,items,withText){
+  var rows=[];var holder=h('div');
+  function addRow(v){
+    var title_=biField(withText?'Title':'Item',v&&(withText?v.title.en:v.en),v&&(withText?v.title.ar:v.ar),false);
+    var text_=withText?biField('Details',v&&v.text.en,v&&v.text.ar,true):null;
+    var row=h('div',{class:'list-item'},title_,text_);
+    var rm=h('button',{class:'btn bad sm mt',type:'button',on:{click:function(){row.remove();rows=rows.filter(function(r){return r!==entry})}}},'Remove');row.appendChild(rm);
+    var entry={get:function(){return withText?{title:title_.get(),text:text_.get()}:title_.get()},blank:function(){var x=withText?title_.get():title_.get();return !x.en&&!x.ar&&(!withText||(!text_.get().en&&!text_.get().ar))}};
+    rows.push(entry);holder.appendChild(row);
+  }
+  (items||[]).forEach(addRow);
+  var box=h('div',{class:'mt'},h('h3',null,title),holder,h('button',{class:'btn sec sm',type:'button',on:{click:function(){addRow(null)}}},'+ Add'));
+  box.get=function(){return rows.filter(function(r){return !r.blank()}).map(function(r){return r.get()})};
+  return box;
+}
+function imagePicker(initial){
+  var value=initial||'';var preview=h('img',{class:'thumb',alt:''});var urlIn=h('input',{placeholder:'https://… (optional)'});
+  var status=h('p',{class:'hint'});
+  function resolve(v){if(!v)return '';if(v.indexOf('asset:')===0)return '';return v}
+  function refresh(){
+    var src=resolve(value);preview.style.display=src?'':'none';if(src)preview.src=src;
+    status.textContent=!value?'No image selected (a neutral placeholder is shown).':value.indexOf('asset:')===0?'Using a picture that ships with the website ('+value.slice(6)+').':'Image: '+value;
+    sel.value=value.indexOf('asset:')===0?value:'';
+  }
+  var sel=h('select',{on:{change:function(){if(sel.value){value=sel.value;refresh()}}}},h('option',{value:''},'Built-in pictures…'),ASSETS.map(function(a){return h('option',{value:a[0]},a[1])}));
+  var file=h('input',{type:'file',accept:'image/jpeg,image/png,image/webp',on:{change:function(){
+    var f=file.files[0];if(!f)return;status.textContent='Preparing image…';
+    shrink(f).then(function(blob){status.textContent='Uploading…';return api('POST','/images',undefined,{body:blob,type:blob.type})})
+      .then(function(r){value=r.url;refresh();toast('Image uploaded. Remember to save the trip.')})
+      .catch(function(e){status.textContent='';status.appendChild(errBox(e))});
+  }}});
+  var useUrl=h('button',{class:'btn sec sm',type:'button',on:{click:function(){var v=urlIn.value.trim();if(!v)return;if(!/^https:\/\//.test(v)){status.textContent='Use an address starting with https://';return}value=v;urlIn.value='';refresh()}}},'Use address');
+  var clear=h('button',{class:'btn sec sm',type:'button',on:{click:function(){value='';refresh()}}},'Remove image');
+  var box=h('div',null,h('label',null,'Image'),h('div',{class:'row'},preview,h('div',{style:'flex:1;min-width:220px'},h('div',null,'Upload a photo (JPG, PNG or WebP): ',file),h('div',{class:'row mt'},sel,clear),h('div',{class:'row mt'},urlIn,useUrl))),status);
+  box.get=function(){return value||null};refresh();return box;
+}
+/* extra photos for a group trip: several uploads, reorder, remove (shown as a slideshow on the website) */
+function galleryPicker(initial){
+  var list=(initial||[]).filter(function(x){return typeof x==='string'&&x});
+  var grid=h('div',{class:'row mt',style:'align-items:flex-start'});
+  var status=h('p',{class:'hint'});var urlIn=h('input',{placeholder:'https://… (optional)'});
+  function src(v){return v.indexOf('asset:')===0?'':v}
+  function move(i,d){var j=i+d;if(j<0||j>=list.length)return;var x=list[i];list[i]=list[j];list[j]=x;refresh()}
+  function refresh(){
+    grid.textContent='';
+    list.forEach(function(v,i){
+      var im=h('img',{class:'thumb',alt:'',style:'width:110px;height:76px'});if(src(v))im.src=src(v);
+      grid.appendChild(h('div',{style:'text-align:center'},im,
+        h('div',{class:'row',style:'justify-content:center;gap:4px;margin-top:4px'},
+          h('button',{class:'btn sec sm',type:'button',title:'Move earlier',on:{click:function(){move(i,-1)}}},'◀'),
+          h('button',{class:'btn sec sm',type:'button',title:'Move later',on:{click:function(){move(i,1)}}},'▶'),
+          h('button',{class:'btn bad sm',type:'button',title:'Remove',on:{click:function(){list.splice(i,1);refresh()}}},'✕'))));
+    });
+    status.textContent=list.length?list.length+' extra photo(s). The main image above is always the first one shown.':'No extra photos yet. Add some to turn the trip into a slideshow.';
+  }
+  var file=h('input',{type:'file',multiple:true,accept:'image/jpeg,image/png,image/webp',on:{change:function(){
+    var files=Array.prototype.slice.call(file.files||[]);if(!files.length)return;
+    var room=12-list.length;if(files.length>room){files=files.slice(0,Math.max(0,room));toast('Up to 12 extra photos. The rest were skipped.')}
+    var done=0;status.textContent='Uploading 0/'+files.length+'…';
+    files.reduce(function(chain,f){return chain.then(function(){
+      return shrink(f).then(function(blob){return api('POST','/images',undefined,{body:blob,type:blob.type})}).then(function(r){list.push(r.url);done++;status.textContent='Uploading '+done+'/'+files.length+'…';refresh()});
+    })},Promise.resolve()).then(function(){file.value='';refresh();toast(done+' photo(s) uploaded. Remember to save the trip.')})
+      .catch(function(e){file.value='';refresh();status.appendChild(errBox(e))});
+  }}});
+  var useUrl=h('button',{class:'btn sec sm',type:'button',on:{click:function(){var v=urlIn.value.trim();if(!v)return;if(!/^https:\/\//.test(v)){status.textContent='Use an address starting with https://';return}if(list.length>=12){status.textContent='Up to 12 extra photos.';return}list.push(v);urlIn.value='';refresh()}}},'Add address');
+  var box=h('div',{class:'mt'},h('label',null,'Extra photos (slideshow)'),
+    h('div',null,'Add several photos at once (JPG, PNG or WebP): ',file),
+    grid,h('div',{class:'row mt'},urlIn,useUrl),status);
+  box.get=function(){return list.slice()};refresh();return box;
+}
+/* shrink big photos in the browser so they fit comfortably in the database */
+function shrink(file){
+  return new Promise(function(resolve,reject){
+    if(file.size>12*1024*1024)return reject(new Error('That file is too large. Choose a photo under 12 MB.'));
+    var img=new Image();var url=URL.createObjectURL(file);
+    img.onload=function(){
+      var max=1600,w=img.naturalWidth,hh=img.naturalHeight,s=Math.min(1,max/Math.max(w,hh));
+      var c=document.createElement('canvas');c.width=Math.round(w*s);c.height=Math.round(hh*s);
+      var ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
+      var q=0.85;(function attempt(){c.toBlob(function(b){
+        if(!b)return reject(new Error('Could not process this image.'));
+        if(b.size>1100000&&q>0.4){q-=0.15;return attempt()}
+        if(b.size>1100000)return reject(new Error('Image is still too large. Try a smaller picture.'));
+        resolve(b)},'image/jpeg',q)})();
+    };
+    img.onerror=function(){URL.revokeObjectURL(url);reject(new Error('This file is not a readable image.'))};
+    img.src=url;
+  });
+}
+function tripView(main){
+  var isNew=typeof state.tripId==='string'&&state.tripId.indexOf('new:')===0;
+  if(isNew){var kind=state.tripId.slice(4);return editor(main,{kind:kind,region:'oman',price_type:kind==='group'?'person':'contact',is_active:1,is_sample:0,sort_order:0,itinerary:'[]',inclusions:'[]',exclusions:'[]',requirements:'[]',terms:'[]'},[],0,true)}
+  loading(main);
+  api('GET','/trips/'+state.tripId).then(function(d){editor(main,d.trip,d.schedules,d.bookingCount,false)}).catch(function(e){main.textContent='';main.appendChild(errBox(e))});
+}
+function parseJson(s){try{var v=JSON.parse(s);return Array.isArray(v)?v:[]}catch(e){return[]}}
+function editor(main,t,schedules,bookingCount,isNew){
+  main.textContent='';
+  var kind=t.kind;var out=h('div');
+  var name=biField('Trip name *',t.name_en,t.name_ar,false);
+  var desc=biField('Description',t.description_en,t.description_ar,true);
+  var img=imagePicker(t.image);
+  var gallery=kind==='group'?galleryPicker(parseJson(t.images)):null;
+  var price=h('input',{type:'number',min:'0',step:'0.001',value:t.price===null||t.price===undefined?'':t.price});
+  var ptype=h('select',null,[['contact','Contact for price (no price shown)'],['person','Per person'],['group','Per group'],['fixed','Fixed price']].map(function(o){return h('option',{value:o[0],selected:t.price_type===o[0]},o[1])}));
+  var active=h('input',{type:'checkbox',checked:!!t.is_active});
+  var sample=h('input',{type:'checkbox',checked:!!t.is_sample});
+  var order=h('input',{type:'number',step:'1',value:t.sort_order||0});
+  var slug=h('input',{value:t.slug||'',disabled:!isNew,placeholder:'auto from the English name',dir:'ltr'});
+  var cat=h('select',null,CATS.map(function(c){return h('option',{value:c[0],selected:t.category===c[0]},c[1])}));
+  var region=h('select',null,[['oman','Oman'],['international','International']].map(function(c){return h('option',{value:c[0],selected:t.region===c[0]},c[1])}));
+  var loc=biField('Location',t.location_en,t.location_ar,false),dur=biField('Duration',t.duration_en,t.duration_ar,false),size=biField('Group size text',t.group_size_en,t.group_size_ar,false,'Shown on the trip page, e.g. “Small group (up to 14 travellers)”. The real seat limit is set per departure below.');
+  var acc=biField('Accommodation',t.accommodation_en,t.accommodation_ar,false);
+  var maxg=h('input',{type:'number',min:'1',step:'1',value:t.max_group||''});
+  var itin=listEditor(kind==='group'?'Itinerary (day by day)':'Itinerary (optional)',parseJson(t.itinerary),true);
+  var inc=listEditor('What’s included',parseJson(t.inclusions),false),exc=listEditor('What’s not included',parseJson(t.exclusions),false);
+  var req=listEditor('Requirements & recommended items',parseJson(t.requirements),false),terms=listEditor('Terms & Conditions for this trip',parseJson(t.terms),false);
+  var err=h('div');
+  var save=h('button',{class:'btn',type:'button'},isNew?'Create trip':'Save changes');
+  save.addEventListener('click',function(){
+    err.textContent='';save.disabled=true;
+    var n=name.get(),d=desc.get(),l=loc.get(),du=dur.get(),sz=size.get(),ac=acc.get();
+    var body={kind:kind,name_en:n.en,name_ar:n.ar,description_en:d.en,description_ar:d.ar,image:img.get(),
+      price:price.value===''?null:Number(price.value),price_type:price.value===''?'contact':ptype.value,
+      is_active:active.checked,is_sample:sample.checked,sort_order:Number(order.value)||0,region:kind==='experience'?region.value:'oman',
+      category:kind==='experience'?cat.value:null,
+      location_en:l.en,location_ar:l.ar,duration_en:du.en,duration_ar:du.ar,group_size_en:sz.en,group_size_ar:sz.ar,accommodation_en:ac.en,accommodation_ar:ac.ar,
+      max_group:maxg.value===''?null:Number(maxg.value),itinerary:itin.get(),inclusions:inc.get(),exclusions:exc.get(),requirements:req.get(),terms:terms.get()};
+    if(gallery)body.images=gallery.get();
+    if(kind==='experience'&&body.category==='international')body.region='international';
+    if(isNew&&slug.value.trim())body.slug=slug.value.trim().toLowerCase();
+    api(isNew?'POST':'PUT','/trips'+(isNew?'':'/'+t.id),body).then(function(r){
+      toast(isNew?'Trip created.':'Saved. The website is updated.');
+      if(isNew)go('trip',{tripId:r.id});else{save.disabled=false}
+    }).catch(function(e){err.appendChild(errBox(e));save.disabled=false;window.scrollTo(0,document.body.scrollHeight)});
+  });
+  var del=!isNew?h('button',{class:'btn bad',type:'button',on:{click:function(){
+    var m='Delete “'+t.name_en+'” permanently?'+(bookingCount?'\n\n'+bookingCount+' booking(s) exist for this trip. They stay in the Bookings list (no longer linked to the trip).':'')+'\n\nTo only hide it from the website, untick “Show on website” instead.';
+    if(confirm(m))api('DELETE','/trips/'+t.id).then(function(){toast('Trip deleted.');go('trips')}).catch(function(e){err.appendChild(errBox(e))})}}},'Delete trip'):null;
+
+  out.appendChild(h('div',{class:'row'},h('button',{class:'btn sec sm',type:'button',on:{click:function(){go('trips')}}},'← All trips'),h('h1',{style:'margin:0'},(isNew?'New ':'Edit ')+KIND[kind].toLowerCase())));
+  out.appendChild(h('div',{class:'card'},name,desc,img,gallery,
+    h('div',{class:'grid g3'},
+      kind==='experience'?field('Section',cat):null,
+      field('Price (OMR)',price,'Leave empty to show “Contact for Price”.'),field('Price applies',ptype),
+      field('Display order',order,'Lower numbers appear first.'),
+      field('Web address ',slug,isNew?'Letters, numbers and dashes. Cannot be changed later.':'Fixed after creation.')),
+    h('label',null,h('input',{type:'checkbox',checked:!!t.is_active,on:{change:function(e){active.checked=e.target.checked}}}),' Show on website'),
+    h('label',null,h('input',{type:'checkbox',checked:!!t.is_sample,on:{change:function(e){sample.checked=e.target.checked}}}),' Mark as sample / placeholder content ',h('small',null,'(adds a “Sample” notice on the trip page)'))));
+  if(kind!=='private'){
+    out.appendChild(h('div',{class:'card'},h('h2',null,'Trip details'),loc,dur,
+      kind==='group'?size:h('div',{class:'grid g3'},field('Max group size',maxg)),
+      kind==='experience'?acc:null,itin,inc,exc,kind==='experience'?req:null,kind==='group'?terms:null));
+  }
+  out.appendChild(h('div',{class:'row'},save,del));out.appendChild(err);
+  if(!isNew&&kind==='group')out.appendChild(schedulesCard(t,schedules));
+  if(isNew&&kind==='group')out.appendChild(h('div',{class:'msg info mt'},'After you create the trip you can add its departure dates, times and seat capacity.'));
+  main.appendChild(out);
+}
+
+/* ---------- schedules ---------- */
+function schedulesCard(trip,schedules){
+  var card=h('div',{class:'card mt'},h('h2',null,'Departures, times & seats'),
+    h('p',{class:'muted'},'Each departure has its own date, time and seat limit. Customers cannot book more seats than are left. Closed departures are hidden from booking.'));
+  schedules.forEach(function(s){card.appendChild(scheduleForm(trip,s))});
+  card.appendChild(h('h3',{class:'mt'},'Add a departure'));card.appendChild(scheduleForm(trip,null));
+  return card;
+}
+function scheduleForm(trip,s){
+  var date=h('input',{type:'date',value:s?s.departure_date:'',required:true});
+  var time=h('input',{type:'time',value:s&&s.departure_time||''});
+  var cap=h('input',{type:'number',min:'0',max:'1000',step:'1',value:s?s.capacity:'14'});
+  var status=h('select',null,[['open','Open for booking'],['closed','Closed']].map(function(o){return h('option',{value:o[0],selected:s&&s.status===o[0]},o[1])}));
+  var lab=biField('Date text on website (optional)',s&&s.label_en,s&&s.label_ar,false,'e.g. “20–21 November 2026”. Leave empty to show the date automatically.');
+  var err=h('div');
+  var btn=h('button',{class:'btn sm',type:'button'},s?'Save departure':'Add departure');
+  btn.addEventListener('click',function(){
+    err.textContent='';btn.disabled=true;var l=lab.get();
+    var body={departure_date:date.value,departure_time:time.value||null,capacity:Number(cap.value),status:status.value,label_en:l.en,label_ar:l.ar};
+    api(s?'PUT':'POST',s?'/schedules/'+s.id:'/trips/'+trip.id+'/schedules',body).then(function(){toast(s?'Departure saved.':'Departure added.');go('trip',{tripId:trip.id})}).catch(function(e){err.appendChild(errBox(e));btn.disabled=false});
+  });
+  var del=s?h('button',{class:'btn bad sm',type:'button',on:{click:function(){
+    if(confirm('Delete this departure? Its '+s.seats_booked+' booked seat(s) stay in the Bookings list but are no longer linked.'))api('DELETE','/schedules/'+s.id).then(function(){toast('Departure deleted.');go('trip',{tripId:trip.id})}).catch(function(e){err.appendChild(errBox(e))})}}},'Delete'):null;
+  var head=s?h('div',{class:'row'},h('strong',null,s.seats_booked+' of '+s.capacity+' seats booked'),
+    s.seats_booked>=s.capacity?badge('cancelled'):badge('confirmed'),
+    h('button',{class:'btn sec sm',type:'button',on:{click:function(){state.filters=Object.assign({},state.filters,{trip:'',schedule:String(s.id),offset:0});go('bookings')}}},'View bookings')):null;
+  return h('div',{class:'list-item'},head,h('div',{class:'grid g3'},field('Date *',date),field('Departure time',time),field('Seat capacity',cap),field('Status',status)),lab,h('div',{class:'row mt'},btn,del),err);
+}
+
+/* ---------- bookings ---------- */
+function bookingsView(main){
+  var f=state.filters;
+  main.textContent='';
+  var q=h('input',{type:'search',placeholder:'Name, phone, e-mail or reference',value:f.q});
+  var st=h('select',null,h('option',{value:''},'All statuses'),['pending','contacted','confirmed','cancelled'].map(function(s){return h('option',{value:s,selected:f.status===s},s)}));
+  var from=h('input',{type:'date',value:f.from}),to=h('input',{type:'date',value:f.to});
+  var tripSel=h('select',null,h('option',{value:''},'All trips'));
+  var list=h('div');
+  function apply(){state.filters=Object.assign({},state.filters,{q:q.value.trim(),status:st.value,trip:tripSel.value,from:from.value,to:to.value,offset:0});if(tripSel.value)state.filters.schedule='';bookingsView(main)}
+  main.appendChild(h('h1',null,'Bookings'));
+  var bar=h('div',{class:'card'},h('div',{class:'grid g3'},field('Search',q),field('Status',st),field('Trip',tripSel),field('Trip date from',from),field('Trip date to',to)),
+    h('div',{class:'row mt'},h('button',{class:'btn',type:'button',on:{click:apply}},'Search'),
+      h('button',{class:'btn sec',type:'button',on:{click:function(){state.filters={q:'',status:'',trip:'',schedule:'',from:'',to:'',email:'',offset:0};bookingsView(main)}}},'Clear filters'),
+      f.schedule?h('span',{class:'badge'},'Filtered to one departure'):null,f.email==='unsent'?h('span',{class:'badge warn'},'E-mail not delivered only'):null));
+  q.addEventListener('keydown',function(e){if(e.key==='Enter')apply()});
+  main.appendChild(bar);main.appendChild(list);
+  function fillTrips(){(state.trips?Promise.resolve({trips:state.trips}):api('GET','/trips')).then(function(d){state.trips=d.trips;d.trips.forEach(function(t){tripSel.appendChild(h('option',{value:t.id,selected:String(t.id)===String(f.trip)},t.name_en))})}).catch(function(){})}
+  fillTrips();
+  list.appendChild(h('p',{class:'muted'},'Loading…'));
+  var qs=['limit=50','offset='+f.offset];['q','status','trip','schedule','from','to','email'].forEach(function(k){if(f[k])qs.push(k+'='+encodeURIComponent(f[k]))});
+  api('GET','/bookings?'+qs.join('&')).then(function(d){
+    list.textContent='';
+    list.appendChild(h('p',{class:'muted'},d.total+' booking(s)'));
+    if(!d.bookings.length)return list.appendChild(h('div',{class:'card muted'},'No bookings match.'));
+    d.bookings.forEach(function(b){list.appendChild(bookingCard(b,function(){bookingsView(main)}))});
+    var pager=h('div',{class:'row'});
+    if(f.offset>0)pager.appendChild(h('button',{class:'btn sec sm',type:'button',on:{click:function(){state.filters.offset=Math.max(0,f.offset-50);bookingsView(main)}}},'← Newer'));
+    if(f.offset+d.bookings.length<d.total)pager.appendChild(h('button',{class:'btn sec sm',type:'button',on:{click:function(){state.filters.offset=f.offset+50;bookingsView(main)}}},'Older →'));
+    list.appendChild(pager);
+  }).catch(function(e){list.textContent='';list.appendChild(errBox(e))});
+}
+function bookingCard(b,reload){
+  var status=h('select',null,['pending','contacted','confirmed','cancelled'].map(function(s){return h('option',{value:s,selected:b.status===s},s)}));
+  var notes=h('textarea',{placeholder:'Private notes (not visible to the customer)'});notes.value=b.admin_notes||'';
+  var count=h('input',{type:'number',min:'1',max:'200',step:'1',value:b.participant_count,style:'max-width:110px'});
+  var err=h('div');
+  var save=h('button',{class:'btn sm',type:'button',on:{click:function(){
+    err.textContent='';save.disabled=true;
+    api('PUT','/bookings/'+b.id,{status:status.value,admin_notes:notes.value,participant_count:Number(count.value)}).then(function(){toast('Booking updated.');reload()}).catch(function(e){err.appendChild(errBox(e));save.disabled=false})}}},'Save');
+  var cancel=b.status!=='cancelled'?h('button',{class:'btn bad sm',type:'button',on:{click:function(){
+    if(confirm('Cancel this booking and free its seats?'))api('PUT','/bookings/'+b.id,{status:'cancelled'}).then(function(){toast('Booking cancelled.');reload()}).catch(function(e){err.appendChild(errBox(e))})}}},'Cancel booking'):null;
+  var resend=h('button',{class:'btn sec sm',type:'button',on:{click:function(){resend.disabled=true;
+    api('POST','/bookings/'+b.id+'/resend-email',{}).then(function(r){if(r.sent){toast('E-mail sent.');reload()}else{err.appendChild(errBox(new Error('E-mail not sent ('+r.reason+'). Check RESEND_API_KEY / BOOKING_NOTIFY_TO / BOOKING_FROM_EMAIL.')));resend.disabled=false}}).catch(function(e){err.appendChild(errBox(e));resend.disabled=false})}}},'Resend e-mail');
+  var del=h('button',{class:'btn bad sm',type:'button',on:{click:function(){
+    if(confirm('Delete this booking record permanently? (Use “Cancel booking” if you want to keep the record.)'))api('DELETE','/bookings/'+b.id).then(function(){toast('Booking deleted.');reload()}).catch(function(e){err.appendChild(errBox(e))})}}},'Delete');
+  var wa='https://api.whatsapp.com/send?phone='+String(b.contact_number).replace(/[^0-9]/g,'');
+  return h('div',{class:'card'},
+    h('div',{class:'row'},h('strong',null,b.customer_name),badge(b.status),b.email_sent?null:h('span',{class:'badge warn'},'e-mail not delivered'),h('span',{class:'muted'},'Received '+fmtDateTime(b.created_at))),
+    h('div',{class:'grid g2 mt'},
+      h('div',null,h('div',null,h('strong',null,b.trip_name)),h('div',null,'Trip date: ',fmtDate(b.preferred_date),b.departure_time?' '+b.departure_time:''),h('div',null,'Participants: ',b.participant_count),h('div',{class:'muted'},'Language: '+b.preferred_language+' · Ref: '+b.id)),
+      h('div',null,h('div',null,'Phone: ',h('a',{href:'tel:'+b.contact_number},b.contact_number),' · ',h('a',{href:wa,target:'_blank',rel:'noopener'},'WhatsApp')),h('div',null,'E-mail: ',b.email?h('a',{href:'mailto:'+b.email},b.email):'—'))),
+    b.special_requirements?h('p',null,h('strong',null,'Special requirements: '),b.special_requirements):null,
+    b.additional_notes?h('p',null,h('strong',null,'Notes from customer: '),b.additional_notes):null,
+    h('div',{class:'grid g3 mt'},field('Status',status),field('Participants',count,'Changing this checks seat capacity.')),
+    h('label',null,'Admin notes'),notes,
+    h('div',{class:'row mt'},save,cancel,resend,del),err);
+}
+
+/* ---------- account ---------- */
+function accountView(main){
+  main.textContent='';
+  var cur=h('input',{type:'password',autocomplete:'current-password'}),nw=h('input',{type:'password',autocomplete:'new-password'}),err=h('div');
+  var btn=h('button',{class:'btn',type:'button',on:{click:function(){err.textContent='';btn.disabled=true;
+    api('POST','/password',{current:cur.value,next:nw.value}).then(function(){toast('Password changed. Other sessions were logged out.');cur.value='';nw.value='';btn.disabled=false}).catch(function(e){err.appendChild(errBox(e));btn.disabled=false})}}},'Change password');
+  main.appendChild(h('h1',null,'Account'));
+  main.appendChild(h('div',{class:'card',style:'max-width:460px'},h('h2',null,'Change password'),field('Current password',cur),field('New password (min. 10 characters, letters and numbers)',nw),err,h('div',{class:'mt'},btn)));
+}
+
+boot();
+})();
+</script>
+</body>
+</html>
