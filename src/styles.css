@@ -386,10 +386,16 @@ a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 .experience-image.has-slider .trip-overlay{pointer-events:none}
 .experience-image.has-slider .experience-tag{z-index:2}
 
-/* Trip page: photo gallery block (whole photo visible, never cropped) */
-.trip-gallery{position:relative;aspect-ratio:3/2;max-height:560px;border-radius:12px;overflow:hidden;background:#0b2a3a}
+/* Trip page: the top picture is the slideshow. It is as tall as the photo needs (3:2), so the whole
+   photo shows; if a photo has another shape, the sides are filled with a blurred copy of it. */
 .slider-contain .slider-slide{position:relative;background:#0b2a3a}
 .slider-contain .slider-slide::before{content:'';position:absolute;inset:-24px;background:var(--bg) center/cover no-repeat;filter:blur(22px) brightness(.65);transform:scale(1.1)}
 .slider-contain .slider-slide img{position:relative;object-fit:contain}
-/* top picture of the trip page: keep faces in view */
+.image-hero.has-slider{width:100%;aspect-ratio:3/2;max-height:80vh;min-height:360px}
+.image-hero.has-slider:after{background:linear-gradient(to top,rgba(6,24,34,.78),rgba(6,24,34,0) 55%);pointer-events:none}
+.image-hero.has-slider .image-hero-content{pointer-events:none}
+.image-hero.has-slider .slider-btn{width:42px;height:42px}
+@media (hover:none){.image-hero.has-slider .slider-btn{width:36px;height:36px}}
+/* single-picture trips: keep faces in view */
 .group-hero>img{object-position:50% 30%}
+.image-hero.has-slider .eyebrow{color:#fff}
