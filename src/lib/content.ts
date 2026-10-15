@@ -131,3 +131,19 @@ export const groupTrips: GroupTrip[] = [
    inclusions:[bi('Transport from Muscat and the island crossing (sample)','النقل من مسقط وعبور الجزيرة (تجريبي)'),bi('Two nights’ accommodation','إقامة ليلتين'),bi('Meals mentioned in the itinerary','الوجبات المذكورة في البرنامج'),bi('Trip leader / local guide','قائد الرحلة / مرشد محلي')],
    exclusions:sampleExclusions, terms:sampleTerms},
 ];
+
+// Cancellation & refund policy: shown on every group trip page under the Notes section.
+export const cancellationPolicy = {
+  title: bi('Cancellation Policy','سياسة الإلغاء'),
+  items: [
+    bi('In case of booking cancellation, the refund and cancellation terms set out below apply.','في حال إلغاء الحجز، تُطبَّق شروط الاسترداد والإلغاء الموضحة أدناه.'),
+    bi('A deposit of OMR 150 is paid to confirm the booking and is non-refundable.','يُدفع عربون بقيمة 150 ريالًا لتأكيد الحجز، وهو غير قابل للاسترداد.'),
+    bi('Cancellation requests must be submitted in writing via Earth Adventure’s WhatsApp, and a cancellation is only valid once confirmed by the company.','يجب تقديم طلبات الإلغاء كتابيًا عبر واتساب شركة Earth Adventure، ولا يُعتمد الإلغاء إلا بعد تأكيد الشركة.'),
+    bi('If you cancel 30 days or more before the trip date, Earth Adventure refunds 50% of the amount paid, excluding the deposit.','في حال الإلغاء قبل موعد الرحلة بـ30 يومًا أو أكثر، تسترد شركة Earth Adventure للعميل 50% من المبلغ المدفوع، باستثناء العربون.'),
+    bi('If you cancel 29 days or less before the trip date, Earth Adventure retains 100% of the amount paid as a cancellation fee. Alternatively, the customer may provide a replacement person to take their place, subject to the company’s approval and the necessary requirements being met.','في حال الإلغاء قبل موعد الرحلة بـ29 يومًا أو أقل، تحتفظ شركة Earth Adventure بنسبة 100% من المبلغ المدفوع كرسوم إلغاء. ويجوز للعميل، بدلًا من ذلك، توفير شخص بديل يحل محله، وذلك بعد موافقة الشركة واستيفاء المتطلبات اللازمة.'),
+    bi('If you do not arrive at the meeting point or departure location on time, Earth Adventure retains 100% of the amount paid, and the customer is not entitled to claim any refund.','في حال عدم الحضور إلى نقطة التجمع أو موقع المغادرة في الوقت المحدد، تحتفظ شركة Earth Adventure بنسبة 100% من المبلغ المدفوع، ولا يحق للعميل المطالبة بأي استرداد.'),
+    bi('No refund is given for any unused service once the trip or tour has started.','لا تُسترد قيمة أي خدمة غير مستخدمة بعد بدء الرحلة أو الجولة.'),
+    bi('Failure to pay instalments according to the agreed payment schedule may result in cancellation of the booking, with Earth Adventure retaining the non-refundable amounts in accordance with the approved cancellation terms.','قد يؤدي عدم سداد الدفعات وفق جدول الدفع المتفق عليه إلى إلغاء الحجز، مع احتفاظ شركة Earth Adventure بالمبالغ غير القابلة للاسترداد وفقًا لشروط الإلغاء المعتمدة.'),
+  ] as Bilingual[],
+  note: bi('Earth Adventure’s cancellation and refund policy is subject to applicable laws and regulations and relevant consumer protection requirements.','تخضع سياسة الإلغاء والاسترداد لدى شركة Earth Adventure للقوانين واللوائح المعمول بها ومتطلبات حماية المستهلك ذات الصلة.'),
+};

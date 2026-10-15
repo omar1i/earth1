@@ -1,6 +1,6 @@
 import { createFileRoute, notFound, Link } from '@tanstack/react-router';
 import { ArrowUpRight, CalendarDays, Clock, MapPin, Tag, Users } from 'lucide-react';
-import { pageHead, bi } from '@/lib/content';
+import { pageHead, bi, cancellationPolicy } from '@/lib/content';
 import { loadCatalog } from '@/lib/catalog.functions';
 import { useCatalog } from '@/lib/catalog-context';
 import { useLanguage, headLang } from '@/lib/language';
@@ -38,7 +38,7 @@ function GroupTripDetail() {
   const lists = [
     [t('What’s included', 'ما يشمله السعر'), trip.inclusions],
     [t('What’s not included', 'ما لا يشمله السعر'), trip.exclusions],
-    [t('Terms & Conditions', 'الشروط والأحكام'), trip.terms],
+    [t('Notes', 'ملاحظات'), trip.terms],
   ] as const;
 
   return (
@@ -94,6 +94,11 @@ function GroupTripDetail() {
                   <ul>{items.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
                 </div>
               ))}
+              <div className="detail-section">
+                <h2>{cancellationPolicy.title[lang]}</h2>
+                <ul className="policy-list">{cancellationPolicy.items.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
+                <p className="policy-note">{cancellationPolicy.note[lang]}</p>
+              </div>
               <div className="detail-section">
                 <h2>{t('How to join', 'طريقة الانضمام')}</h2>
                 <p>{t('Press Book Now to send your booking request and reserve your seat. Payment and trip details are agreed directly with our team.', 'اضغط احجز الآن لإرسال طلب الحجز وحجز مقعدك. يتم الاتفاق على الدفع وتفاصيل الرحلة مباشرة مع فريقنا.')}</p>

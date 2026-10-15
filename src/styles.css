@@ -399,3 +399,6 @@ a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 /* single-picture trips: keep faces in view */
 .group-hero>img{object-position:50% 30%}
 .image-hero.has-slider .eyebrow{color:#fff}
+.detail-section ul.policy-list{list-style:disc}
+.detail-section .policy-list li::marker{color:var(--primary)}
+.policy-note{margin-top:18px;font-size:15px;color:var(--muted-foreground)}
