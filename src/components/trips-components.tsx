@@ -131,7 +131,7 @@ export function GroupTripsSection({ trips }: { trips?: GroupTrip[] } = {}) {
 export function ContactTripLink({ message, label }: { message: string; label: string }) {
   return (
     <Button asChild size="lg">
-      <a href={`${whatsapp}?text=${encodeURIComponent(message)}`} target="_blank" rel="noreferrer">
+      <a href={`${whatsapp}&text=${encodeURIComponent(message)}`} target="_blank" rel="noreferrer">
         <MessageCircle size={17} />
         {label}
         <ArrowUpRight size={17} />

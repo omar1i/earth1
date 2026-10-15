@@ -53,7 +53,7 @@ describe("notifyBooking (Resend)", () => {
     expect(String(call.body["subject"])).toContain("Sea Fishing Adventure");
     const text = String(call.body["text"]);
     expect(text).toContain("Test Visitor");
-    expect(text).toContain("https://wa.me/96800000000");
+    expect(text).toContain("https://api.whatsapp.com/send?phone=96800000000");
     expect(text).toContain(booking.submission_key);
     expect(text).toContain("ACTION NEEDED"); // customer e-mail was skipped
   });

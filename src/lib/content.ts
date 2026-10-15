@@ -6,7 +6,7 @@ import type { Bilingual, Language } from './language';
 export const images = {coast, camping, wadi};
 // Pictures that ship with the site. The database refers to them as asset:<name>; trips can also use an uploaded image or any https URL.
 export const assetImages: Record<string,string> = {coast, camping, wadi, mountains};
-export const whatsapp = 'https://wa.me/96891915594';
+export const whatsapp = 'https://api.whatsapp.com/send?phone=96891915594';
 export const instagram = 'https://www.instagram.com/earthadventure_/';
 export const bi = (en: string, ar: string): Bilingual => ({en, ar});
 export const categories = [
@@ -74,7 +74,7 @@ export const privateDestinations: PrivateDestination[] = [
   {id:'masirah-island', name:bi('Masirah Island','جزيرة مصيرة'), image:coast, description:bi('Long empty beaches, clear water and an easy island pace. Plan time for fishing, beach camping and watching the coast from the sea.','شواطئ طويلة هادئة ومياه صافية وإيقاع جزيرة مريح. خطط لوقت للصيد والتخييم على الشاطئ ومشاهدة الساحل من البحر.')},
   {id:'salalah', name:bi('Salalah','صلالة'), image:camping, description:bi('Green hills, coastal scenery and a very different side of Oman, especially in the khareef season. Explore the coast and valleys at your own pace.','تلال خضراء ومناظر ساحلية وجانب مختلف تمامًا من عُمان، خصوصًا في موسم الخريف. استكشف الساحل والأودية بالوتيرة التي تناسبك.')},
 ];
-export const privateTripWhatsapp=(name:string)=>`${whatsapp}?text=${encodeURIComponent('Hello! I would like to plan a private trip to '+name+'.')}`;
+export const privateTripWhatsapp=(name:string)=>`${whatsapp}&text=${encodeURIComponent('Hello! I would like to plan a private trip to '+name+'.')}`;
 
 export type GroupTrip = {
   id:string; name:Bilingual; description:Bilingual; image:string;

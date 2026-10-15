@@ -117,7 +117,7 @@ function buildOwnerMail(
     "",
     `Name: ${clean(booking.customer_name, 100)}`,
     `Phone: ${phone}`,
-    ...(digits ? [`WhatsApp: https://wa.me/${digits}`] : []),
+    ...(digits ? [`WhatsApp: https://api.whatsapp.com/send?phone=${digits}`] : []),
     `Email: ${email || "(not provided)"}`,
     `Preferred language: ${booking.preferred_language === "ar" ? "Arabic" : "English"}`,
     "",
