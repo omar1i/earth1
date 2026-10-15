@@ -1,17 +1,39 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useRouter } from '@tanstack/react-router';
 export type Language = 'en' | 'ar';
 export type Bilingual = { en: string; ar: string };
+
+// Load a language's fonts before showing it, so the text never flashes in a fallback font the first
+// time a visitor switches language (the other language's fonts are also fetched while the browser is idle).
+const fontsFor = (l: Language): [string, string][] =>
+  l === 'ar' ? [['1em Cairo', '\u0627'], ['1em Cairo', 'A']] : [['1em "DM Sans"', 'A'], ['1em Manrope', 'A']];
+function warmFonts(l: Language): Promise<unknown> {
+  const fonts = typeof document !== 'undefined' ? document.fonts : undefined;
+  if (!fonts) return Promise.resolve();
+  return Promise.all(fontsFor(l).map(([face, text]) => fonts.load(face, text))).catch(() => undefined);
+}
 const LanguageContext = createContext<{lang: Language; setLang: (l: Language) => void; t: (en: string, ar: string) => string}>({lang: 'en', setLang: () => {}, t: en => en});
 export function LanguageProvider({children, initial = 'en'}: {children: ReactNode; initial?: Language}) {
  const [lang, setLangState] = useState<Language>(initial);
  const router = useRouter();
- const setLang = (l: Language) => {
+ const apply = (l: Language) => {
   document.cookie = `earth-language=${l}; path=/; max-age=31536000; SameSite=Lax`;
   document.documentElement.lang = l; document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
   setLangState(l);
   void router.invalidate(); // re-run head() so titles and descriptions follow the language
  };
+ // Wait (at most 0.7 s) for the new language's fonts; instant when they are already loaded.
+ const setLang = (l: Language) => {
+  void Promise.race([warmFonts(l), new Promise((resolve) => setTimeout(resolve, 700))]).then(() => apply(l));
+ };
+ useEffect(() => {
+  const other: Language = lang === 'ar' ? 'en' : 'ar';
+  const run = () => { void warmFonts(other); };
+  const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+  if (w.requestIdleCallback) { w.requestIdleCallback(run, { timeout: 4000 }); return; }
+  const id = setTimeout(run, 2500);
+  return () => clearTimeout(id);
+ }, [lang]);
  return <LanguageContext.Provider value={{lang, setLang, t: (en, ar) => lang === 'ar' ? ar : en}}>{children}</LanguageContext.Provider>;
 }
 export const useLanguage = () => useContext(LanguageContext);
