@@ -1,7 +1,7 @@
-import coast from '@/assets/oman-coast.jpg';
-import camping from '@/assets/oman-camping.jpg';
-import wadi from '@/assets/oman-wadi.jpg';
-import mountains from '@/assets/oman-mountains.jpg';
+import coast from '@/assets/oman-coast.webp';
+import camping from '@/assets/oman-camping.webp';
+import wadi from '@/assets/oman-wadi.webp';
+import mountains from '@/assets/oman-mountains.webp';
 import type { Bilingual, Language } from './language';
 export const images = {coast, camping, wadi};
 // Pictures that ship with the site. The database refers to them as asset:<name>; trips can also use an uploaded image or any https URL.
