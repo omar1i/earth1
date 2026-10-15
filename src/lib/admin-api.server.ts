@@ -411,17 +411,31 @@ const uploadImage: Handler = async ({ db, request }) => {
   return json({ url: `/api/images/${id}` }, 201);
 };
 
+type EdgeCache = { match(r: Request): Promise<Response | undefined>; put(r: Request, res: Response): Promise<void> };
 async function serveImage(id: string): Promise<Response> {
+  if (!/^[a-f0-9]{16,64}$/.test(id)) return new Response('Not found', { status: 404 });
+  // Edge cache: after the first visitor, the picture is served from Cloudflare's cache instead of D1.
+  // (Cloudflare only caches on a custom domain; on *.workers.dev these calls simply do nothing.)
+  const cache = (globalThis as unknown as { caches?: { default?: EdgeCache } }).caches?.default;
+  const cacheKey = new Request(`https://images.cache.invalid/${id}`);
+  try {
+    const hit = await cache?.match(cacheKey);
+    if (hit) return hit;
+  } catch { /* fall through to D1 */ }
   const db = await getDb();
-  if (!db || !/^[a-f0-9]{16,64}$/.test(id)) return new Response('Not found', { status: 404 });
+  if (!db) return new Response('Not found', { status: 404 });
   const row = await db.prepare('SELECT mime, data_base64 FROM images WHERE id = ?1').bind(id).first<{ mime: string; data_base64: string }>();
   if (!row) return new Response('Not found', { status: 404 });
   const bin = atob(row.data_base64);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return new Response(bytes, {
+  const response = new Response(bytes, {
     headers: { 'content-type': row.mime, 'cache-control': 'public, max-age=31536000, immutable', 'x-content-type-options': 'nosniff', 'content-security-policy': "default-src 'none'; sandbox" },
   });
+  try {
+    await cache?.put(cacheKey, response.clone());
+  } catch { /* caching is optional */ }
+  return response;
 }
 
 // --- account --------------------------------------------------------------------------------------

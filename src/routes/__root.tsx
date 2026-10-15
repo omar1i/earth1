@@ -9,6 +9,16 @@ import {
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import dmSansLatin from "@/assets/fonts/dm-sans-latin-wght-normal.woff2?url";
+import manropeLatin from "@/assets/fonts/manrope-latin-wght-normal.woff2?url";
+import cairoArabic from "@/assets/fonts/cairo-arabic-wght-normal.woff2?url";
+import cairoLatin from "@/assets/fonts/cairo-latin-wght-normal.woff2?url";
+
+// Preload only the fonts the first screen needs (headings and body in the visitor's language).
+const fontPreloads = (lang?: string) =>
+  (lang === "ar" ? [cairoArabic, cairoLatin] : [dmSansLatin, manropeLatin]).map((href) => ({
+    rel: "preload", href, as: "font", type: "font/woff2", crossOrigin: "anonymous" as const,
+  }));
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -81,7 +91,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -95,9 +105,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400..700&family=Manrope:wght@400..800&family=Noto+Sans+Arabic:wght@400..700&display=swap" },
+      ...fontPreloads(loaderData?.lang),
     ],
   }),
   // Trips, prices, images and departures come from the D1 database (built-in content if D1 is not connected).
