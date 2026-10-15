@@ -356,7 +356,7 @@ const resendEmail: Handler = async ({ db, params }) => {
     terms_accepted: true,
   };
   const { notifyBooking } = await import('./booking-notify.server');
-  const result = await notifyBooking(input, { tripName: String(b['trip_name']), env: await getRuntimeEnv() });
+  const result = await notifyBooking(input, { tripName: String(b['trip_name']), env: await getRuntimeEnv(), fresh: true });
   if (!result.sent) return json({ sent: false, reason: result.reason }, 200);
   await db.prepare('UPDATE bookings SET email_sent = 1 WHERE id = ?1').bind(params[0]).run();
   return json({ sent: true });

@@ -7,7 +7,7 @@ ALREADY DONE IN THE FILES (you do not need to do these)
   - migrations/0001_init.sql (tables, seat-capacity rules) and migrations/0002_seed_existing_content.sql
     (your current trips copied into the database).
   - Public pages read trips/prices/images/departures from D1. Booking form saves to D1 and keeps the
-    existing e-mail (Google Apps Script) notification. Admin dashboard at  /admin.
+    e-mail notification through Resend. Admin dashboard at  /admin.
 
 WHAT YOU MUST DO MANUALLY
 -------------------------
@@ -31,8 +31,12 @@ Run steps 1-2 on your computer in the project folder (needs Node.js; log in to C
 3) Check the e-mail secrets. The booking e-mail needs these two secrets on the Worker. If they were
    already set before, leave them as they are. If not, add them (values come from integrations/google-apps-script/SETUP.md):
 
-       npx wrangler secret put BOOKING_WEBHOOK_URL --name earth1
-       npx wrangler secret put BOOKING_WEBHOOK_SECRET --name earth1
+       npx wrangler secret put RESEND_API_KEY --name earth1
+       npx wrangler secret put BOOKING_NOTIFY_TO --name earth1
+       (optional) npx wrangler secret put BOOKING_FROM_EMAIL --name earth1
+       (optional) npx wrangler secret put BANK_DETAILS --name earth1
+       In the dashboard (Settings > Variables and secrets) add them with type SECRET so a later
+       deploy never wipes them.
 
    Without them bookings are still saved in the database and shown in the dashboard, but no e-mail is sent
    (the dashboard marks such bookings "e-mail not delivered" and has a "Resend e-mail" button).
@@ -62,6 +66,6 @@ IF YOU FORGET THE ADMIN PASSWORD
 
 NOT VERIFIED (I could not run a build or Cloudflare in my environment - please check after deploying)
   - That the production build succeeds and picks up wrangler.jsonc (steps 5 note above).
-  - The e-mail flow against your real Apps Script (code unchanged; only the trip name is now read from D1).
+  - The e-mail flow against your real Resend account.
   - src/routeTree.gen.ts is unchanged (no new pages were added; /admin is served by the Worker itself).
   - Run "npm test" once; the booking tests use Node's built-in SQLite (Node 22+).

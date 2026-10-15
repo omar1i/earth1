@@ -2,7 +2,7 @@
 
 Bilingual (English / Arabic, RTL) adventure-tourism site. Stack: TanStack Start (React 19, SSR),
 TypeScript, Tailwind v4. Trips, prices, images, departures and bookings live in a Cloudflare D1 database managed from `/admin`;
-booking notifications are e-mailed through a Google Apps Script. See `DEPLOY.txt` to set it up.
+booking notifications are e-mailed through Resend. See `DEPLOY.txt` to set it up.
 
 ## Run it
 
@@ -18,8 +18,10 @@ them in the host's environment-variable settings. Never commit secrets.
 
 | Variable | Needed | What for |
 |---|---|---|
-| `BOOKING_WEBHOOK_URL` | **Yes** | Apps Script web-app URL that emails each booking to you |
-| `BOOKING_WEBHOOK_SECRET` | **Yes** | Shared secret, same value as the script's `WEBHOOK_SECRET` |
+| `RESEND_API_KEY` | **Yes** | Resend API key (secret) used to e-mail each booking |
+| `BOOKING_NOTIFY_TO` | **Yes** | Your e-mail address(es) that receive each booking (comma-separated) |
+| `BOOKING_FROM_EMAIL` | No | Sender, e.g. `Earth Adventure <bookings@yourdomain.com>` (needs a domain verified in Resend). Default: `onboarding@resend.dev` (test sender) |
+| `BANK_DETAILS` | No | If set, customers who gave an e-mail get the bank transfer details automatically. Use ` | ` where a new line should start |
 | `ADMIN_SETUP_TOKEN` | **Yes (once)** | Lets you create the first administrator at `/admin` |
 | D1 binding `DB` | **Yes** | Configured in `wrangler.jsonc` (database `earth-adventure`) |
 | `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | No | No longer used by bookings (D1 replaced the optional Supabase backup) |
@@ -30,7 +32,7 @@ them in the host's environment-variable settings. Never commit secrets.
 1. The visitor fills in `/book` and accepts the Terms & Conditions.
 2. The server validates it, saves it in D1 (seat capacity is enforced by the database, so a departure can
    never be overbooked; a retry reuses the same reference and cannot create a duplicate), then sends the
-   existing Apps Script e-mail. If the e-mail fails the booking is still saved and flagged in the dashboard,
+   Resend e-mail. If the e-mail fails the booking is still saved and flagged in the dashboard,
    where you can press "Resend e-mail".
 3. If no D1 database is connected, the site falls back to the old e-mail-only behaviour.
 
@@ -48,7 +50,7 @@ the source of `migrations/0002_seed_existing_content.sql`. Do not edit trips in 
       (marked `SAMPLE` in `content.ts`). Replace them with real trips or delete them.
 - [ ] **Legal:** have Terms & Conditions and Privacy Policy reviewed. They intentionally no longer
       show "draft" notes. No cancellation/refund policy is defined yet; add yours.
-- [ ] **Apps Script:** created, deployed, secret set, `BANK_DETAILS` set if you want the automatic
+- [ ] **Resend:** `RESEND_API_KEY` and `BOOKING_NOTIFY_TO` set, `BOOKING_FROM_EMAIL` set (verified domain), `BANK_DETAILS` set if you want the automatic
       customer email. Send one test booking in English and one in Arabic.
 - [ ] **"Within minutes" promise:** the site tells customers bank details arrive within minutes. That
       is only automatic when the customer typed an email and `BANK_DETAILS` is set; otherwise your

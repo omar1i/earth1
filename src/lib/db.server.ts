@@ -56,7 +56,7 @@ export async function getSecret(name: string): Promise<string | undefined> {
 
 /** Every variable the email notifier needs, in the shape booking-notify.server.ts expects. */
 export async function getRuntimeEnv(): Promise<Record<string, string | undefined>> {
-  const names = ["BOOKING_WEBHOOK_URL", "BOOKING_WEBHOOK_SECRET"];
+  const names = ["RESEND_API_KEY", "BOOKING_NOTIFY_TO", "BOOKING_FROM_EMAIL", "BANK_DETAILS"];
   const out: Record<string, string | undefined> = {};
   for (const n of names) out[n] = await getSecret(n);
   return out;

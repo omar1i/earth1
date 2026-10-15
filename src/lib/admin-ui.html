@@ -385,7 +385,7 @@ function bookingCard(b,reload){
   var cancel=b.status!=='cancelled'?h('button',{class:'btn bad sm',type:'button',on:{click:function(){
     if(confirm('Cancel this booking and free its seats?'))api('PUT','/bookings/'+b.id,{status:'cancelled'}).then(function(){toast('Booking cancelled.');reload()}).catch(function(e){err.appendChild(errBox(e))})}}},'Cancel booking'):null;
   var resend=h('button',{class:'btn sec sm',type:'button',on:{click:function(){resend.disabled=true;
-    api('POST','/bookings/'+b.id+'/resend-email',{}).then(function(r){if(r.sent){toast('E-mail sent.');reload()}else{err.appendChild(errBox(new Error('E-mail not sent ('+r.reason+'). Check BOOKING_WEBHOOK_URL / BOOKING_WEBHOOK_SECRET.')));resend.disabled=false}}).catch(function(e){err.appendChild(errBox(e));resend.disabled=false})}}},'Resend e-mail');
+    api('POST','/bookings/'+b.id+'/resend-email',{}).then(function(r){if(r.sent){toast('E-mail sent.');reload()}else{err.appendChild(errBox(new Error('E-mail not sent ('+r.reason+'). Check RESEND_API_KEY / BOOKING_NOTIFY_TO / BOOKING_FROM_EMAIL.')));resend.disabled=false}}).catch(function(e){err.appendChild(errBox(e));resend.disabled=false})}}},'Resend e-mail');
   var del=h('button',{class:'btn bad sm',type:'button',on:{click:function(){
     if(confirm('Delete this booking record permanently? (Use “Cancel booking” if you want to keep the record.)'))api('DELETE','/bookings/'+b.id).then(function(){toast('Booking deleted.');reload()}).catch(function(e){err.appendChild(errBox(e))})}}},'Delete');
   var wa='https://wa.me/'+String(b.contact_number).replace(/[^0-9]/g,'');
