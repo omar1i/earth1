@@ -117,7 +117,7 @@ export function GroupTripsSection({ trips }: { trips?: GroupTrip[] } = {}) {
     <section className="trip-part trip-part-group" aria-labelledby="group-trips-title">
       <div className="trip-part-head trip-part-head-main">
         <h3 id="group-trips-title">{t('Group Trips', 'الرحلات الجماعية')}</h3>
-        <p>{t('Trips we announce on set dates. Pick one, read the full details and join the group.', 'رحلات نعلن عنها في مواعيد محددة. اختر رحلة واطلع على كل التفاصيل وانضم إلى المجموعة.')}</p>
+        <p>{t('Organized trips where you travel with a group of people to discover new destinations, enjoy a variety of experiences and activities, and meet people from different countries and cultures, united by a love of travel and a spirit of adventure.', 'رحلات منظمة تسافر فيها مع مجموعة من الأشخاص لاكتشاف وجهات جديدة، والاستمتاع بتجارب وأنشطة متنوعة، والتعرّف على أشخاص من دول وثقافات مختلفة يجمعكم حب السفر وروح المغامرة.')}</p>
       </div>
       <div className="experience-grid">
         {groupTrips.map((trip) => (
