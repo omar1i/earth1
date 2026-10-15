@@ -65,7 +65,7 @@ export function pageHead(lang: Language, title: Bilingual, description: Bilingua
 // ---------------------------------------------------------------------------------------------
 export const privateTripsIntro = {
   title: bi('Private Trips','الرحلات الخاصة'),
-  text: bi('Travel on your own or with friends, in a private group of up to 12 people. We design the trip around your interests and the places you want to see.','سافر وحدك أو مع أصدقائك في مجموعة خاصة تصل إلى 12 شخصًا. نصمم الرحلة حسب اهتماماتك والأماكن التي تحب زيارتها.'),
+  text: bi('Trips designed around your wishes and interests, whether you want to travel with family or friends, or plan a personal experience. You choose the destination, the activities and the kind of experience that suits you, and we arrange a travel programme that fits your needs and lets you enjoy your trip your own way.','رحلات تُصمَّم حسب رغبتك واهتماماتك، سواء كنت تبي تسافر مع الأهل أو الأصدقاء أو تخطط لتجربة خاصة. تختار الوجهة والأنشطة ونوع التجربة اللي تناسبك، ونرتب لك برنامج سفر يناسب احتياجاتك ويخليك تستمتع برحلتك على طريقتك.'),
 };
 export type PrivateDestination = {id:string; name:Bilingual; description:Bilingual; image:string};
 export const privateDestinations: PrivateDestination[] = [
