@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { bookingSchema, muscatToday } from '@/lib/booking-schema';
-const input={submission_key:'55c1ad41-1b0e-4b1c-a513-7246ad52f3fb',experience_id:'sea-fishing',customer_name:'Test Visitor',contact_number:'+96800000000',email:'',preferred_date:muscatToday(),participant_count:2,preferred_language:'en',terms_accepted:true};
+const input={submission_key:'55c1ad41-1b0e-4b1c-a513-7246ad52f3fb',experience_id:'sea-fishing',customer_name:'Test Visitor',contact_number:'+96800000000',email:'visitor@example.com',preferred_date:muscatToday(),participant_count:2,preferred_language:'en',terms_accepted:true};
 describe('Booking inquiry validation',()=>{
  it('accepts a valid inquiry',()=>expect(bookingSchema.safeParse(input).success).toBe(true));
+ it.each(['','   ','not-an-email','a@b'])('requires a valid email (%j)',email=>expect(bookingSchema.safeParse({...input,email}).success).toBe(false));
+ it('rejects a missing email',()=>{const{email:_e,...rest}=input;expect(bookingSchema.safeParse(rest).success).toBe(false);});
  it.each([0,-1,1.5,201])('rejects participant count %s',count=>expect(bookingSchema.safeParse({...input,participant_count:count}).success).toBe(false));
  it('rejects past dates',()=>expect(bookingSchema.safeParse({...input,preferred_date:'2000-01-01'}).success).toBe(false));
  it('rejects impossible dates',()=>expect(bookingSchema.safeParse({...input,preferred_date:'2030-02-30'}).success).toBe(false));

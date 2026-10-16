@@ -9,7 +9,7 @@ export const bookingSchema=z.object({
  schedule_id:z.number().int().positive().optional(),
  customer_name:z.string().trim().min(2).max(100),
  contact_number:z.string().trim().regex(/^\+[0-9 ()-]{7,24}$/),
- email:z.union([z.string().trim().email().max(255),z.literal('')]).optional(),
+ email:z.string().trim().email().max(255),
  preferred_date:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(d=>!Number.isNaN(Date.parse(d))&&new Date(d).toISOString().slice(0,10)===d&&d>=muscatToday()),
  participant_count:z.number().int().min(1).max(200),
  preferred_language:z.enum(['en','ar']),
