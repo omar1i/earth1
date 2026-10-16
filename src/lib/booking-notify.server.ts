@@ -7,6 +7,7 @@
 import { experiences, groupTrips, privateDestinations } from "./content";
 import type { BookingInput } from "./booking-schema";
 import { getRuntimeEnv } from "./db.server";
+import { DEFAULT_SITE_URL, renderCustomerEmail, renderOwnerEmail, type EmailData } from "./booking-email-template";
 
 const RESEND_URL = "https://api.resend.com/emails";
 const REQUEST_TIMEOUT_MS = 8000;
@@ -29,7 +30,7 @@ type NotifyOptions = {
   fresh?: boolean;
 };
 
-type Mail = { to: string[]; subject: string; text: string; replyTo?: string };
+type Mail = { to: string[]; subject: string; text: string; html?: string; replyTo?: string };
 type Attempt = NotifyResult & { retryable?: boolean };
 
 // Coerce to text, cap the length, and (unless multiline is allowed) remove line breaks so a
@@ -159,6 +160,7 @@ async function attempt(
         to: mail.to,
         subject: mail.subject,
         text: mail.text,
+        ...(mail.html ? { html: mail.html } : {}),
         ...(mail.replyTo ? { reply_to: mail.replyTo } : {}),
       }),
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
@@ -213,13 +215,26 @@ export async function notifyBooking(
   const trip = tripNameOf(booking, options);
   const departure = clean(options.departure ?? "", 80);
   const retryDelay = options.retryDelayMs ?? RETRY_DELAY_MS;
+  const siteUrl = (env["SITE_URL"] ?? "").trim() || DEFAULT_SITE_URL;
+  const emailData: EmailData = {
+    ref: booking.submission_key, name: clean(booking.customer_name, 100), phone: clean(booking.contact_number, 40),
+    email: clean(booking.email, 255), date: clean(booking.preferred_date, 20), people: clean(booking.participant_count, 6),
+    language: booking.preferred_language === "ar" ? "ar" : "en", trip, departure,
+    requirements: clean(booking.special_requirements, 2000, true), notes: clean(booking.additional_notes, 2000, true),
+    termsAccepted: booking.terms_accepted === true, submittedAt: new Date().toISOString().slice(0, 16).replace("T", " "),
+  };
 
   // Customer e-mail first (best effort, one attempt), so the owner's e-mail can say what happened.
   // A customer-mail problem must never stop the owner's e-mail from being sent.
   let customer: "sent" | "skipped" | "failed" = "skipped";
   const customerAddress = clean(booking.email, 255);
   if (bankDetails && EMAIL_RE.test(customerAddress)) {
-    const mail = buildCustomerMail(booking, trip, bankDetails, departure);
+    const mail = {
+      ...buildCustomerMail(booking, trip, bankDetails, departure),
+      html: renderCustomerEmail(emailData, bankDetails, { siteUrl }),
+      // The customer's "reply" reaches the business, not the sender address.
+      ...(to[0] ? { replyTo: to[0] } : {}),
+    };
     const r = await attempt(mail, from, apiKey, `customer-${booking.submission_key}`, fetchImpl);
     customer = r.sent ? "sent" : "failed";
     if (!r.sent) {
@@ -227,7 +242,10 @@ export async function notifyBooking(
     }
   }
 
-  const ownerMail = buildOwnerMail(booking, trip, departure, to, customer);
+  const ownerMail = {
+    ...buildOwnerMail(booking, trip, departure, to, customer),
+    html: renderOwnerEmail(emailData, customer, { siteUrl }),
+  };
   const ownerKey = `owner-${booking.submission_key}${options.fresh ? `-${Date.now()}` : ""}`;
   let result = await attempt(ownerMail, from, apiKey, ownerKey, fetchImpl);
 
