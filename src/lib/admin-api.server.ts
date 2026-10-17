@@ -7,6 +7,8 @@ import { getDb, getRuntimeEnv, getSecret, type D1Like } from './db.server';
 import type { BookingInput } from './booking-schema';
 import { SITE_IMAGE_KEYS, GALLERY_MAX } from './site-images';
 import { readSiteImagesWith, writeSiteImage } from './site-images.server';
+import { GALLERY_CATEGORY_IDS, GALLERY_DEFAULTS, GALLERY_PAGE_MAX } from './gallery-defaults';
+import { readGalleryWith, writeGallery } from './gallery.server';
 
 const SECURITY_HEADERS = {
   'Cache-Control': 'no-store',
@@ -419,6 +421,28 @@ const siteImageSchema = z.object({
   key: z.enum(SITE_IMAGE_KEYS),
   value: z.union([z.null(), z.string().trim().max(500), z.array(galleryRef).max(GALLERY_MAX, `You can add up to ${GALLERY_MAX} photos.`)]),
 });
+// --- Gallery page photos --------------------------------------------------------------------------
+const getGalleryAdmin: Handler = async ({ db }) => {
+  const rows = await readGalleryWith(db);
+  return json({ photos: rows.length ? rows : GALLERY_DEFAULTS, isDefault: rows.length === 0 });
+};
+const galleryPageSchema = z.object({
+  photos: z
+    .array(
+      z.object({
+        image: galleryRef,
+        title_en: z.string().trim().max(120, 'Titles can have up to 120 characters.'),
+        title_ar: z.string().trim().max(120, 'Titles can have up to 120 characters.'),
+        category: z.enum(GALLERY_CATEGORY_IDS).nullish().transform((v) => v ?? null),
+      }),
+    )
+    .max(GALLERY_PAGE_MAX, `The gallery can have up to ${GALLERY_PAGE_MAX} photos.`),
+});
+const putGalleryAdmin: Handler = async ({ db, request }) => {
+  const v = parse(galleryPageSchema, await readJson(request));
+  await writeGallery(db, v.photos);
+  return json({ ok: true });
+};
 const putSiteImage: Handler = async ({ db, request }) => {
   const v = parse(siteImageSchema, await readJson(request));
   if (v.key === 'gallery') {
@@ -491,6 +515,8 @@ const routes: { method: string; pattern: RegExp; handler: Handler }[] = [
   { method: 'POST', pattern: /^\/api\/admin\/images$/, handler: uploadImage },
   { method: 'GET', pattern: /^\/api\/admin\/site-images$/, handler: getSiteImagesAdmin },
   { method: 'PUT', pattern: /^\/api\/admin\/site-images$/, handler: putSiteImage },
+  { method: 'GET', pattern: /^\/api\/admin\/gallery$/, handler: getGalleryAdmin },
+  { method: 'PUT', pattern: /^\/api\/admin\/gallery$/, handler: putGalleryAdmin },
   { method: 'POST', pattern: /^\/api\/admin\/password$/, handler: changePassword },
 ];
 

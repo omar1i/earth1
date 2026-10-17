@@ -126,11 +126,11 @@ function logout(){api('POST','/logout',{}).finally(boot)}
 
 /* ---------- shell ---------- */
 function renderShell(){
-  var views=[['dashboard','Overview'],['trips','Trips'],['bookings','Bookings'],['about','About page'],['account','Account']];
+  var views=[['dashboard','Overview'],['trips','Trips'],['bookings','Bookings'],['about','About page'],['gallery','Gallery page'],['account','Account']];
   var nav=h('nav',null,views.map(function(v){return h('button',{type:'button','aria-current':state.view===v[0]||(v[0]==='trips'&&state.view==='trip'),on:{click:function(){go(v[0])}}},v[1])}));
   var main=h('div',{class:'wrap',id:'main'});
   show(h('div',null,h('header',{class:'top'},h('div',{class:'wrap'},h('strong',null,'Earth Adventure admin'),nav,h('span',{class:'sp'}),h('a',{href:'/',target:'_blank',rel:'noopener',style:'color:#fff'},'View website'),h('span',{class:'who'},state.session.username),h('button',{class:'btn sec sm',type:'button',on:{click:logout}},'Log out'))),main));
-  ({dashboard:dashboardView,trips:tripsView,trip:tripView,bookings:bookingsView,about:aboutView,account:accountView})[state.view](main);
+  ({dashboard:dashboardView,trips:tripsView,trip:tripView,bookings:bookingsView,about:aboutView,gallery:galleryAdminView,account:accountView})[state.view](main);
 }
 function go(view,extra){state.view=view;if(extra)Object.keys(extra).forEach(function(k){state[k]=extra[k]});renderShell()}
 function loading(main){main.textContent='';main.appendChild(h('p',{class:'muted'},'Loading…'))}
@@ -311,6 +311,59 @@ function aboutView(main){
         .catch(function(e){btn.disabled=false;msg.appendChild(errBox(e))});
     }}},'Save pictures');
     main.appendChild(h('div',{class:'mt'},btn,msg,h('p',{class:'hint'},'Visitors may need to refresh the About page to see the new pictures.')));
+  }).catch(function(e){main.textContent='';main.appendChild(errBox(e))});
+}
+/* ---------- Gallery page photos ---------- */
+var GCATS=[['','No category (only in "All")']].concat(CATS);
+function galleryAdminView(main){
+  loading(main);
+  api('GET','/gallery').then(function(d){
+    var list=d.photos.map(function(p){return{image:p.image,title_en:p.title_en||'',title_ar:p.title_ar||'',category:p.category||''}});
+    main.textContent='';
+    main.appendChild(h('h1',null,'Gallery page'));
+    main.appendChild(h('p',{class:'muted'},'These are the photos on the Gallery page of the website. Add photos, give each one an optional title (English and Arabic) and a category, and arrange the order with ◀ ▶. Visitors can filter by category and open any photo full screen. Nothing changes on the website until you press "Save gallery".'));
+    if(d.isDefault)main.appendChild(h('div',{class:'msg info'},'The website is currently showing the built-in sample photos. You can keep, edit or remove them below. As soon as you save, the gallery shows exactly what is listed here.'));
+    var rows=h('div');var status=h('p',{class:'hint'});var msg=h('div');var urlIn=h('input',{placeholder:'https://… (optional)'});
+    function thumb(v){
+      if(v.indexOf('asset:')===0)return h('div',{class:'thumb',style:'width:110px;height:76px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#667;text-align:center'},'Built-in photo');
+      var im=h('img',{class:'thumb',alt:'',style:'width:110px;height:76px'});im.src=v;return im;
+    }
+    function move(i,dl){var j=i+dl;if(j<0||j>=list.length)return;var x=list[i];list[i]=list[j];list[j]=x;refresh()}
+    function refresh(){
+      rows.textContent='';
+      list.forEach(function(p,i){
+        var en=h('input',{value:p.title_en,placeholder:'Title in English (optional)',maxlength:'120',on:{input:function(){p.title_en=en.value}}});
+        var ar=h('input',{value:p.title_ar,dir:'rtl',placeholder:'العنوان بالعربي (اختياري)',maxlength:'120',on:{input:function(){p.title_ar=ar.value}}});
+        var sel=h('select',{on:{change:function(){p.category=sel.value}}},GCATS.map(function(c){return h('option',{value:c[0],selected:p.category===c[0]},c[1])}));
+        rows.appendChild(h('div',{class:'card mt'},h('div',{class:'row',style:'align-items:flex-start'},thumb(p.image),
+          h('div',{style:'flex:1;min-width:240px'},en,h('div',{class:'mt'},ar),h('div',{class:'mt'},sel)),
+          h('div',{class:'row',style:'gap:4px'},
+            h('button',{class:'btn sec sm',type:'button',title:'Move earlier',on:{click:function(){move(i,-1)}}},'◀'),
+            h('button',{class:'btn sec sm',type:'button',title:'Move later',on:{click:function(){move(i,1)}}},'▶'),
+            h('button',{class:'btn bad sm',type:'button',title:'Remove',on:{click:function(){list.splice(i,1);refresh()}}},'✕')))));
+      });
+      status.textContent=list.length?list.length+' photo(s) in the gallery (up to 60).':'The gallery is empty. If you save it empty, the built-in sample photos are shown again.';
+    }
+    var file=h('input',{type:'file',multiple:true,accept:'image/jpeg,image/png,image/webp',on:{change:function(){
+      var files=Array.prototype.slice.call(file.files||[]);if(!files.length)return;
+      var room=60-list.length;if(files.length>room){files=files.slice(0,Math.max(0,room));toast('Up to 60 photos. The rest were skipped.')}
+      var done=0;status.textContent='Uploading 0/'+files.length+'…';
+      files.reduce(function(chain,f){return chain.then(function(){
+        return shrink(f).then(function(blob){return api('POST','/images',undefined,{body:blob,type:blob.type})}).then(function(r){list.push({image:r.url,title_en:'',title_ar:'',category:''});done++;status.textContent='Uploading '+done+'/'+files.length+'…';refresh()});
+      })},Promise.resolve()).then(function(){file.value='';refresh();toast(done+' photo(s) uploaded. Press "Save gallery" to publish.')})
+        .catch(function(e){file.value='';refresh();status.appendChild(errBox(e))});
+    }}});
+    var useUrl=h('button',{class:'btn sec sm',type:'button',on:{click:function(){var v=urlIn.value.trim();if(!v)return;if(!/^https:\/\//.test(v)){status.textContent='Use an address starting with https://';return}if(list.length>=60){status.textContent='Up to 60 photos.';return}list.push({image:v,title_en:'',title_ar:'',category:''});urlIn.value='';refresh()}}},'Add address');
+    main.appendChild(h('div',{class:'card mt'},h('h2',null,'Add photos'),h('div',null,'Choose one or several photos (JPG, PNG or WebP): ',file),h('div',{class:'row mt'},urlIn,useUrl)));
+    main.appendChild(rows);
+    var btn=h('button',{class:'btn',type:'button',on:{click:function(){
+      btn.disabled=true;msg.textContent='';
+      api('PUT','/gallery',{photos:list.map(function(p){return{image:p.image,title_en:p.title_en,title_ar:p.title_ar,category:p.category||null}})})
+        .then(function(){btn.disabled=false;toast('Saved. The Gallery page now shows these photos.');galleryAdminView(main)})
+        .catch(function(e){btn.disabled=false;msg.appendChild(errBox(e))});
+    }}},'Save gallery');
+    main.appendChild(h('div',{class:'mt'},status,btn,msg,h('p',{class:'hint'},'Visitors may need to refresh the Gallery page to see the changes.')));
+    refresh();
   }).catch(function(e){main.textContent='';main.appendChild(errBox(e))});
 }
 function tripView(main){
