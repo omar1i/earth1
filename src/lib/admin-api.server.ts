@@ -5,6 +5,8 @@ import adminHtml from './admin-ui.html?raw';
 import * as auth from './auth.server';
 import { getDb, getRuntimeEnv, getSecret, type D1Like } from './db.server';
 import type { BookingInput } from './booking-schema';
+import { SITE_IMAGE_KEYS, GALLERY_MAX } from './site-images';
+import { readSiteImagesWith, writeSiteImage } from './site-images.server';
 
 const SECURITY_HEADERS = {
   'Cache-Control': 'no-store',
@@ -411,6 +413,25 @@ const uploadImage: Handler = async ({ db, request }) => {
   return json({ url: `/api/images/${id}` }, 201);
 };
 
+// --- About-page pictures --------------------------------------------------------------------------
+const getSiteImagesAdmin: Handler = async ({ db }) => json({ images: await readSiteImagesWith(db) });
+const siteImageSchema = z.object({
+  key: z.enum(SITE_IMAGE_KEYS),
+  value: z.union([z.null(), z.string().trim().max(500), z.array(galleryRef).max(GALLERY_MAX, `You can add up to ${GALLERY_MAX} photos.`)]),
+});
+const putSiteImage: Handler = async ({ db, request }) => {
+  const v = parse(siteImageSchema, await readJson(request));
+  if (v.key === 'gallery') {
+    if (v.value !== null && !Array.isArray(v.value)) return fail('The gallery needs a list of photos.');
+  } else if (Array.isArray(v.value)) {
+    return fail('This spot takes a single picture.');
+  } else if (typeof v.value === 'string' && v.value !== '' && !IMAGE_REF.test(v.value)) {
+    return fail('Use an uploaded image or an https:// image address.');
+  }
+  await writeSiteImage(db, v.key, v.value);
+  return json({ ok: true });
+};
+
 type EdgeCache = { match(r: Request): Promise<Response | undefined>; put(r: Request, res: Response): Promise<void> };
 async function serveImage(id: string): Promise<Response> {
   if (!/^[a-f0-9]{16,64}$/.test(id)) return new Response('Not found', { status: 404 });
@@ -468,6 +489,8 @@ const routes: { method: string; pattern: RegExp; handler: Handler }[] = [
   { method: 'DELETE', pattern: /^\/api\/admin\/bookings\/([A-Za-z0-9-]{8,64})$/, handler: deleteBooking },
   { method: 'POST', pattern: /^\/api\/admin\/bookings\/([A-Za-z0-9-]{8,64})\/resend-email$/, handler: resendEmail },
   { method: 'POST', pattern: /^\/api\/admin\/images$/, handler: uploadImage },
+  { method: 'GET', pattern: /^\/api\/admin\/site-images$/, handler: getSiteImagesAdmin },
+  { method: 'PUT', pattern: /^\/api\/admin\/site-images$/, handler: putSiteImage },
   { method: 'POST', pattern: /^\/api\/admin\/password$/, handler: changePassword },
 ];
 

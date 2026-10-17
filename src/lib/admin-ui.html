@@ -126,11 +126,11 @@ function logout(){api('POST','/logout',{}).finally(boot)}
 
 /* ---------- shell ---------- */
 function renderShell(){
-  var views=[['dashboard','Overview'],['trips','Trips'],['bookings','Bookings'],['account','Account']];
+  var views=[['dashboard','Overview'],['trips','Trips'],['bookings','Bookings'],['about','About page'],['account','Account']];
   var nav=h('nav',null,views.map(function(v){return h('button',{type:'button','aria-current':state.view===v[0]||(v[0]==='trips'&&state.view==='trip'),on:{click:function(){go(v[0])}}},v[1])}));
   var main=h('div',{class:'wrap',id:'main'});
   show(h('div',null,h('header',{class:'top'},h('div',{class:'wrap'},h('strong',null,'Earth Adventure admin'),nav,h('span',{class:'sp'}),h('a',{href:'/',target:'_blank',rel:'noopener',style:'color:#fff'},'View website'),h('span',{class:'who'},state.session.username),h('button',{class:'btn sec sm',type:'button',on:{click:logout}},'Log out'))),main));
-  ({dashboard:dashboardView,trips:tripsView,trip:tripView,bookings:bookingsView,account:accountView})[state.view](main);
+  ({dashboard:dashboardView,trips:tripsView,trip:tripView,bookings:bookingsView,about:aboutView,account:accountView})[state.view](main);
 }
 function go(view,extra){state.view=view;if(extra)Object.keys(extra).forEach(function(k){state[k]=extra[k]});renderShell()}
 function loading(main){main.textContent='';main.appendChild(h('p',{class:'muted'},'Loading…'))}
@@ -204,7 +204,7 @@ function listEditor(title,items,withText){
   box.get=function(){return rows.filter(function(r){return !r.blank()}).map(function(r){return r.get()})};
   return box;
 }
-function imagePicker(initial){
+function imagePicker(initial,saveHint){
   var value=initial||'';var preview=h('img',{class:'thumb',alt:''});var urlIn=h('input',{placeholder:'https://… (optional)'});
   var status=h('p',{class:'hint'});
   function resolve(v){if(!v)return '';if(v.indexOf('asset:')===0)return '';return v}
@@ -217,7 +217,7 @@ function imagePicker(initial){
   var file=h('input',{type:'file',accept:'image/jpeg,image/png,image/webp',on:{change:function(){
     var f=file.files[0];if(!f)return;status.textContent='Preparing image…';
     shrink(f).then(function(blob){status.textContent='Uploading…';return api('POST','/images',undefined,{body:blob,type:blob.type})})
-      .then(function(r){value=r.url;refresh();toast('Image uploaded. Remember to save the trip.')})
+      .then(function(r){value=r.url;refresh();toast('Image uploaded. '+(saveHint||'Remember to save the trip.'))})
       .catch(function(e){status.textContent='';status.appendChild(errBox(e))});
   }}});
   var useUrl=h('button',{class:'btn sec sm',type:'button',on:{click:function(){var v=urlIn.value.trim();if(!v)return;if(!/^https:\/\//.test(v)){status.textContent='Use an address starting with https://';return}value=v;urlIn.value='';refresh()}}},'Use address');
@@ -226,7 +226,8 @@ function imagePicker(initial){
   box.get=function(){return value||null};refresh();return box;
 }
 /* extra photos for a group trip: several uploads, reorder, remove (shown as a slideshow on the website) */
-function galleryPicker(initial){
+function galleryPicker(initial,opts){
+  opts=opts||{};
   var list=(initial||[]).filter(function(x){return typeof x==='string'&&x});
   var grid=h('div',{class:'row mt',style:'align-items:flex-start'});
   var status=h('p',{class:'hint'});var urlIn=h('input',{placeholder:'https://… (optional)'});
@@ -242,7 +243,7 @@ function galleryPicker(initial){
           h('button',{class:'btn sec sm',type:'button',title:'Move later',on:{click:function(){move(i,1)}}},'▶'),
           h('button',{class:'btn bad sm',type:'button',title:'Remove',on:{click:function(){list.splice(i,1);refresh()}}},'✕'))));
     });
-    status.textContent=list.length?list.length+' extra photo(s). The main image above is always the first one shown.':'No extra photos yet. Add some to turn the trip into a slideshow.';
+    status.textContent=list.length?list.length+(opts.countText||' extra photo(s). The main image above is always the first one shown.'):(opts.emptyText||'No extra photos yet. Add some to turn the trip into a slideshow.');
   }
   var file=h('input',{type:'file',multiple:true,accept:'image/jpeg,image/png,image/webp',on:{change:function(){
     var files=Array.prototype.slice.call(file.files||[]);if(!files.length)return;
@@ -250,11 +251,11 @@ function galleryPicker(initial){
     var done=0;status.textContent='Uploading 0/'+files.length+'…';
     files.reduce(function(chain,f){return chain.then(function(){
       return shrink(f).then(function(blob){return api('POST','/images',undefined,{body:blob,type:blob.type})}).then(function(r){list.push(r.url);done++;status.textContent='Uploading '+done+'/'+files.length+'…';refresh()});
-    })},Promise.resolve()).then(function(){file.value='';refresh();toast(done+' photo(s) uploaded. Remember to save the trip.')})
+    })},Promise.resolve()).then(function(){file.value='';refresh();toast(done+' photo(s) uploaded. '+(opts.saveHint||'Remember to save the trip.'))})
       .catch(function(e){file.value='';refresh();status.appendChild(errBox(e))});
   }}});
   var useUrl=h('button',{class:'btn sec sm',type:'button',on:{click:function(){var v=urlIn.value.trim();if(!v)return;if(!/^https:\/\//.test(v)){status.textContent='Use an address starting with https://';return}if(list.length>=12){status.textContent='Up to 12 extra photos.';return}list.push(v);urlIn.value='';refresh()}}},'Add address');
-  var box=h('div',{class:'mt'},h('label',null,'Extra photos (slideshow)'),
+  var box=h('div',{class:'mt'},h('label',null,opts.label||'Extra photos (slideshow)'),
     h('div',null,'Add several photos at once (JPG, PNG or WebP): ',file),
     grid,h('div',{class:'row mt'},urlIn,useUrl),status);
   box.get=function(){return list.slice()};refresh();return box;
@@ -277,6 +278,40 @@ function shrink(file){
     img.onerror=function(){URL.revokeObjectURL(url);reject(new Error('This file is not a readable image.'))};
     img.src=url;
   });
+}
+/* ---------- About page pictures ---------- */
+var ABOUT_SLOTS=[
+  ['purpose','Top section: "Memories begin where the ordinary ends"','Large picture next to the opening text. If empty, the built-in wadi picture is shown.'],
+  ['company','About the company','Picture beside the company description. If empty, the section is text only.'],
+  ['vision','Vision','Picture on the Vision card. If empty, the card is text only.'],
+  ['mission','Mission','Picture on the Mission card. If empty, the card is text only.'],
+  ['why','Why us','Picture beside the "Why us" text. If empty, the section is text only.'],
+  ['founder','Founder portrait','Portrait photo (a vertical photo works best). If empty, a monogram circle is shown.']
+];
+function aboutView(main){
+  loading(main);
+  api('GET','/site-images').then(function(d){
+    var imgs=d.images||{};main.textContent='';
+    main.appendChild(h('h1',null,'About page pictures'));
+    main.appendChild(h('p',{class:'muted'},'Choose the pictures that appear on the About page of the website. Upload a photo (JPG, PNG or WebP) or paste an https:// address. Nothing changes on the website until you press "Save pictures" at the bottom.'));
+    var pickers={};
+    ABOUT_SLOTS.forEach(function(sl){
+      var p=imagePicker(imgs[sl[0]]||'','Press "Save pictures" at the bottom to publish it.');pickers[sl[0]]=p;
+      main.appendChild(h('div',{class:'card mt'},h('h2',null,sl[1]),h('p',{class:'hint'},sl[2]),p));
+    });
+    var g=galleryPicker(imgs.gallery||[],{label:'Photos',countText:' photo(s) in the gallery.',emptyText:'No photos yet. The gallery section stays hidden until you add some.',saveHint:'Press "Save pictures" at the bottom to publish them.'});
+    main.appendChild(h('div',{class:'card mt'},h('h2',null,'Photo gallery'),h('p',{class:'hint'},'Up to 12 photos, shown as a mosaic on computers and a swipeable strip on phones. Visitors can tap a photo to view it full screen. Use ◀ ▶ to change the order.'),g));
+    var msg=h('div');
+    var btn=h('button',{class:'btn',type:'button',on:{click:function(){
+      btn.disabled=true;msg.textContent='';
+      var keys=ABOUT_SLOTS.map(function(sl){return sl[0]}).concat(['gallery']);
+      keys.reduce(function(chain,k){return chain.then(function(){
+        return api('PUT','/site-images',{key:k,value:k==='gallery'?g.get():pickers[k].get()});
+      })},Promise.resolve()).then(function(){btn.disabled=false;toast('Saved. The About page now shows these pictures.')})
+        .catch(function(e){btn.disabled=false;msg.appendChild(errBox(e))});
+    }}},'Save pictures');
+    main.appendChild(h('div',{class:'mt'},btn,msg,h('p',{class:'hint'},'Visitors may need to refresh the About page to see the new pictures.')));
+  }).catch(function(e){main.textContent='';main.appendChild(errBox(e))});
 }
 function tripView(main){
   var isNew=typeof state.tripId==='string'&&state.tripId.indexOf('new:')===0;
