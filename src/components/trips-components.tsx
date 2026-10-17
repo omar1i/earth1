@@ -1,10 +1,10 @@
 import { Link } from '@tanstack/react-router';
-import { ArrowRight, ArrowUpRight, CalendarDays, Clock, MapPin, MessageCircle, Tag } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, CalendarDays, Clock, Fish, MapPin, MessageCircle, Tag, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/language';
 import { privateTripsIntro, privateTripWhatsapp, whatsapp, type GroupTrip, type PrivateDestination } from '@/lib/content';
 import { useCatalog } from '@/lib/catalog-context';
-import { seatStatus } from '@/lib/catalog';
+import { seatStatus, privateHasPage } from '@/lib/catalog';
 import { ImageSlider } from '@/components/image-slider';
 
 // Private Trips: inspiration cards only. One "Contact Us" button per card opens WhatsApp.
@@ -19,25 +19,48 @@ export function PrivateTripsSection({ destinations }: { destinations?: PrivateDe
         <p>{privateTripsIntro.text[lang]}</p>
       </div>
       <div className="trip-grid-4">
-        {privateDestinations.map((d) => (
-          <article className="experience-card" key={d.id}>
-            <div className="experience-image">
+        {privateDestinations.map((d) => {
+          const page = privateHasPage(d);
+          const media = (
+            <>
               <img src={d.image} alt={d.name[lang]} loading="lazy" width="600" height="400" />
-            </div>
-            <div className="experience-body">
-              <h3>{d.name[lang]}</h3>
-              <p>{d.description[lang]}</p>
-              <div className="experience-actions">
-                <Button asChild size="sm" className="contact-btn">
-                  <a href={privateTripWhatsapp(d.name.en)} target="_blank" rel="noreferrer">
-                    <MessageCircle size={15} />
-                    {t('Contact Us', 'تواصل معنا')}
-                  </a>
-                </Button>
+              {d.tag && <span className="experience-tag trip-kind-tag">{/fish|صيد/i.test(`${d.tag.en} ${d.tag.ar}`) ? <Fish aria-hidden="true" /> : <Tag aria-hidden="true" />}{d.tag[lang]}</span>}
+              {(d.price || d.maxGuests) && (
+                <div className="trip-overlay">
+                  {d.maxGuests ? <span className="trip-overlay-date"><Users aria-hidden="true" />{t(`Up to ${d.maxGuests} guests`, `حتى ${d.maxGuests} أشخاص`)}</span> : <span />}
+                  {d.price && <span className="trip-overlay-price"><Tag aria-hidden="true" />{d.price[lang]}</span>}
+                </div>
+              )}
+            </>
+          );
+          return (
+            <article className="experience-card" key={d.id}>
+              {page ? (
+                <Link className="experience-image" to="/private-trips/$trip" params={{ trip: d.id }}>{media}</Link>
+              ) : (
+                <div className="experience-image">{media}</div>
+              )}
+              <div className="experience-body">
+                <h3>{page ? <Link to="/private-trips/$trip" params={{ trip: d.id }}>{d.name[lang]}</Link> : d.name[lang]}</h3>
+                <p>{d.description[lang]}</p>
+                <div className="experience-actions">
+                  {page && (
+                    <Link className="text-link" to="/private-trips/$trip" params={{ trip: d.id }}>
+                      {t('View Details', 'عرض التفاصيل')}
+                      <ArrowRight />
+                    </Link>
+                  )}
+                  <Button asChild size="sm" className="contact-btn">
+                    <a href={privateTripWhatsapp(d.name.en)} target="_blank" rel="noreferrer">
+                      <MessageCircle size={15} />
+                      {t('Contact Us', 'تواصل معنا')}
+                    </a>
+                  </Button>
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
     </section>
   );

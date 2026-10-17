@@ -24,6 +24,7 @@ import { Route as DestinationsDestinationRouteImport } from './routes/destinatio
 import { Route as ExperiencesIndexRouteImport } from './routes/experiences.index'
 import { Route as ExperiencesExperienceRouteImport } from './routes/experiences.$experience'
 import { Route as GroupTripsTripRouteImport } from './routes/group-trips.$trip'
+import { Route as PrivateTripsTripRouteImport } from './routes/private-trips.$trip'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -100,6 +101,11 @@ const GroupTripsTripRoute = GroupTripsTripRouteImport.update({
   path: '/group-trips/$trip',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivateTripsTripRoute = PrivateTripsTripRouteImport.update({
+  id: '/private-trips/$trip',
+  path: '/private-trips/$trip',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/destinations/$destination': typeof DestinationsDestinationRoute
   '/experiences/$experience': typeof ExperiencesExperienceRoute
   '/group-trips/$trip': typeof GroupTripsTripRoute
+  '/private-trips/$trip': typeof PrivateTripsTripRoute
   '/destinations/': typeof DestinationsIndexRoute
   '/experiences/': typeof ExperiencesIndexRoute
 }
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/destinations/$destination': typeof DestinationsDestinationRoute
   '/experiences/$experience': typeof ExperiencesExperienceRoute
   '/group-trips/$trip': typeof GroupTripsTripRoute
+  '/private-trips/$trip': typeof PrivateTripsTripRoute
   '/destinations': typeof DestinationsIndexRoute
   '/experiences': typeof ExperiencesIndexRoute
 }
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/destinations/$destination': typeof DestinationsDestinationRoute
   '/experiences/$experience': typeof ExperiencesExperienceRoute
   '/group-trips/$trip': typeof GroupTripsTripRoute
+  '/private-trips/$trip': typeof PrivateTripsTripRoute
   '/destinations/': typeof DestinationsIndexRoute
   '/experiences/': typeof ExperiencesIndexRoute
 }
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
     | '/destinations/$destination'
     | '/experiences/$experience'
     | '/group-trips/$trip'
+    | '/private-trips/$trip'
     | '/destinations/'
     | '/experiences/'
   fileRoutesByTo: FileRoutesByTo
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/destinations/$destination'
     | '/experiences/$experience'
     | '/group-trips/$trip'
+    | '/private-trips/$trip'
     | '/destinations'
     | '/experiences'
   id:
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/destinations/$destination'
     | '/experiences/$experience'
     | '/group-trips/$trip'
+    | '/private-trips/$trip'
     | '/destinations/'
     | '/experiences/'
   fileRoutesById: FileRoutesById
@@ -215,6 +227,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   CategoriesCategoryRoute: typeof CategoriesCategoryRoute
   GroupTripsTripRoute: typeof GroupTripsTripRoute
+  PrivateTripsTripRoute: typeof PrivateTripsTripRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -324,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupTripsTripRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/private-trips/$trip': {
+      id: '/private-trips/$trip'
+      path: '/private-trips/$trip'
+      fullPath: '/private-trips/$trip'
+      preLoaderRoute: typeof PrivateTripsTripRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -367,6 +387,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   CategoriesCategoryRoute: CategoriesCategoryRoute,
   GroupTripsTripRoute: GroupTripsTripRoute,
+  PrivateTripsTripRoute: PrivateTripsTripRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

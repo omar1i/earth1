@@ -3,7 +3,7 @@
 import {
   assetImages, bi, experiences as staticExperiences, groupTrips as staticGroupTrips,
   privateDestinations as staticPrivate, regionOf,
-  type Experience, type GroupTrip, type PrivateDestination, type Schedule,
+  type Experience, type GroupTrip, type PrivateBoat, type PrivateDestination, type Schedule,
 } from './content';
 import type { Bilingual, Language } from './language';
 
@@ -12,6 +12,7 @@ export type TripRow = {
   category: string | null; region: 'oman' | 'international'; destination: string | null;
   name_en: string; name_ar: string; description_en: string; description_ar: string; image: string | null;
   images?: string | null; // JSON list of extra photo references (group-trip slideshow); absent on older databases
+  details?: string | null; // JSON object with the private-trip page extras (label, itinerary switch, cancellation, boat); absent on older databases
   location_en: string | null; location_ar: string | null; duration_en: string | null; duration_ar: string | null;
   group_size_en: string | null; group_size_ar: string | null; max_group: number | null;
   accommodation_en: string | null; accommodation_ar: string | null;
@@ -56,6 +57,29 @@ const toBi = (v: unknown): Bilingual => {
   const o = (v && typeof v === 'object' ? v : {}) as Partial<Bilingual>;
   return bi(typeof o.en === 'string' ? o.en : '', typeof o.ar === 'string' ? o.ar : '');
 };
+
+
+/** Extras of a private trip (stored as JSON in trips.details). Every field is optional. */
+export type PrivateDetails = {
+  tag?: { en?: string; ar?: string };
+  show_itinerary?: boolean;
+  show_cancellation?: boolean;
+  cancellation?: { en?: string; ar?: string }[];
+  boat?: {
+    enabled?: boolean; name?: { en?: string; ar?: string }; tagline?: { en?: string; ar?: string }; description?: { en?: string; ar?: string };
+    image?: string | null; specs?: { label?: unknown; value?: unknown }[]; amenities?: { en?: string; ar?: string }[];
+  };
+};
+function parseDetails(text: string | null | undefined): PrivateDetails {
+  if (!text) return {};
+  try {
+    const v = JSON.parse(text);
+    return v && typeof v === 'object' && !Array.isArray(v) ? (v as PrivateDetails) : {};
+  } catch {
+    return {};
+  }
+}
+const hasText = (b: Bilingual) => !!(b.en.trim() || b.ar.trim());
 
 export function formatTripPrice(price: number | null, type: TripRow['price_type'], sample: boolean, lang: Language): string {
   if (price === null || price === undefined || type === 'contact') return lang === 'ar' ? 'تواصل لمعرفة السعر' : 'Contact for Price';
@@ -102,7 +126,38 @@ export function buildCatalog(rows: CatalogRows): Catalog {
     const optBi = (en: string | null, ar: string | null) => (en || ar ? { v: bi(en ?? '', ar ?? '') } : null);
 
     if (t.kind === 'private') {
-      privateDestinations.push({ id: t.slug, name, description, image: image ?? assetImages['coast']! });
+      const d = parseDetails(t.details);
+      const dest: PrivateDestination = { id: t.slug, name, description, image: image ?? assetImages['coast']! };
+      const tag = toBi(d.tag);
+      if (hasText(tag)) dest.tag = tag;
+      if (t.price !== null && t.price !== undefined && t.price_type !== 'contact') {
+        const sampleTrip = t.is_sample === 1;
+        dest.price = bi(formatTripPrice(t.price, t.price_type, sampleTrip, 'en'), formatTripPrice(t.price, t.price_type, sampleTrip, 'ar'));
+      }
+      if (t.max_group) dest.maxGuests = t.max_group;
+      const loc = optBi(t.location_en, t.location_ar);
+      const dur = optBi(t.duration_en, t.duration_ar);
+      if (loc) dest.location = loc.v;
+      if (dur) dest.duration = dur.v;
+      const steps = parseList<{ title?: unknown; text?: unknown }>(t.itinerary).map((i) => ({ title: toBi(i.title), text: toBi(i.text) }));
+      dest.showItinerary = d.show_itinerary === true && steps.length > 0;
+      if (steps.length) dest.itinerary = steps;
+      dest.showCancellation = d.show_cancellation !== false; // on unless the admin switches it off
+      const custom = (Array.isArray(d.cancellation) ? d.cancellation : []).map(toBi).filter(hasText);
+      if (custom.length) dest.cancellation = custom;
+      const b = d.boat;
+      if (b && b.enabled === true) {
+        const boat: PrivateBoat = {
+          name: toBi(b.name), tagline: toBi(b.tagline), description: toBi(b.description),
+          specs: (Array.isArray(b.specs) ? b.specs : []).map((x) => ({ label: toBi(x.label), value: toBi(x.value) })).filter((x) => hasText(x.label) || hasText(x.value)),
+          amenities: (Array.isArray(b.amenities) ? b.amenities : []).map(toBi).filter(hasText),
+        };
+        const bi_ = resolveImage(b.image ?? null);
+        if (bi_) boat.image = bi_;
+        dest.boat = boat;
+      }
+      if (t.is_sample === 1) dest.sample = true;
+      privateDestinations.push(dest);
     } else if (t.kind === 'group') {
       const schedules = (byTrip.get(t.id) ?? [])
         .sort((a, b) => (a.departure_date + (a.departure_time ?? '')).localeCompare(b.departure_date + (b.departure_time ?? '')))
@@ -184,3 +239,7 @@ export function seatStatus(schedules: Schedule[] | undefined): SeatStatus | null
   if (open) return { tone: open.seatsLeft <= 3 ? 'low' : 'ok', left: open.seatsLeft };
   return { tone: list.some((s) => s.soldOut) ? 'full' : 'closed', left: 0 };
 }
+
+/** Private trips get their own page when the admin gave them anything beyond the plain card. */
+export const privateHasPage = (d: PrivateDestination): boolean =>
+  !!(d.tag || d.price || d.maxGuests || d.showItinerary || d.boat || d.cancellation);

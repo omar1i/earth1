@@ -67,3 +67,11 @@ price of trip Y". Do not let the agent change `booking-schema.ts` and `content.t
 The original Lovable brief is kept in `docs/original-lovable-brief.md`.
 
 
+
+## Private trip pages (e.g. the Masirah fishing trip)
+
+In `/admin` -> Trips -> a **private** trip you can set: the label printed on the card photo (e.g. "Fishing Trip"), price, maximum guests,
+location and duration, an optional **itinerary** (with a show/hide switch), the **cancellation policy** (show/hide, optionally a custom
+policy for that trip) and an **Our Boat** section (title, tagline, text, photo, quick facts and on-board equipment).
+As soon as a private trip has a label, price, guest number, itinerary or boat, its card opens its own page at `/private-trips/<slug>`.
+The new `details` column is added to an older database automatically on the first save. For a database that already exists, `docs/masirah-existing-database.sql` fills in the sample Masirah content in one step.

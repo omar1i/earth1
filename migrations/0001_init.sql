@@ -38,6 +38,7 @@ CREATE TABLE trips (
   exclusions      TEXT NOT NULL DEFAULT '[]',
   requirements    TEXT NOT NULL DEFAULT '[]',
   terms           TEXT NOT NULL DEFAULT '[]',
+  details         TEXT NOT NULL DEFAULT '{}',   -- JSON object: private-trip page extras (label on photo, itinerary / cancellation switches, boat section)
   is_sample       INTEGER NOT NULL DEFAULT 0 CHECK (is_sample IN (0,1)),
   is_active       INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0,1)),
   sort_order      INTEGER NOT NULL DEFAULT 0,

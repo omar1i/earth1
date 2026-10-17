@@ -67,11 +67,49 @@ export const privateTripsIntro = {
   title: bi('Private Trips','الرحلات الخاصة'),
   text: bi('Trips designed around your wishes and interests, whether you want to travel with family or friends, or plan a personal experience. You choose the destination, the activities and the kind of experience that suits you, and we arrange a travel programme that fits your needs and lets you enjoy your trip your own way.','رحلات تُصمَّم حسب رغبتك واهتماماتك، سواء كنت تبي تسافر مع الأهل أو الأصدقاء أو تخطط لتجربة خاصة. تختار الوجهة والأنشطة ونوع التجربة اللي تناسبك، ونرتب لك برنامج سفر يناسب احتياجاتك ويخليك تستمتع برحلتك على طريقتك.'),
 };
-export type PrivateDestination = {id:string; name:Bilingual; description:Bilingual; image:string};
+export type BoatSpec = {label:Bilingual; value:Bilingual};
+// "Our Boat" section of a private trip page. Everything is optional and editable in the admin dashboard.
+export type PrivateBoat = {name:Bilingual; tagline:Bilingual; description:Bilingual; image?:string; specs:BoatSpec[]; amenities:Bilingual[]};
+export type PrivateDestination = {
+  id:string; name:Bilingual; description:Bilingual; image:string;
+  tag?:Bilingual;                 // short label printed on the card photo, e.g. "Fishing trip"
+  price?:Bilingual;               // ready-to-show price text (only when a real price is set)
+  maxGuests?:number;              // maximum number of people
+  location?:Bilingual; duration?:Bilingual;
+  itinerary?:{title:Bilingual; text:Bilingual}[];
+  showItinerary?:boolean;         // admin switch: show the itinerary on the trip page
+  showCancellation?:boolean;      // admin switch: show the cancellation policy on the trip page
+  cancellation?:Bilingual[];      // custom policy for this trip; empty = the standard policy below
+  boat?:PrivateBoat;              // admin switch + content of the "Our Boat" section
+  sample?:boolean;
+};
 export const privateDestinations: PrivateDestination[] = [
   {id:'wadi-al-arbaeen', name:bi('Wadi Al Arbaeen','وادي العربيين'), image:wadi, description:bi('A hidden valley of rugged rock walls and natural pools. Hike, take a swim stop, and enjoy quiet time in nature with your group.','وادٍ مخفي بجدران صخرية وبرك طبيعية. امشِ في الوادي واستمتع بالسباحة وبالهدوء في الطبيعة مع مجموعتك.')},
   {id:'jabal-akhdar', name:bi('Jabal Akhdar','الجبل الأخضر'), image:mountains, description:bi('Cool mountain air, terraced orchards and wide canyon viewpoints. Ideal for scenic hikes, village walks and a slower pace above the clouds.','هواء جبلي منعش ومدرجات زراعية وإطلالات واسعة على الأخاديد. مثالي للمشي في الطبيعة وجولات القرى وإيقاع أهدأ فوق الغيوم.')},
-  {id:'masirah-island', name:bi('Masirah Island','جزيرة مصيرة'), image:coast, description:bi('Long empty beaches, clear water and an easy island pace. Plan time for fishing, beach camping and watching the coast from the sea.','شواطئ طويلة هادئة ومياه صافية وإيقاع جزيرة مريح. خطط لوقت للصيد والتخييم على الشاطئ ومشاهدة الساحل من البحر.')},
+  {id:'masirah-island', name:bi('Masirah Island','جزيرة مصيرة'), image:coast, description:bi('Long empty beaches, clear water and an easy island pace. Plan time for fishing, beach camping and watching the coast from the sea.','شواطئ طويلة هادئة ومياه صافية وإيقاع جزيرة مريح. خطط لوقت للصيد والتخييم على الشاطئ ومشاهدة الساحل من البحر.'),
+   // SAMPLE details: replace the price, guest number, itinerary and boat facts with the real ones in the admin dashboard.
+   sample:true, tag:bi('Fishing Trip','رحلة صيد'), price:bi('Sample price: OMR 450 per group','سعر تجريبي: 450 ر.ع. للمجموعة'), maxGuests:10,
+   location:bi('Masirah Island, Oman','جزيرة مصيرة، عُمان'), duration:bi('Full day (sunrise to sunset)','يوم كامل (من الشروق إلى الغروب)'),
+   showItinerary:true, showCancellation:true,
+   itinerary:[
+    {title:bi('Sunrise · Departure','الشروق · الانطلاق'), text:bi('Meet at the marina, a short safety briefing, then head out to the fishing grounds.','اللقاء في المرسى وإرشادات سلامة سريعة ثم الانطلاق نحو مواقع الصيد.')},
+    {title:bi('Morning · Fishing','الصباح · الصيد'), text:bi('Several fishing stops with all gear on board. Your catch stays fresh in the fish tank.','عدة محطات للصيد مع كامل المعدات على القارب، ويبقى صيدك طازجًا في خزان السمك.')},
+    {title:bi('Midday · Sea and shade','الظهيرة · البحر والظل'), text:bi('A swim and snorkel stop in clear water, then lunch and a rest under the canopy.','وقفة للسباحة والغطس في مياه صافية ثم غداء واستراحة تحت المظلة.')},
+    {title:bi('Sunset · Return','الغروب · العودة'), text:bi('One last stop for the catch, then a slow ride back along the coast as the light fades.','محطة أخيرة للصيد ثم رحلة هادئة للعودة على الساحل مع غروب الشمس.')},
+   ],
+   boat:{
+    name:bi('Our Boat','قاربنا'), tagline:bi('Built for open water, set up for a full day at sea.','مجهّز للمياه المفتوحة ولليوم الكامل في البحر.'),
+    description:bi('A stable, spacious boat with shade, fishing gear and safety equipment on board, so your group can focus on the sea.','قارب ثابت وواسع مع مظلات ومعدات صيد وسلامة على متنه، لتركّز مجموعتك على البحر.'),
+    specs:[
+     {label:bi('Vessel','القارب'), value:bi('Royal Craft 42','رويال كرافت 42')},
+     {label:bi('Length','الطول'), value:bi('42 ft','42 قدمًا')},
+     {label:bi('Engines','المحركات'), value:bi('Triple 300hp','ثلاثة محركات 300 حصان')},
+     {label:bi('Max capacity','السعة القصوى'), value:bi('10 guests','10 أشخاص')},
+     {label:bi('Departure','نقطة الانطلاق'), value:bi('Masirah Island Marina','مرسى جزيرة مصيرة')},
+     {label:bi('Trip type','نوع الرحلة'), value:bi('Full day','يوم كامل')},
+    ],
+    amenities:[bi('Onboard bathroom with shower','حمّام مع دش على القارب'),bi('Fish tank to keep the catch fresh','خزان سمك للحفاظ على الصيد طازجًا'),bi('Trolling motor for precision fishing','محرك تحكم دقيق للصيد'),bi('Radar for navigation and safety','رادار للملاحة والسلامة'),bi('Sunshade canopy','مظلة للحماية من الشمس'),bi('Fishing gear included','معدات الصيد متوفرة'),bi('Snorkeling equipment','معدات غطس'),bi('Life jackets (all sizes)','سترات نجاة بجميع المقاسات'),bi('Cooler and ice box','صندوق تبريد وثلج'),bi('Bluetooth speaker','سماعة بلوتوث'),bi('GPS navigation','نظام ملاحة GPS'),bi('First aid kit','حقيبة إسعافات أولية'),bi('Fuel included','الوقود مشمول')],
+   }},
   {id:'salalah', name:bi('Salalah','صلالة'), image:camping, description:bi('Green hills, coastal scenery and a very different side of Oman, especially in the khareef season. Explore the coast and valleys at your own pace.','تلال خضراء ومناظر ساحلية وجانب مختلف تمامًا من عُمان، خصوصًا في موسم الخريف. استكشف الساحل والأودية بالوتيرة التي تناسبك.')},
 ];
 export const privateTripWhatsapp=(name:string)=>`${whatsapp}&text=${encodeURIComponent('Hello! I would like to plan a private trip to '+name+'.')}`;

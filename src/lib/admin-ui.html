@@ -204,7 +204,22 @@ function listEditor(title,items,withText){
   box.get=function(){return rows.filter(function(r){return !r.blank()}).map(function(r){return r.get()})};
   return box;
 }
-function imagePicker(initial,saveHint){
+/* list of label + value pairs (each in English and Arabic), e.g. the boat's quick facts */
+function pairEditor(title,items,hint){
+  var rows=[];var holder=h('div');
+  function addRow(v){
+    var lab=biField('Label',v&&v.label&&v.label.en,v&&v.label&&v.label.ar,false),val=biField('Value',v&&v.value&&v.value.en,v&&v.value&&v.value.ar,false);
+    var row=h('div',{class:'list-item'},lab,val);
+    var entry={get:function(){return{label:lab.get(),value:val.get()}},blank:function(){var a=lab.get(),b=val.get();return !a.en&&!a.ar&&!b.en&&!b.ar}};
+    row.appendChild(h('button',{class:'btn bad sm mt',type:'button',on:{click:function(){row.remove();rows=rows.filter(function(r){return r!==entry})}}},'Remove'));
+    rows.push(entry);holder.appendChild(row);
+  }
+  (items||[]).forEach(addRow);
+  var box=h('div',{class:'mt'},h('h3',null,title),hint?h('p',{class:'hint'},hint):null,holder,h('button',{class:'btn sec sm',type:'button',on:{click:function(){addRow(null)}}},'+ Add'));
+  box.get=function(){return rows.filter(function(r){return !r.blank()}).map(function(r){return r.get()})};
+  return box;
+}
+function imagePicker(initial,saveHint,label){
   var value=initial||'';var preview=h('img',{class:'thumb',alt:''});var urlIn=h('input',{placeholder:'https://… (optional)'});
   var status=h('p',{class:'hint'});
   function resolve(v){if(!v)return '';if(v.indexOf('asset:')===0)return '';return v}
@@ -222,7 +237,7 @@ function imagePicker(initial,saveHint){
   }}});
   var useUrl=h('button',{class:'btn sec sm',type:'button',on:{click:function(){var v=urlIn.value.trim();if(!v)return;if(!/^https:\/\//.test(v)){status.textContent='Use an address starting with https://';return}value=v;urlIn.value='';refresh()}}},'Use address');
   var clear=h('button',{class:'btn sec sm',type:'button',on:{click:function(){value='';refresh()}}},'Remove image');
-  var box=h('div',null,h('label',null,'Image'),h('div',{class:'row'},preview,h('div',{style:'flex:1;min-width:220px'},h('div',null,'Upload a photo (JPG, PNG or WebP): ',file),h('div',{class:'row mt'},sel,clear),h('div',{class:'row mt'},urlIn,useUrl))),status);
+  var box=h('div',null,h('label',null,label||'Image'),h('div',{class:'row'},preview,h('div',{style:'flex:1;min-width:220px'},h('div',null,'Upload a photo (JPG, PNG or WebP): ',file),h('div',{class:'row mt'},sel,clear),h('div',{class:'row mt'},urlIn,useUrl))),status);
   box.get=function(){return value||null};refresh();return box;
 }
 /* extra photos for a group trip: several uploads, reorder, remove (shown as a slideshow on the website) */
@@ -373,6 +388,7 @@ function tripView(main){
   api('GET','/trips/'+state.tripId).then(function(d){editor(main,d.trip,d.schedules,d.bookingCount,false)}).catch(function(e){main.textContent='';main.appendChild(errBox(e))});
 }
 function parseJson(s){try{var v=JSON.parse(s);return Array.isArray(v)?v:[]}catch(e){return[]}}
+function parseObj(s){try{var v=JSON.parse(s);return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch(e){return{}}}
 function editor(main,t,schedules,bookingCount,isNew){
   main.textContent='';
   var kind=t.kind;var out=h('div');
@@ -391,9 +407,22 @@ function editor(main,t,schedules,bookingCount,isNew){
   var loc=biField('Location',t.location_en,t.location_ar,false),dur=biField('Duration',t.duration_en,t.duration_ar,false),size=biField('Group size text',t.group_size_en,t.group_size_ar,false,'Shown on the trip page, e.g. “Small group (up to 14 travellers)”. The real seat limit is set per departure below.');
   var acc=biField('Accommodation',t.accommodation_en,t.accommodation_ar,false);
   var maxg=h('input',{type:'number',min:'1',step:'1',value:t.max_group||''});
-  var itin=listEditor(kind==='group'?'Itinerary (day by day)':'Itinerary (optional)',parseJson(t.itinerary),true);
+  var itin=listEditor(kind==='group'?'Itinerary (day by day)':kind==='private'?'Itinerary (hour by hour or day by day)':'Itinerary (optional)',parseJson(t.itinerary),true);
   var inc=listEditor('What’s included',parseJson(t.inclusions),false),exc=listEditor('What’s not included',parseJson(t.exclusions),false);
   var req=listEditor('Requirements & recommended items',parseJson(t.requirements),false),terms=listEditor('Terms & Conditions for this trip',parseJson(t.terms),false);
+  /* private trips: label on the photo, itinerary + cancellation switches, "Our boat" section */
+  var pd=kind==='private'?parseObj(t.details):{};var pb=pd.boat||{};
+  var ptag=kind==='private'?biField('Label on the photo',pd.tag&&pd.tag.en,pd.tag&&pd.tag.ar,false,'Short text shown on the trip card photo, e.g. “Fishing Trip” / “رحلة صيد”. Leave empty for no label.'):null;
+  var showItin=h('input',{type:'checkbox',checked:!!pd.show_itinerary});
+  var showCancel=h('input',{type:'checkbox',checked:pd.show_cancellation!==false});
+  var customCancel=kind==='private'?listEditor('Custom cancellation policy (optional)',(pd.cancellation||[]),false):null;
+  var boatOn=h('input',{type:'checkbox',checked:!!pb.enabled});
+  var boatName=kind==='private'?biField('Section title / boat name',pb.name&&pb.name.en,pb.name&&pb.name.ar,false,'Shown as the big heading of the “Our Boat” section. Empty = “Our Boat”.'):null;
+  var boatTag=kind==='private'?biField('Short tagline',pb.tagline&&pb.tagline.en,pb.tagline&&pb.tagline.ar,false):null;
+  var boatDesc=kind==='private'?biField('About the boat',pb.description&&pb.description.en,pb.description&&pb.description.ar,true):null;
+  var boatImg=kind==='private'?imagePicker(pb.image||null,'Remember to save the trip.','Boat photo'):null;
+  var boatSpecs=kind==='private'?pairEditor('Quick facts (length, engines, capacity…)',pb.specs||[],'Each fact has a label and a value, e.g. “Length” = “42 ft”.'):null;
+  var boatAmen=kind==='private'?listEditor('On board (equipment & amenities)',pb.amenities||[],false):null;
   var err=h('div');
   var save=h('button',{class:'btn',type:'button'},isNew?'Create trip':'Save changes');
   save.addEventListener('click',function(){
@@ -406,6 +435,8 @@ function editor(main,t,schedules,bookingCount,isNew){
       location_en:l.en,location_ar:l.ar,duration_en:du.en,duration_ar:du.ar,group_size_en:sz.en,group_size_ar:sz.ar,accommodation_en:ac.en,accommodation_ar:ac.ar,
       max_group:maxg.value===''?null:Number(maxg.value),itinerary:itin.get(),inclusions:inc.get(),exclusions:exc.get(),requirements:req.get(),terms:terms.get()};
     if(gallery)body.images=gallery.get();
+    if(kind==='private'){body.details={tag:ptag.get(),show_itinerary:showItin.checked,show_cancellation:showCancel.checked,cancellation:customCancel.get(),
+      boat:{enabled:boatOn.checked,name:boatName.get(),tagline:boatTag.get(),description:boatDesc.get(),image:boatImg.get(),specs:boatSpecs.get(),amenities:boatAmen.get()}}}
     if(kind==='experience'&&body.category==='international')body.region='international';
     if(isNew&&slug.value.trim())body.slug=slug.value.trim().toLowerCase();
     api(isNew?'POST':'PUT','/trips'+(isNew?'':'/'+t.id),body).then(function(r){
@@ -426,6 +457,20 @@ function editor(main,t,schedules,bookingCount,isNew){
       field('Web address ',slug,isNew?'Letters, numbers and dashes. Cannot be changed later.':'Fixed after creation.')),
     h('label',null,h('input',{type:'checkbox',checked:!!t.is_active,on:{change:function(e){active.checked=e.target.checked}}}),' Show on website'),
     h('label',null,h('input',{type:'checkbox',checked:!!t.is_sample,on:{change:function(e){sample.checked=e.target.checked}}}),' Mark as sample / placeholder content ',h('small',null,'(adds a “Sample” notice on the trip page)'))));
+  if(kind==='private'){
+    out.appendChild(h('div',{class:'card'},h('h2',null,'Trip card & page'),ptag,loc,dur,
+      h('div',{class:'grid g3'},field('Maximum number of guests',maxg,'Shown as “Up to N guests” on the card and the trip page.')),
+      h('p',{class:'hint'},'The price above (with “Price applies”) is printed on the card photo. Once the label, price or guests are filled in, the card opens its own trip page.')));
+    out.appendChild(h('div',{class:'card'},h('h2',null,'Itinerary'),
+      h('label',null,h('input',{type:'checkbox',checked:!!pd.show_itinerary,on:{change:function(e){showItin.checked=e.target.checked}}}),' Show the itinerary on the trip page'),
+      h('p',{class:'hint'},'Switch it off to hide the itinerary without deleting it.'),itin));
+    out.appendChild(h('div',{class:'card'},h('h2',null,'Cancellation policy'),
+      h('label',null,h('input',{type:'checkbox',checked:pd.show_cancellation!==false,on:{change:function(e){showCancel.checked=e.target.checked}}}),' Show the cancellation policy on the trip page'),
+      h('p',{class:'hint'},'By default the standard Earth Adventure cancellation policy is shown. Add your own points below only if this trip needs different terms; when the list is empty the standard policy is used.'),customCancel));
+    out.appendChild(h('div',{class:'card'},h('h2',null,'Our boat section'),
+      h('label',null,h('input',{type:'checkbox',checked:!!pb.enabled,on:{change:function(e){boatOn.checked=e.target.checked}}}),' Show the “Our Boat” section on the trip page'),
+      boatName,boatTag,boatDesc,boatImg,boatSpecs,boatAmen));
+  }
   if(kind!=='private'){
     out.appendChild(h('div',{class:'card'},h('h2',null,'Trip details'),loc,dur,
       kind==='group'?size:h('div',{class:'grid g3'},field('Max group size',maxg)),

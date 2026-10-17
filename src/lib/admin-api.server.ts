@@ -65,6 +65,25 @@ const imageRef = z
 const IMAGE_REF = /^(asset:[a-z0-9-]+|\/api\/images\/[a-f0-9]{16,64}|https:\/\/[^\s"'<>]+)$/;
 const galleryRef = z.string().trim().max(500).regex(IMAGE_REF, 'Use an uploaded image or an https:// image address.');
 
+// Extras for private trips (stored as one JSON column): label on the photo, itinerary / cancellation switches and the "Our Boat" section.
+const biLong = z.object({ en: text(2000).default(''), ar: text(2000).default('') });
+const biShort = z.object({ en: text(600).default(''), ar: text(600).default('') });
+const detailsSchema = z.object({
+  tag: biShort.default({ en: '', ar: '' }),
+  show_itinerary: z.boolean().default(false),
+  show_cancellation: z.boolean().default(true),
+  cancellation: z.array(biLong).max(30).default([]),
+  boat: z.object({
+    enabled: z.boolean().default(false),
+    name: biShort.default({ en: '', ar: '' }),
+    tagline: biShort.default({ en: '', ar: '' }),
+    description: biLong.default({ en: '', ar: '' }),
+    image: imageRef,
+    specs: z.array(z.object({ label: biShort, value: biShort })).max(12).default([]),
+    amenities: z.array(biShort).max(30).default([]),
+  }).default({ enabled: false, name: { en: '', ar: '' }, tagline: { en: '', ar: '' }, description: { en: '', ar: '' }, image: null, specs: [], amenities: [] }),
+});
+
 const tripSchema = z.object({
   slug: z.string().trim().regex(/^[a-z0-9-]{1,100}$/, 'Web address may only use a-z, 0-9 and dashes.').optional(),
   kind: z.enum(['group', 'private', 'experience']),
@@ -78,6 +97,8 @@ const tripSchema = z.object({
   image: imageRef,
   // Extra photos for the slideshow on a group trip (the main `image` above stays the cover).
   images: z.array(galleryRef).max(12, 'You can add up to 12 extra photos.').optional(),
+  // Private-trip page extras (label, itinerary / cancellation switches, boat section). Only saved when sent.
+  details: detailsSchema.optional(),
   location_en: optText(200), location_ar: optText(200),
   duration_en: optText(200), duration_ar: optText(200),
   group_size_en: optText(200), group_size_ar: optText(200),
@@ -113,7 +134,7 @@ const passwordRules = (value: string) => auth.validatePasswordStrength(value);
 // Helpers
 // ------------------------------------------------------------------------------------------------
 const TRIP_COLUMNS = [
-  'category', 'region', 'destination', 'name_en', 'name_ar', 'description_en', 'description_ar', 'image', 'images',
+  'category', 'region', 'destination', 'name_en', 'name_ar', 'description_en', 'description_ar', 'image', 'images', 'details',
   'location_en', 'location_ar', 'duration_en', 'duration_ar', 'group_size_en', 'group_size_ar', 'max_group',
   'accommodation_en', 'accommodation_ar', 'price', 'price_type', 'itinerary', 'inclusions', 'exclusions',
   'requirements', 'terms', 'is_sample', 'is_active', 'sort_order',
@@ -124,25 +145,29 @@ function tripValues(v: TripInput, cols: readonly string[] = TRIP_COLUMNS): unkno
   return cols.map((c) => {
     const x = r[c];
     if (c === 'itinerary' || c === 'inclusions' || c === 'exclusions' || c === 'requirements' || c === 'terms' || c === 'images') return JSON.stringify(x ?? []);
+    if (c === 'details') return JSON.stringify(x ?? {});
     if (c === 'is_sample' || c === 'is_active') return x ? 1 : 0;
     return x === undefined ? null : x;
   });
 }
 
-// The extra-photos column is added to older databases automatically the first time it is needed,
-// so no manual migration command is required.
-let imagesColumnReady = false;
-async function ensureImagesColumn(db: D1Like): Promise<void> {
-  if (imagesColumnReady) return;
+// The extra columns (group-trip photos, private-trip details) are added to older databases automatically
+// the first time they are needed, so no manual migration command is required.
+let extraColumnsReady = false;
+async function ensureExtraColumns(db: D1Like): Promise<void> {
+  if (extraColumnsReady) return;
   const info = await db.prepare('PRAGMA table_info(trips)').all<{ name: string }>();
-  if (!(info.results ?? []).some((c) => c.name === 'images')) {
+  const have = new Set((info.results ?? []).map((c) => c.name));
+  const wanted: [string, string][] = [['images', "TEXT NOT NULL DEFAULT '[]'"], ['details', "TEXT NOT NULL DEFAULT '{}'"]];
+  for (const [name, def] of wanted) {
+    if (have.has(name)) continue;
     try {
-      await db.prepare("ALTER TABLE trips ADD COLUMN images TEXT NOT NULL DEFAULT '[]'").run();
+      await db.prepare(`ALTER TABLE trips ADD COLUMN ${name} ${def}`).run();
     } catch (e) {
       if (!/duplicate column/i.test(e instanceof Error ? e.message : String(e))) throw e;
     }
   }
-  imagesColumnReady = true;
+  extraColumnsReady = true;
 }
 
 function slugify(name: string): string {
@@ -202,7 +227,7 @@ const getTrip: Handler = async ({ db, params }) => {
 
 const createTrip: Handler = async ({ db, request }) => {
   const v = parse(tripSchema, await readJson(request));
-  await ensureImagesColumn(db);
+  await ensureExtraColumns(db);
   let slug = v.slug ?? slugify(v.name_en);
   for (let attempt = 0; attempt < 20; attempt++) {
     const candidate = attempt === 0 ? slug : `${slug}-${attempt + 1}`;
@@ -235,9 +260,9 @@ const updateTrip: Handler = async ({ db, request, params }) => {
   if (!existing) return fail('Trip not found.', 404);
   const body = (await readJson(request)) as Record<string, unknown>;
   const v = parse(tripSchema, { ...body, kind: existing.kind });
-  // Only touch the photos column when the request carries it (an old open admin tab never wipes photos).
-  if (v.images !== undefined) await ensureImagesColumn(db);
-  const cols = TRIP_COLUMNS.filter((c) => c !== 'images' || v.images !== undefined);
+  // Only touch the photos / details columns when the request carries them (an old open admin tab never wipes them).
+  if (v.images !== undefined || v.details !== undefined) await ensureExtraColumns(db);
+  const cols = TRIP_COLUMNS.filter((c) => (c !== 'images' || v.images !== undefined) && (c !== 'details' || v.details !== undefined));
   const sets = cols.map((c, i) => `${c} = ?${i + 1}`).join(', ');
   await db
     .prepare(`UPDATE trips SET ${sets}, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id = ?${cols.length + 1}`)
