@@ -81,8 +81,8 @@ export const aboutText = {
     tagline: bi('Dreams come true', 'الأحلام تصبح حقيقة'),
     paragraphs: [
       bi(
-        'My name is Dalal AlOmar, also nicknamed “Ba7riya”. I’m proud to have an Omani soul. I’m the founder of “Earth Adventure”. My life completely changed as I started getting new skills and got to know myself better when I started traveling with groups.',
-        'اسمي دلال العمر وألقب أيضاً بـ “بحرية”. فخورة بروح عُمانية. أنا مؤسسة “Earth Adventure”. تغيرت حياتي تماماً عندما بدأت باكتساب مهارات جديدة والتعرف على نفسي بشكل أفضل عندما بدأت السفر مع المجموعات.',
+        'My name is Dalal AlOmar, also nicknamed “Ba7riya”. I’m proud to be a Kuwaiti citizen. I’m the founder of “Earth Adventure”. My life completely changed as I started getting new skills and got to know myself better when I started traveling with groups.',
+        'اسمي دلال العمر وألقب أيضاً بـ “بحرية”. فخورة بكوني مواطنة كويتية. أنا مؤسسة “Earth Adventure”. تغيرت حياتي تماماً عندما بدأت باكتساب مهارات جديدة والتعرف على نفسي بشكل أفضل عندما بدأت السفر مع المجموعات.',
       ),
       bi(
         'Fishing is my life. I love it and spend every day doing it. I’m an avid angler and passionate about adventures and outdoor activities, including hiking, fishing, and mountain climbing. Diving has been both a hobby and a way of life for me since 2010, and I am a PADI instructor, so I can share my knowledge with others. I’m also a first-aid trainer, so whenever you need me, I’ll be there for you.',

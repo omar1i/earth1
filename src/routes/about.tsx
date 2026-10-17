@@ -66,8 +66,8 @@ function About() {
             </p>
             <p>
               {t(
-                'Whether you’re an Oman resident seeking a fresh escape, a GCC traveller, or discovering Oman for the first time, your next adventure starts with what inspires you.',
-                'سواء كنت مقيمًا في عُمان تبحث عن رحلة مختلفة أو مسافرًا من الخليج أو تزور عُمان لأول مرة، تبدأ مغامرتك القادمة بما يلهمك.',
+                'Whether you’re an Oman resident seeking a fresh escape or discovering Oman for the first time, your next adventure starts with what inspires you.',
+                'سواء كنت مقيمًا في عُمان تبحث عن رحلة مختلفة أو تزور عُمان لأول مرة، تبدأ مغامرتك القادمة بما يلهمك.',
               )}
             </p>
             <Button asChild size="lg">
