@@ -242,7 +242,7 @@ export function PrivateBoatSection({ boat, fallbackName, embedded = false }: { b
   const [hover, setHover] = useState<ZoneId | null>(null);
   const [pin, setPin] = useState<ZoneId | null>(null);
   const active = hover ?? pin;
-  const bind = (zone: ZoneId | null) =>
+  const bind = (zone: ZoneId | null | undefined) =>
     zone
       ? {
           onMouseEnter: () => setHover(zone),
@@ -260,7 +260,8 @@ export function PrivateBoatSection({ boat, fallbackName, embedded = false }: { b
     const a = boat.amenities.find((_, i) => amenityZones[i] === id);
     if (a) return a[lang];
     const si = specZones.indexOf(id);
-    return si >= 0 ? `${boat.specs[si].label[lang]}: ${boat.specs[si].value[lang]}` : '';
+    const spec = si >= 0 ? boat.specs[si] : undefined;
+    return spec ? `${spec.label[lang]}: ${spec.value[lang]}` : '';
   };
   const pins = zones.filter((z) => specZones.includes(z.id) || amenityZones.includes(z.id));
 
@@ -273,7 +274,7 @@ export function PrivateBoatSection({ boat, fallbackName, embedded = false }: { b
   useEffect(() => {
     const el = stageRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') return;
-    const io = new IntersectionObserver(([e]) => el.classList.toggle('bt-offscreen', !e.isIntersecting), { rootMargin: '80px 0px' });
+    const io = new IntersectionObserver(([e]) => { if (e) el.classList.toggle('bt-offscreen', !e.isIntersecting); }, { rootMargin: '80px 0px' });
     io.observe(el);
     return () => io.disconnect();
   }, [hasStageEl]);

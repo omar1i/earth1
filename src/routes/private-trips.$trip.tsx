@@ -57,6 +57,7 @@ function PrivateTripDetail() {
     const step = (e.key === 'ArrowRight' ? 1 : -1) * (lang === 'ar' ? -1 : 1);
     const i = tabs.findIndex((x) => x.id === active);
     const next = tabs[(i + step + tabs.length) % tabs.length];
+    if (!next) return;
     setTab(next.id);
     document.getElementById(`trip-tab-${next.id}`)?.focus();
   };
