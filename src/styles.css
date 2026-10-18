@@ -768,3 +768,27 @@ a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 
 /* counting numbers: reserve the final width so the spec cards don't jump while the digits count up */
 .bt-num{display:inline-grid;font-variant-numeric:tabular-nums}.bt-num>span{grid-area:1/1;white-space:nowrap}.bt-num-ghost{visibility:hidden}
+
+/* Private trip page: three section buttons under the hero photo */
+.trip-tabs-bar{background:#fff;border-bottom:1px solid var(--border)}
+.trip-tabs{display:flex;gap:10px;padding:16px 0}
+.trip-tab{display:inline-flex;align-items:center;gap:9px;height:46px;padding:0 22px;border-radius:999px;border:1px solid var(--border);background:#fff;color:var(--foreground);font-size:14px;font-weight:650;cursor:pointer;white-space:nowrap;transition:background .2s,border-color .2s,color .2s,box-shadow .2s}
+.trip-tab svg{width:18px;height:18px;color:var(--primary)}
+.trip-tab:hover{border-color:var(--adventure);background:color-mix(in oklch,var(--adventure) 8%,#fff)}
+.trip-tab[aria-selected=true]{background:var(--primary);border-color:var(--primary);color:var(--primary-foreground);box-shadow:0 8px 18px -10px var(--primary)}
+.trip-tab[aria-selected=true] svg{color:var(--primary-foreground)}
+.trip-tab[aria-selected=true]::after{content:'';width:7px;height:7px;border-radius:50%;background:var(--adventure)}
+.trip-tab:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+.trip-panel{animation:trip-panel-in .35s ease both}
+@keyframes trip-panel-in{from{opacity:0}to{opacity:1}}
+@media(max-width:600px){.trip-tabs{overflow-x:auto;gap:8px;padding:12px 0;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none}.trip-tabs::-webkit-scrollbar{display:none}.trip-tab{height:42px;padding:0 16px;font-size:13px;scroll-snap-align:start}}
+@media(prefers-reduced-motion:reduce){.trip-panel{animation:none}}
+
+/* Booking form: "Terms & Conditions" opens the cancellation policy (Masirah) */
+.legal-btn{background:none;border:0;padding:0;font:inherit;font-weight:600;cursor:pointer}
+.policy-dialog{max-height:85svh;overflow:hidden;display:flex;flex-direction:column;gap:14px}
+.policy-dialog-body{overflow-y:auto;padding-inline-end:6px}
+.policy-dialog-body ul.policy-list{list-style:disc;padding-inline-start:20px;margin:0;color:var(--muted-foreground);font-size:14px;line-height:1.75}
+.policy-dialog-body .policy-list li{margin:9px 0}
+.policy-dialog-body .policy-list li::marker{color:var(--primary)}
+.policy-dialog-body .policy-note{font-size:13px}

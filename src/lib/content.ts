@@ -112,6 +112,8 @@ export const privateDestinations: PrivateDestination[] = [
    }},
   {id:'salalah', name:bi('Salalah','صلالة'), image:camping, description:bi('Green hills, coastal scenery and a very different side of Oman, especially in the khareef season. Explore the coast and valleys at your own pace.','تلال خضراء ومناظر ساحلية وجانب مختلف تمامًا من عُمان، خصوصًا في موسم الخريف. استكشف الساحل والأودية بالوتيرة التي تناسبك.')},
 ];
+// The Masirah trip is the only one with an online "Book Now" card and the cancellation policy inside the Terms & Conditions link.
+export const isMasirahTrip=(d:{id:string;name:Bilingual})=>/masirah|مصيرة|مصيره/i.test(`${d.id} ${d.name.en} ${d.name.ar}`);
 export const privateTripWhatsapp=(name:string)=>`${whatsapp}&text=${encodeURIComponent('Hello! I would like to plan a private trip to '+name+'.')}`;
 
 export type GroupTrip = {

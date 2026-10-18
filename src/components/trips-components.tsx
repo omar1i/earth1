@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { ArrowRight, ArrowUpRight, CalendarDays, Clock, MapPin, MessageCircle, Tag, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/language';
-import { privateTripsIntro, privateTripWhatsapp, whatsapp, type GroupTrip, type PrivateDestination } from '@/lib/content';
+import { isMasirahTrip, privateTripsIntro, privateTripWhatsapp, whatsapp, type GroupTrip, type PrivateDestination } from '@/lib/content';
 import { useCatalog } from '@/lib/catalog-context';
 import { seatStatus, privateHasPage } from '@/lib/catalog';
 import { ImageSlider } from '@/components/image-slider';
@@ -50,12 +50,21 @@ export function PrivateTripCard({ d }: { d: PrivateDestination }) {
               <ArrowRight />
             </Link>
           )}
-          <Button asChild size="sm" className="contact-btn">
-            <a href={privateTripWhatsapp(d.name.en)} target="_blank" rel="noreferrer">
-              <MessageCircle size={15} />
-              {t('Contact Us', 'تواصل معنا')}
-            </a>
-          </Button>
+          {isMasirahTrip(d) ? (
+            <Button asChild size="sm" className="contact-btn">
+              <Link to="/book" search={{ experience: d.id }}>
+                {t('Book Now', 'احجز الآن')}
+                <ArrowUpRight size={15} />
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild size="sm" className="contact-btn">
+              <a href={privateTripWhatsapp(d.name.en)} target="_blank" rel="noreferrer">
+                <MessageCircle size={15} />
+                {t('Contact Us', 'تواصل معنا')}
+              </a>
+            </Button>
+          )}
         </div>
       </div>
     </article>

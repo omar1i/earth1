@@ -1,5 +1,6 @@
+import { useEffect, useState, type KeyboardEvent } from 'react';
 import { createFileRoute, notFound, Link } from '@tanstack/react-router';
-import { ArrowUpRight, Clock, Fish, MapPin, MessageCircle, Tag, Users } from 'lucide-react';
+import { ArrowUpRight, Clock, Fish, ListChecks, MapPin, MessageCircle, Ship, ShieldCheck, Tag, Users } from 'lucide-react';
 import { pageHead, bi, cancellationPolicy, privateTripWhatsapp } from '@/lib/content';
 import { loadCatalog } from '@/lib/catalog.functions';
 import { useCatalog } from '@/lib/catalog-context';
@@ -25,16 +26,40 @@ export const Route = createFileRoute('/private-trips/$trip')({
   component: PrivateTripDetail,
 });
 
+type TripTab = 'boat' | 'details' | 'policy';
+
 function PrivateTripDetail() {
   const trip = Route.useLoaderData();
   const { privateDestinations } = useCatalog();
   const { lang, t } = useLanguage();
+  // Three buttons under the hero photo: Our Boat / Trip Details / Cancellation Policy. Each one shows only its own content.
+  const [tab, setTab] = useState<TripTab>('details');
+  useEffect(() => {
+    const h = window.location.hash.replace('#', '');
+    if (h === 'boat' || h === 'policy' || h === 'details') setTab(h);
+  }, []);
   if (!trip) return null;
   const policy = trip.cancellation && trip.cancellation.length > 0 ? trip.cancellation : cancellationPolicy.items;
   const customPolicy = !!(trip.cancellation && trip.cancellation.length > 0);
   const isFishing = !!trip.tag && /fish|صيد/i.test(`${trip.tag.en} ${trip.tag.ar}`);
   const guests = trip.maxGuests ? t(`Up to ${trip.maxGuests} guests`, `حتى ${trip.maxGuests} أشخاص`) : '';
   const others = privateDestinations.filter((x) => x.id !== trip.id);
+  const hasPolicy = trip.showCancellation !== false;
+  const tabs: { id: TripTab; label: string; Icon: typeof Ship }[] = [
+    ...(trip.boat ? [{ id: 'boat' as const, label: t('Our Boat', 'قاربنا'), Icon: Ship }] : []),
+    { id: 'details' as const, label: t('Trip Details', 'تفاصيل الرحلة'), Icon: ListChecks },
+    ...(hasPolicy ? [{ id: 'policy' as const, label: cancellationPolicy.title[lang], Icon: ShieldCheck }] : []),
+  ];
+  const active: TripTab = tabs.some((x) => x.id === tab) ? tab : 'details';
+  const onTabKey = (e: KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    e.preventDefault();
+    const step = (e.key === 'ArrowRight' ? 1 : -1) * (lang === 'ar' ? -1 : 1);
+    const i = tabs.findIndex((x) => x.id === active);
+    const next = tabs[(i + step + tabs.length) % tabs.length];
+    setTab(next.id);
+    document.getElementById(`trip-tab-${next.id}`)?.focus();
+  };
   return (
     <>
       <section className="image-hero group-hero">
@@ -44,6 +69,29 @@ function PrivateTripDetail() {
           <h1>{trip.name[lang]}</h1>
         </div>
       </section>
+      <div className="trip-tabs-bar">
+        <div className="container">
+          <div className="trip-tabs" role="tablist" aria-label={t('Trip sections', 'أقسام الرحلة')}>
+            {tabs.map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                id={`trip-tab-${id}`}
+                aria-selected={active === id}
+                aria-controls="trip-panel"
+                tabIndex={active === id ? 0 : -1}
+                className="trip-tab"
+                onClick={() => setTab(id)}
+                onKeyDown={onTabKey}
+              >
+                <Icon aria-hidden="true" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
       <section className="section group-trip-page">
         <div className="container">
           <div className="breadcrumbs">
@@ -58,39 +106,44 @@ function PrivateTripDetail() {
           )}
           <div className="detail-layout">
             <div className="detail-copy">
-              <div className="detail-section">
-                <h2>{isFishing ? t('About this fishing trip', 'نبذة عن رحلة الصيد') : t('About this trip', 'نبذة عن الرحلة')}</h2>
-                <p>{trip.description[lang]}</p>
-                <div className="experience-meta">
-                  {trip.location && <span><MapPin />{trip.location[lang]}</span>}
-                  {trip.duration && <span><Clock />{trip.duration[lang]}</span>}
-                  {guests && <span><Users />{guests}</span>}
-                </div>
-              </div>
-              {trip.showItinerary && trip.itinerary && trip.itinerary.length > 0 && (
-                <div className="detail-section">
-                  <h2>{t('Trip Details', 'تفاصيل الرحلة')}</h2>
-                  <ol className="itinerary">
-                    {trip.itinerary.map((step, i) => (
-                      <li key={i}>
-                        <strong>{step.title[lang]}</strong>
-                        <p>{step.text[lang]}</p>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              )}
-              {trip.boat && <PrivateBoatSection embedded boat={trip.boat} fallbackName={trip.name[lang]} />}
-              {trip.showCancellation !== false && (
-                <div className="detail-section">
-                  <h2>{cancellationPolicy.title[lang]}</h2>
-                  <ul className="policy-list">{policy.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
-                  {!customPolicy && <p className="policy-note">{cancellationPolicy.note[lang]}</p>}
-                </div>
-              )}
-              <div className="detail-section">
-                <h2>{t('How to book', 'طريقة الحجز')}</h2>
-                <p>{t('Press Book Now to send your booking request and choose your preferred date. Payment and trip details are agreed directly with our team.', 'اضغط احجز الآن لإرسال طلب الحجز واختيار التاريخ المناسب لك. يتم الاتفاق على الدفع وتفاصيل الرحلة مباشرة مع فريقنا.')}</p>
+              <div className="trip-panel" role="tabpanel" id="trip-panel" aria-labelledby={`trip-tab-${active}`} key={active}>
+                {active === 'details' && (
+                  <>
+                    <div className="detail-section">
+                      <h2>{isFishing ? t('About this fishing trip', 'نبذة عن رحلة الصيد') : t('About this trip', 'نبذة عن الرحلة')}</h2>
+                      <p>{trip.description[lang]}</p>
+                      <div className="experience-meta">
+                        {trip.location && <span><MapPin />{trip.location[lang]}</span>}
+                        {trip.duration && <span><Clock />{trip.duration[lang]}</span>}
+                        {guests && <span><Users />{guests}</span>}
+                      </div>
+                    </div>
+                    {trip.showItinerary && trip.itinerary && trip.itinerary.length > 0 && (
+                      <div className="detail-section">
+                        <ol className="itinerary">
+                          {trip.itinerary.map((step, i) => (
+                            <li key={i}>
+                              <strong>{step.title[lang]}</strong>
+                              <p>{step.text[lang]}</p>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+                    <div className="detail-section">
+                      <h2>{t('How to book', 'طريقة الحجز')}</h2>
+                      <p>{t('Press Book Now to send your booking request and choose your preferred date. Payment and trip details are agreed directly with our team.', 'اضغط احجز الآن لإرسال طلب الحجز واختيار التاريخ المناسب لك. يتم الاتفاق على الدفع وتفاصيل الرحلة مباشرة مع فريقنا.')}</p>
+                    </div>
+                  </>
+                )}
+                {active === 'boat' && trip.boat && <PrivateBoatSection embedded boat={trip.boat} fallbackName={trip.name[lang]} />}
+                {active === 'policy' && hasPolicy && (
+                  <div className="detail-section">
+                    <h2>{cancellationPolicy.title[lang]}</h2>
+                    <ul className="policy-list">{policy.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
+                    {!customPolicy && <p className="policy-note">{cancellationPolicy.note[lang]}</p>}
+                  </div>
+                )}
               </div>
             </div>
             <aside className="booking-aside">
