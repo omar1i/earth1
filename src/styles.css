@@ -649,7 +649,7 @@ a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 .bt-specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:30px 0 0}
 .bt-tile{position:relative;display:flex;align-items:center;gap:16px;padding:20px 22px;border-radius:18px;overflow:hidden;background:linear-gradient(160deg,rgba(255,255,255,.11),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.15);transition:transform .3s,border-color .3s,box-shadow .3s}
 .bt-tile::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(230px circle at var(--mx,50%) var(--my,-30%),rgba(182,255,77,.22),transparent 62%)}
-@media(hover:hover){.bt-tile:hover::before{opacity:1}.bt-tile:hover{transform:translateY(-3px);border-color:rgba(182,255,77,.45)}}
+@media(hover:hover){.bt-tile:hover::before{opacity:1}}
 .bt-tile.is-active{border-color:rgba(182,255,77,.75);box-shadow:0 0 0 1px rgba(182,255,77,.35),0 16px 36px -16px rgba(182,255,77,.5)}
 .bt-tile-icon{flex:none;display:grid;place-items:center;width:54px;height:54px;border-radius:17px;color:var(--adventure);background:rgba(182,255,77,.14);box-shadow:inset 0 0 0 1px rgba(182,255,77,.32)}
 .bt-tile-icon svg{width:27px;height:27px}
@@ -670,9 +670,8 @@ a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 .bt-chips{display:flex;flex-wrap:wrap;gap:12px;margin:0;padding:0;list-style:none}
 .bt-chip{outline:none}
 .bt-chip[tabindex]{cursor:pointer}
-.bt-chip-card{display:inline-flex;align-items:center;gap:12px;padding:8px 20px 8px 8px;border-radius:999px;background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.17);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-size:15px;font-weight:600;line-height:1.35;color:#eef7fd;transition:background .25s,border-color .25s,box-shadow .25s;animation:bt-float 6s ease-in-out infinite;animation-delay:calc(var(--f,0)*-1.5s)}
+.bt-chip-card{display:inline-flex;align-items:center;gap:12px;padding:8px 20px 8px 8px;border-radius:999px;background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.17);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-size:15px;font-weight:600;line-height:1.35;color:#eef7fd;transition:background .25s,border-color .25s,box-shadow .25s}
 [dir=rtl] .bt-chip-card{padding:8px 8px 8px 20px}
-.bt-onboard:not(.bt-in) .bt-chip-card{animation-play-state:paused}
 @keyframes bt-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 .bt-chip-icon{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;color:var(--adventure);background:rgba(182,255,77,.16)}
 .bt-chip-icon svg{width:18px;height:18px}
@@ -762,3 +761,7 @@ a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 .bt-onboard h3::after{order:3}
 .bt-onboard h3{gap:12px}
 .bt-hint{color:var(--muted-foreground)}
+
+/* no hover lift / floating on the spec cards and chips: the moving target made the hover flicker */
+.bt-tile,.bt-chip-card{transform:none!important}
+.bt-stage .bt-chip,.bt-stage .bt-tile{will-change:auto}
