@@ -69,7 +69,7 @@ function PrivateTripDetail() {
               </div>
               {trip.showItinerary && trip.itinerary && trip.itinerary.length > 0 && (
                 <div className="detail-section">
-                  <h2>{t('Itinerary', 'برنامج الرحلة')}</h2>
+                  <h2>{t('Trip Details', 'تفاصيل الرحلة')}</h2>
                   <ol className="itinerary">
                     {trip.itinerary.map((step, i) => (
                       <li key={i}>
@@ -80,6 +80,7 @@ function PrivateTripDetail() {
                   </ol>
                 </div>
               )}
+              {trip.boat && <PrivateBoatSection embedded boat={trip.boat} fallbackName={trip.name[lang]} />}
               {trip.showCancellation !== false && (
                 <div className="detail-section">
                   <h2>{cancellationPolicy.title[lang]}</h2>
@@ -114,7 +115,6 @@ function PrivateTripDetail() {
           </div>
         </div>
       </section>
-      {trip.boat && <PrivateBoatSection boat={trip.boat} fallbackName={trip.name[lang]} />}
       {others.length > 0 && (
         <section className="section">
           <div className="container">

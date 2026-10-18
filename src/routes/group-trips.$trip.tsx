@@ -78,7 +78,7 @@ function GroupTripDetail() {
                 </div>
               </div>
               <div className="detail-section">
-                <h2>{t('Itinerary', 'برنامج الرحلة')}</h2>
+                <h2>{t('Trip Details', 'تفاصيل الرحلة')}</h2>
                 <ol className="itinerary">
                   {trip.itinerary.map((step, i) => (
                     <li key={i}>

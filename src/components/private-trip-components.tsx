@@ -122,15 +122,15 @@ function BoatDrawing() {
         {/* sun canopy */}
         <g className="bt-z bt-z-canopy">
           <path d="M200 64 L470 58 Q484 58 482 70 L196 78 Q188 70 200 64 Z" fill="url(#bt-roof)" />
-          <path d="M204 72 L476 66" stroke="#35a0f0" strokeWidth="3" strokeLinecap="round" opacity=".85" />
+          <path d="M204 72 L476 66" stroke="#7dc918" strokeWidth="3" strokeLinecap="round" opacity=".95" />
         </g>
       </g>
 
       {/* fish finder: sonar pings below the hull + a few fish */}
-      <g className="bt-sonar" fill="none" stroke="#007adb" strokeWidth="2">
+      <g className="bt-sonar" fill="none" stroke="#7dc918" strokeWidth="2">
         <ellipse cx="300" cy="232" rx="12" ry="4" /><ellipse cx="300" cy="232" rx="12" ry="4" /><ellipse cx="300" cy="232" rx="12" ry="4" />
       </g>
-      <g className="bt-fish" fill="#007adb">
+      <g className="bt-fish" fill="#5fa80f">
         <path className="bt-fish-1" d="M0 0 C8 -7 20 -7 28 0 C20 7 8 7 0 0 Z M28 0 L37 -6 L37 6 Z" />
         <path className="bt-fish-2" d="M0 0 C8 -7 20 -7 28 0 C20 7 8 7 0 0 Z M28 0 L37 -6 L37 6 Z" />
         <path className="bt-fish-3" d="M0 0 C8 -7 20 -7 28 0 C20 7 8 7 0 0 Z M28 0 L37 -6 L37 6 Z" />
@@ -222,7 +222,7 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(2)}%`;
 
 // "Our Boat": a light brand-coloured panel. A drawing of the boat whose parts light up together with the matching cards,
 // spec cards that count up, and the equipment as floating chips.
-export function PrivateBoatSection({ boat, fallbackName }: { boat: PrivateBoat; fallbackName: string }) {
+export function PrivateBoatSection({ boat, fallbackName, embedded = false }: { boat: PrivateBoat; fallbackName: string; embedded?: boolean }) {
   const { lang, t } = useLanguage();
   const label = t('Our Boat', 'قاربنا');
   const title = boat.name[lang] || label;
@@ -259,9 +259,8 @@ export function PrivateBoatSection({ boat, fallbackName }: { boat: PrivateBoat; 
   const rtl = lang === 'ar';
   const hasStage = boat.specs.length > 0 || boat.amenities.length > 0;
 
-  return (
-    <section className="section section-soft boat-section" aria-labelledby="our-boat-title">
-      <div className="container">
+  const body = (
+    <>
         <div className={boat.image ? 'boat-head has-image' : 'boat-head'}>
           <div className="boat-intro">
             {showLabel && <div className="eyebrow">{label}</div>}
@@ -360,7 +359,14 @@ export function PrivateBoatSection({ boat, fallbackName }: { boat: PrivateBoat; 
             )}
           </div>
         )}
-      </div>
+    </>
+  );
+
+  return embedded ? (
+    <div className="detail-section boat-embedded" aria-labelledby="our-boat-title">{body}</div>
+  ) : (
+    <section className="section section-soft boat-section" aria-labelledby="our-boat-title">
+      <div className="container">{body}</div>
     </section>
   );
 }
