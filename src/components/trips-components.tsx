@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { ArrowRight, ArrowUpRight, CalendarDays, Clock, MapPin, MessageCircle, Tag, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/language';
-import { isMasirahTrip, privateTripsIntro, privateTripWhatsapp, whatsapp, type GroupTrip, type PrivateDestination } from '@/lib/content';
+import { isMasirahTrip, privateTripsIntro, privateTripWhatsapp, tripRegion, whatsapp, type GroupTrip, type PrivateDestination } from '@/lib/content';
 import { useCatalog } from '@/lib/catalog-context';
 import { seatStatus, privateHasPage } from '@/lib/catalog';
 import { ImageSlider } from '@/components/image-slider';
@@ -158,7 +158,8 @@ export function GroupTripCard({ trip }: { trip: GroupTrip }) {
 export function GroupTripsSection({ trips }: { trips?: GroupTrip[] } = {}) {
   const { t } = useLanguage();
   const catalog = useCatalog();
-  const groupTrips = trips ?? catalog.groupTrips;
+  // Without an explicit list, show the Oman group trips; international ones live under the International tab.
+  const groupTrips = trips ?? catalog.groupTrips.filter((g) => tripRegion(g) === 'oman');
   return (
     <section className="trip-part trip-part-group" aria-labelledby="group-trips-title">
       <div className="trip-part-head trip-part-head-main">

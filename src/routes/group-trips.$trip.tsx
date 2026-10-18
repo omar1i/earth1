@@ -1,6 +1,6 @@
 import { createFileRoute, notFound, Link } from '@tanstack/react-router';
 import { ArrowUpRight, CalendarDays, Clock, MapPin, Tag, Users } from 'lucide-react';
-import { pageHead, bi, cancellationPolicy } from '@/lib/content';
+import { pageHead, bi, cancellationPolicy, tripRegion } from '@/lib/content';
 import { loadCatalog } from '@/lib/catalog.functions';
 import { useCatalog } from '@/lib/catalog-context';
 import { useLanguage, headLang } from '@/lib/language';
@@ -35,6 +35,8 @@ function GroupTripDetail() {
   const hasSchedules = !!trip.schedules;
   const canBook = !hasSchedules || (trip.schedules ?? []).some((s) => s.bookable);
   const fullyBooked = hasSchedules && !canBook && (trip.schedules ?? []).length > 0 && (trip.schedules ?? []).every((s) => s.soldOut);
+  const international = tripRegion(trip) === 'international';
+  const sameRegion = groupTrips.filter((x) => x.id !== trip.id && tripRegion(x) === tripRegion(trip));
   const lists = [
     [t('What’s included', 'ما يشمله السعر'), trip.inclusions],
     [t('What’s not included', 'ما لا يشمله السعر'), trip.exclusions],
@@ -57,7 +59,7 @@ function GroupTripDetail() {
       <section className="section group-trip-page">
         <div className="container">
           <div className="breadcrumbs">
-            <Link to="/" search={{ trips: 'oman' }}>{t('Oman Trips', 'رحلات عمان')}</Link>
+            <Link to="/" search={{ trips: international ? 'international' : 'oman' }}>{international ? t('International Trips', 'رحلات دولية') : t('Oman Trips', 'رحلات عمان')}</Link>
             <span>/</span>
             <span>{trip.name[lang]}</span>
           </div>
@@ -96,8 +98,18 @@ function GroupTripDetail() {
               ))}
               <div className="detail-section">
                 <h2>{cancellationPolicy.title[lang]}</h2>
-                <ul className="policy-list">{cancellationPolicy.items.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
-                <p className="policy-note">{cancellationPolicy.note[lang]}</p>
+                {international ? (
+                  // International trips follow the Terms & Conditions for International Trips (page /terms).
+                  <p>
+                    {t('Payment, cancellation and refund terms for international trips are set out in our ', 'شروط الدفع والإلغاء والاسترداد للرحلات الدولية موضحة في ')}
+                    <Link className="text-link" to="/terms">{t('Terms & Conditions for International Trips', 'شروط وأحكام الرحلات الدولية')}</Link>.
+                  </p>
+                ) : (
+                  <>
+                    <ul className="policy-list">{cancellationPolicy.items.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
+                    <p className="policy-note">{cancellationPolicy.note[lang]}</p>
+                  </>
+                )}
               </div>
               <div className="detail-section">
                 <h2>{t('How to join', 'طريقة الانضمام')}</h2>
@@ -131,7 +143,7 @@ function GroupTripDetail() {
         <div className="container">
           <div className="section-header"><h2>{t('More group trips', 'رحلات جماعية أخرى')}</h2></div>
           <div className="experience-grid">
-            {groupTrips.filter((x) => x.id !== trip.id).map((x) => <GroupTripCard key={x.id} trip={x} />)}
+            {sameRegion.map((x) => <GroupTripCard key={x.id} trip={x} />)}
           </div>
         </div>
       </section>

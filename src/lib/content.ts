@@ -2,10 +2,16 @@ import coast from '@/assets/oman-coast.webp';
 import camping from '@/assets/oman-camping.webp';
 import wadi from '@/assets/oman-wadi.webp';
 import mountains from '@/assets/oman-mountains.webp';
+import kgCover from '@/assets/kyrgyzstan-cover.webp';
+import kgYurts from '@/assets/kyrgyzstan-yurts.webp';
+import kgIssykkul from '@/assets/kyrgyzstan-issykkul.webp';
+import kgValley from '@/assets/kyrgyzstan-valley.webp';
+import kgEagle from '@/assets/kyrgyzstan-eagle.webp';
+import kgAltyn from '@/assets/kyrgyzstan-altyn.webp';
 import type { Bilingual, Language } from './language';
 export const images = {coast, camping, wadi};
 // Pictures that ship with the site. The database refers to them as asset:<name>; trips can also use an uploaded image or any https URL.
-export const assetImages: Record<string,string> = {coast, camping, wadi, mountains};
+export const assetImages: Record<string,string> = {coast, camping, wadi, mountains, 'kyrgyzstan-cover':kgCover, 'kyrgyzstan-yurts':kgYurts, 'kyrgyzstan-issykkul':kgIssykkul, 'kyrgyzstan-valley':kgValley, 'kyrgyzstan-eagle':kgEagle, 'kyrgyzstan-altyn':kgAltyn};
 export const whatsapp = 'https://api.whatsapp.com/send?phone=96891915594';
 export const instagram = 'https://www.instagram.com/earthadventure_/';
 export const bi = (en: string, ar: string): Bilingual => ({en, ar});
@@ -31,6 +37,7 @@ export const experiences: Experience[] = [
  {id:'intl-sample-3', category:'international', region:'international', name:bi('Culture & City Journey','رحلة ثقافية إلى المدن'), description:bi('A sample international trip idea for discovering new cities and cultures. Contact us to discuss destinations and details.','فكرة رحلة دولية نموذجية لاكتشاف مدن وثقافات جديدة. تواصل معنا لمناقشة الوجهات والتفاصيل.'), price:null, priceType:'contact'},
 ];
 export const regionOf=(e:Experience)=>e.region??'oman';
+export const tripRegion=(t:{region?:'oman'|'international'})=>t.region??'oman';
 export const omanExperiences=experiences.filter(e=>regionOf(e)==='oman');
 export const internationalExperiences=experiences.filter(e=>regionOf(e)==='international');
 export const destinations = [
@@ -117,7 +124,8 @@ export const isMasirahTrip=(d:{id:string;name:Bilingual})=>/masirah|مصيرة|�
 export const privateTripWhatsapp=(name:string)=>`${whatsapp}&text=${encodeURIComponent('Hello! I would like to plan a private trip to '+name+'.')}`;
 
 export type GroupTrip = {
-  id:string; name:Bilingual; description:Bilingual; image:string;
+  id:string; region?:'oman'|'international'; // region decides which tab of the home page shows the trip (default: oman)
+  name:Bilingual; description:Bilingual; image:string;
   gallery?:string[]; // cover first, then the extra photos added in the admin (slideshow on the card and trip page)
   location:Bilingual; duration:Bilingual; groupSize:Bilingual;
   startDate:string; // ISO date (YYYY-MM-DD) the booking form uses; customers cannot pick another date
@@ -170,6 +178,38 @@ export const groupTrips: GroupTrip[] = [
    ],
    inclusions:[bi('Transport from Muscat and the island crossing (sample)','النقل من مسقط وعبور الجزيرة (تجريبي)'),bi('Two nights’ accommodation','إقامة ليلتين'),bi('Meals mentioned in the itinerary','الوجبات المذكورة في البرنامج'),bi('Trip leader / local guide','قائد الرحلة / مرشد محلي')],
    exclusions:sampleExclusions, terms:sampleTerms},
+  // International group trip (women only). Real details taken from the Kyrgyzstan brochure (22-29 May 2027).
+  {id:'kyrgyzstan-women-trip', region:'international', sample:false,
+   name:bi('Kyrgyzstan: Women’s Group Trip','قرغيزستان: رحلة جماعية للسيدات'), image:kgCover,
+   gallery:[kgCover, kgYurts, kgIssykkul, kgValley, kgEagle, kgAltyn],
+   description:bi('Eight active days in Central Asia: Son-Kul lake and a night in a yurt camp, horse riding, rafting, hot springs, an eagle-hunting show and the shores of Issyk-Kul. A women-only trip with an English-speaking guide.','ثمانية أيام من النشاط والمغامرة في آسيا الوسطى: بحيرة سون كول والمبيت في مخيم يورت، ركوب الخيل، الرافتنج، الينابيع الحارة، عرض صيد النسور وشاطئ بحيرة إيسيك كول. رحلة للسيدات فقط مع مرشد يتحدث الإنجليزية.'),
+   location:bi('Kyrgyzstan (Bishkek, Son-Kul, Karakol, Issyk-Kul)','قرغيزستان (بشكيك، سون كول، كاراكول، إيسيك كول)'), duration:bi('8 days','8 أيام'), groupSize:bi('Women only · ages 18–65','للسيدات فقط · الأعمار 18–65'),
+   startDate:'2027-05-22', date:bi('22–29 May 2027','22–29 مايو 2027'), price:bi('OMR 555 per person','555 ر.ع. للشخص'),
+   itinerary:[
+    {title:bi('Day 1 · Arrival in Bishkek','اليوم 1 · الوصول إلى بشكيك'), text:bi('Arrive at Manas Airport and transfer to the hotel to rest. After noon, a short city tour of the main sights (bazaars, the opera house and the museums), then dinner at a local restaurant. Stay: Grand Hotel or similar (meals not included).','الوصول إلى مطار ماناس ثم التوجّه إلى الفندق للراحة. بعد الظهر جولة سريعة لأبرز معالم المدينة (الأسواق الشعبية، دار الأوبرا، والمتاحف) ثم عشاء في مطعم محلي. الإقامة: فندق جراند أو مشابه له (غير شامل الوجبات).')},
+    {title:bi('Day 2 · Bishkek – Konorchok Canyon – Son-Kul Lake','اليوم 2 · بشكيك – وادي كونورتشوك – بحيرة سون كول'), text:bi('Breakfast, then drive towards Son-Kul through the Chuy valley and Boom Gorge. Rafting and a walk to Konorchok canyon, lunch at a guesthouse with a carpet-making demonstration, then arrive at Son-Kul to learn about the life of the nomads. Overnight in a yurt camp. Meals: breakfast, lunch, dinner.','الإفطار في الفندق ثم الانطلاق نحو بحيرة سون كول مرورًا بوادي تشوي وممر بوم. تجربة الرافتنج ومسير إلى وادي كونورتشوك، والغداء في بيت ضيافة مع عرض لصناعة السجاد، ثم الوصول إلى بحيرة سون كول للتعرف على حياة البدو الرحّل. المبيت في مخيم اليورت. الوجبات: إفطار وغداء وعشاء.')},
+    {title:bi('Day 3 · Son-Kul Lake – Ak-Sai Canyon','اليوم 3 · بحيرة سون كول – وادي آك ساي'), text:bi('Breakfast, then a 3-hour horse ride at Son-Kul lake. Lunch at the yurt camp, then drive to the village of Bokonbaevo and visit the Ak-Say valley, with a chance to swim. Overnight in a family guesthouse. Meals: breakfast, lunch, dinner.','الإفطار ثم ركوب الخيل لمدة 3 ساعات في بحيرة سون كول. الغداء في مخيم اليورت ثم التوجه إلى قرية بوكونباييفو وزيارة وادي آك ساي مع فرصة للسباحة. المبيت في بيت ضيافة عائلي. الوجبات: إفطار وغداء وعشاء.')},
+    {title:bi('Day 4 · Skazka Canyon – Kokjayk – Karakol','اليوم 4 · وادي سكازكا – كوك جايك – كاراكول'), text:bi('After breakfast, an eagle-hunting show and a visit to Skazka canyon with its red rock formations. Then Kokjayk valley and pasture, with a walk to the hidden waterfall. Box lunch, then drive to Karakol. Overnight in a family guesthouse. Meals: breakfast, lunch.','بعد الإفطار حضور عرض صيد النسور وزيارة وادي سكازكا بتكويناته الصخرية الحمراء. ثم زيارة وادي كوك جايك ومرعاه مع فرصة للمشي إلى الشلال المخفي. غداء (Lunch Box) ثم التوجه إلى كاراكول. المبيت في بيت ضيافة عائلي. الوجبات: إفطار وغداء.')},
+    {title:bi('Day 5 · Karakol – Altyn Arashan – Karakol','اليوم 5 · كاراكول – ألتن آراشان – كاراكول'), text:bi('Breakfast, then a 4x4 jeep ride to Altyn Arashan valley. A walk in nature and a visit to the hot springs. Picnic lunch, then back to Karakol. Overnight at the Karagat hotel or similar. Meals: breakfast, lunch.','الإفطار ثم الانطلاق بسيارات الجيب نحو وادي ألتن آراشان. جولة مشي بين الطبيعة وزيارة الينابيع الحارة. غداء بنظام البيكنيك ثم العودة إلى كاراكول. المبيت في فندق كاراقات أو مشابه له. الوجبات: إفطار وغداء.')},
+    {title:bi('Day 6 · Karakol – Cholpon-Ata','اليوم 6 · كاراكول – تشولبون آتا'), text:bi('Breakfast, then drive (about 3 hours) to the northern shore of Lake Issyk-Kul. On the way, visit Semenovskoye valley and drive through Grigorievskoye valley, two scenic valleys. Overnight at the Karagat hotel or similar. Meals: breakfast.','الإفطار ثم الانطلاق (حوالي 3 ساعات) نحو الشاطئ الشمالي لبحيرة إيسيك كول. في الطريق زيارة وادي سيمينوفسكوي والدخول والخروج عبر وادي غريغوريفسكوي، وهما واديان خلابان بمناظر طبيعية رائعة. المبيت في فندق كاراقات أو مشابه له. الوجبات: إفطار.')},
+    {title:bi('Day 7 · Cholpon-Ata – Burana – Bishkek','اليوم 7 · تشولبون آتا – برج بورانا – بشكيك'), text:bi('Breakfast, then relax on the shore of Issyk-Kul with a one-hour boat ride. In the afternoon drive (about 3 hours) to Bishkek with a stop at the Burana Tower, a 10th–11th century historic complex on the Silk Road. Arrive in Bishkek in the evening. Overnight at the Garden Hotel or similar. Meals: breakfast.','الإفطار ثم الاسترخاء على شاطئ بحيرة إيسيك كول مع جولة بحرية بالقارب لمدة ساعة. بعد الظهر الانطلاق (حوالي 3 ساعات) نحو بشكيك مع زيارة برج بورانا، المجمع التاريخي من القرنين العاشر والحادي عشر على طريق الحرير. الوصول إلى بشكيك مساءً. المبيت في فندق جاردن أو مشابه له. الوجبات: إفطار.')},
+    {title:bi('Day 8 · Bishkek – Airport','اليوم 8 · بشكيك – المطار'), text:bi('Breakfast at the hotel, then departure formalities and transfer to the airport.','الإفطار في الفندق ثم إنهاء إجراءات المغادرة والتوجه إلى المطار.')},
+   ],
+   inclusions:[bi('Transfers to and from the airport','المواصلات من وإلى المطار'),bi('Sprinter minibus for the whole trip','حافلة صغيرة (Minibus Sprinter) طوال الرحلة'),bi('Accommodation in a 3-star hotel, a yurt camp and guesthouses','الإقامة في فنادق 3 نجوم ومخيم يورت وبيوت ضيافة'),bi('Meals as in the programme: daily breakfast, 4 lunches and 2 dinners','الوجبات حسب البرنامج: إفطار يوميًا، 4 وجبات غداء ووجبتا عشاء'),bi('English-speaking guide throughout the trip','مرشد يتحدث الإنجليزية طوال الرحلة'),bi('Entrance fees to the sights in the programme','رسوم دخول المعالم السياحية المذكورة في البرنامج'),bi('Carpet-making demonstration','عرض صناعة السجاد'),bi('Rafting at Boom Gorge','رافتنج في ممر بوم'),bi('3-hour horse ride at Son-Kul lake with a horse guide','ركوب الخيل لمدة 3 ساعات في بحيرة سون كول مع مرشد خيول'),bi('Eagle-hunting show','عرض صيد النسور'),bi('One-hour boat ride on Issyk-Kul lake','رحلة بالقارب لمدة ساعة في بحيرة إيسيك كول'),bi('First aid','الإسعافات الأولية'),bi('Tips (gratuities)','الإكرامية')],
+   exclusions:[bi('International flight tickets','تذاكر الطيران الدولي'),bi('Meals in the cities and any meal not listed in the programme','الوجبات في المدن'),bi('Visa fees, travel and health insurance, and personal expenses','رسوم التأشيرة وتأمين السفر والتأمين الصحي والمصاريف الشخصية'),bi('Any service not mentioned in the programme','أي خدمات غير مذكورة في البرنامج')],
+   terms:[
+    bi('Women only. Participants must be 18–65 years old. Level: easy, but an active road trip that needs good general fitness.','هذه الرحلة للسيدات فقط. العمر 18–65 سنة. المستوى: سهل، لكنها رحلة نشاط وتنقّل بالسيارات وتتطلب لياقة بدنية جيدة.'),
+    bi('The price is per person sharing a double room (OMR 555). Single room: OMR 745 per person.','السعر للشخص بالغرفة المزدوجة (555 ر.ع.). التكلفة بالغرفة الفردية: 745 ر.ع. للشخص.'),
+    bi('International flights: arrive on 22 May and depart on 29 May after 9 am. Arrival and departure airport: Manas International Airport, Bishkek. Suggested airlines: flydubai and Air Arabia.','الطيران الدولي: الوصول يوم 22 مايو والمغادرة يوم 29 مايو بعد الساعة 9 صباحًا. مطار الوصول والمغادرة: مطار ماناس الدولي، بشكيك. الطيران المناسب: فلاي دبي والعربية للطيران.'),
+    bi('Please check the visa and flight requirements yourself; they are not our responsibility. GCC citizens do not need a visa. Passport valid for at least 6 months.','يرجى التأكد شخصيًا من التأشيرة ورحلات الطيران فهي ليست من مسؤوليتنا. مواطنو دول الخليج لا يحتاجون إلى تأشيرة. جواز السفر ساري المفعول لمدة 6 أشهر على الأقل.'),
+    bi('Luggage: one large bag plus a backpack per participant.','الحقائب: حقيبة كبيرة واحدة + حقيبة ظهر لكل مشاركة.'),
+    bi('Expected weather: mild in the cities (20–25°C by day, 10–15°C at night), cold in the mountains (10–20°C by day, 0–5°C at night). Wear light, comfortable layers.','أحوال الطقس المتوقعة: معتدل في المدن (20–25° نهارًا، 10–15° ليلًا) وبارد في الجبال (10–20° نهارًا، 0–5° ليلًا). يُنصح بارتداء طبقات خفيفة ومريحة.'),
+    bi('Bring cash in US dollars (unstamped, new issue) and exchange it to Kyrgyz som. A local SIM card can be bought at the airport.','يرجى إحضار كاش بالدولار (من غير ختم والإصدار الجديد) وتبديله إلى السوم القرغيزي. يمكن شراء شريحة اتصال من المطار.'),
+    bi('Please take out travel insurance.','الرجاء عمل تأمين سفر.'),
+    bi('Daily schedule runs from about 5 am to 7 pm. Please keep to the times and the programme.','جدول الرحلات يبدأ حوالي الساعة 5 صباحًا وينتهي الساعة 7 مساءً. الرجاء الالتزام بالوقت المحدد وجدول الرحلة.'),
+    bi('The route and schedule may change because of weather or rain; the trip captain may change the programme for the safety and comfort of the group. Hotels and camps are as named in the programme or similar.','يخضع مسار الرحلة والجدول الزمني للتغيير بسبب الطقس والأمطار، ويحق لكابتن الرحلة تغيير البرنامج من أجل سلامة وراحة الجميع. الفنادق والمخيمات كما في البرنامج أو مشابهة لها.'),
+    bi('After booking and payment, we create a WhatsApp group for the trip details.','بعد التسجيل والدفع واكتمال المجموعة ننشئ قروب واتساب لمناقشة تفاصيل الرحلة.'),
+   ]},
 ];
 
 // Cancellation & refund policy: shown on every group trip page under the Notes section.

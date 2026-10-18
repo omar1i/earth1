@@ -1,16 +1,15 @@
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { ArrowUpRight, Compass, Globe, MessageCircle } from "lucide-react";
-import { ExperienceCard } from "@/components/experience-components";
 import { GroupTripsSection, PrivateTripsSection } from "@/components/trips-components";
 import { useLanguage } from "@/lib/language";
-import { whatsapp } from "@/lib/content";
+import { tripRegion, whatsapp } from "@/lib/content";
 import { useCatalog } from "@/lib/catalog-context";
 
 type Region = "oman" | "international";
 
-// Set to true when real international trips are ready; until then the international tab only
-// shows a short "coming soon + WhatsApp" message instead of the sample cards.
-const SHOW_INTERNATIONAL_TRIPS = false;
+// The International tab lists the group trips whose region is "international" (set in the admin
+// dashboard). While there are none it shows a short "coming soon + WhatsApp" message. The old
+// placeholder experience cards (intl-sample-*) are intentionally not shown.
 
 // The Oman / International choice lives in the URL (?trips=international) so it can be shared and
 // the Back button works. RegionPicker = the small buttons shown inside the hero (first screen);
@@ -62,7 +61,9 @@ export function RegionPicker() {
 
 export function RegionChooser() {
   const { t, region, boxes } = useRegion();
-  const { internationalExperiences, groupTrips, privateDestinations } = useCatalog();
+  const { groupTrips, privateDestinations } = useCatalog();
+  const omanGroupTrips = groupTrips.filter((g) => tripRegion(g) === "oman");
+  const internationalGroupTrips = groupTrips.filter((g) => tripRegion(g) === "international");
 
   return (
     <section className="section region-section" id="choose-trip">
@@ -91,10 +92,10 @@ export function RegionChooser() {
           </div>
           {region === "oman" ? (
             <>
-              <GroupTripsSection trips={groupTrips} />
+              <GroupTripsSection trips={omanGroupTrips} />
               <PrivateTripsSection destinations={privateDestinations} />
             </>
-          ) : !SHOW_INTERNATIONAL_TRIPS ? (
+          ) : internationalGroupTrips.length === 0 ? (
             <p className="region-soon">
               {t(
                 "International trips are coming soon. Tell us where you would like to go and we will arrange it.",
@@ -102,11 +103,7 @@ export function RegionChooser() {
               )}
             </p>
           ) : (
-            <div className="experience-grid">
-              {internationalExperiences.map((e) => (
-                <ExperienceCard key={e.id} experience={e} />
-              ))}
-            </div>
+            <GroupTripsSection trips={internationalGroupTrips} />
           )}
         </div>
       </div>

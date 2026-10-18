@@ -172,7 +172,7 @@ export function buildCatalog(rows: CatalogRows): Catalog {
         .map((x) => (typeof x === 'string' ? resolveImage(x) : undefined))
         .filter((x): x is string => !!x && x !== cover);
       groupTrips.push({
-        id: t.slug, name, description, image: cover, gallery: [cover, ...new Set(extra)],
+        id: t.slug, region: t.region, name, description, image: cover, gallery: [cover, ...new Set(extra)],
         location: loc?.v ?? bi('', ''), duration: dur?.v ?? bi('', ''), groupSize: size?.v ?? bi('', ''),
         startDate: next?.date ?? '',
         date: next ? bi((sample ? 'Sample date: ' : '') + next.label.en, (sample ? 'تاريخ تجريبي: ' : '') + next.label.ar) : bi('Date to be announced', 'سيُعلن عن الموعد لاحقًا'),

@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { groupTrips, privateDestinations } from '@/lib/content';
+import { groupTrips, privateDestinations, tripRegion } from '@/lib/content';
 import { buildCatalog, privateHasPage, type TripRow } from '@/lib/catalog';
 
 describe('Oman trips content', () => {
   it('has the four private destinations', () => {
     expect(privateDestinations.map((d) => d.id)).toEqual(['wadi-al-arbaeen', 'jabal-akhdar', 'masirah-island', 'salalah']);
   });
-  it('has the three group trips with unique ids and full details', () => {
-    expect(groupTrips).toHaveLength(3);
-    expect(new Set(groupTrips.map((t) => t.id)).size).toBe(3);
+  it('has the group trips with unique ids and full details', () => {
+    expect(groupTrips).toHaveLength(4);
+    expect(new Set(groupTrips.map((t) => t.id)).size).toBe(4);
     for (const t of groupTrips) {
       expect(t.startDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(t.itinerary.length).toBeGreaterThan(0);
@@ -58,5 +58,33 @@ describe('Private trip details coming from the database', () => {
     expect(on.cancellation![0]!.en).toBe('Custom');
     expect(on.price!.en).toBe('OMR 300 per group');
     expect(on.maxGuests).toBe(8);
+  });
+});
+
+describe('International group trip (Kyrgyzstan, women only)', () => {
+  const kg = groupTrips.find((t) => t.id === 'kyrgyzstan-women-trip')!;
+  it('is an international, non-sample trip with a real date and price', () => {
+    expect(tripRegion(kg)).toBe('international');
+    expect(kg.sample).toBe(false);
+    expect(kg.startDate).toBe('2027-05-22');
+    expect(kg.price.en).toBe('OMR 555 per person');
+    expect(kg.itinerary).toHaveLength(8);
+    expect(kg.gallery!.length).toBeGreaterThan(1);
+  });
+  it('keeps the Oman group trips out of the international list and the other way round', () => {
+    const oman = groupTrips.filter((t) => tripRegion(t) === 'oman').map((t) => t.id);
+    const intl = groupTrips.filter((t) => tripRegion(t) === 'international').map((t) => t.id);
+    expect(intl).toEqual(['kyrgyzstan-women-trip']);
+    expect(oman).toEqual(['jabal-akhdar-trip', 'muscat-trip', 'masirah-island-trip']);
+  });
+  it('keeps the region of a group trip that comes from the database', () => {
+    const row: TripRow = {
+      id: 9, slug: 'kg', kind: 'group', category: null, region: 'international', destination: null, name_en: 'K', name_ar: 'ق', description_en: '', description_ar: '', image: null,
+      location_en: null, location_ar: null, duration_en: null, duration_ar: null, group_size_en: null, group_size_ar: null, max_group: null, accommodation_en: null, accommodation_ar: null,
+      price: 555, price_type: 'person', itinerary: '[]', inclusions: '[]', exclusions: '[]', requirements: '[]', terms: '[]', is_sample: 0, is_active: 1, sort_order: 0,
+    };
+    const trip = buildCatalog({ trips: [row], schedules: [] }).groupTrips[0]!;
+    expect(tripRegion(trip)).toBe('international');
+    expect(trip.price.en).toBe('OMR 555 per person');
   });
 });
