@@ -765,3 +765,6 @@ a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 /* no hover lift / floating on the spec cards and chips: the moving target made the hover flicker */
 .bt-tile,.bt-chip-card{transform:none!important}
 .bt-stage .bt-chip,.bt-stage .bt-tile{will-change:auto}
+
+/* counting numbers: reserve the final width so the spec cards don't jump while the digits count up */
+.bt-num{display:inline-grid;font-variant-numeric:tabular-nums}.bt-num>span{grid-area:1/1;white-space:nowrap}.bt-num-ghost{visibility:hidden}

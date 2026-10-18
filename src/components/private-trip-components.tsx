@@ -196,7 +196,18 @@ function CountUp({ text, armed, go }: { text: string; armed: boolean; go: boolea
   }, [armed, go, target, has]);
   if (!best || best.index === undefined) return <>{text}</>;
   const i = best.index;
-  return <>{text.slice(0, i)}<span className="bt-num">{shown}</span>{text.slice(i + best[0].length)}</>;
+  // the final number is rendered invisibly underneath so the card keeps its final width while the digits count up (no layout shift)
+  const live = shown === Math.round(target) ? best[0] : String(shown);
+  return (
+    <>
+      {text.slice(0, i)}
+      <span className="bt-num" aria-label={best[0]}>
+        <span className="bt-num-ghost" aria-hidden="true">{best[0]}</span>
+        <span className="bt-num-live" aria-hidden="true">{live}</span>
+      </span>
+      {text.slice(i + best[0].length)}
+    </>
+  );
 }
 
 // Capacity as little people: one per guest, plus one lime figure for each crew member named (Nakhuda, Captain...).
