@@ -1,7 +1,7 @@
 // Server-only: e-mails a saved booking through Resend (https://resend.com).
 //   1. The owner always gets the booking details (to BOOKING_NOTIFY_TO).
-//   2. OPTIONALLY the customer gets a "preliminarily confirmed" message with the bank transfer
-//      details, when BANK_DETAILS is set and the customer gave an e-mail address.
+//   2. The customer gets a "preliminarily confirmed" message with the booking summary when they
+//      gave an e-mail address. It never contains payment details.
 // The API key comes from a server secret and must never be imported into client code. Only load
 // this file inside server function handlers.
 import { experiences, groupTrips, privateDestinations } from "./content";
@@ -53,11 +53,9 @@ function tripNameOf(booking: BookingInput, options: NotifyOptions): string {
 function buildCustomerMail(
   booking: BookingInput,
   trip: string,
-  bankDetails: string,
   departure: string,
 ): Mail {
   const arabic = booking.preferred_language === "ar";
-  const bank = bankDetails.replace(/\s*\|\s*/g, "\n").trim();
   const name = clean(booking.customer_name, 100);
   const date = clean(booking.preferred_date, 20);
   const people = clean(booking.participant_count, 6);
@@ -72,7 +70,6 @@ function buildCustomerMail(
         `الرحلة: ${trip}`,
         ...(departure ? [`الموعد: ${departure}`] : []),
         `التاريخ المفضل: ${date}`, `عدد المشاركين: ${people}`, `رقم الحجز: ${ref}`, "",
-        "بيانات التحويل البنكي:", bank, "",
         "لأي استفسار يمكنك الرد على هذه الرسالة.",
       ].join("\n"),
     };
@@ -86,7 +83,6 @@ function buildCustomerMail(
       `Experience: ${trip}`,
       ...(departure ? [`Departure: ${departure}`] : []),
       `Preferred date: ${date}`, `Participants: ${people}`, `Booking reference: ${ref}`, "",
-      "Bank transfer details:", bank, "",
       "If you have any questions, simply reply to this email.",
     ].join("\n"),
   };
@@ -104,9 +100,10 @@ function buildOwnerMail(
   const digits = phone.replace(/[^0-9]/g, "");
   const action =
     customer === "sent"
-      ? "Bank transfer details were emailed to the customer automatically."
-      : "ACTION NEEDED: send the bank transfer details to the customer now (WhatsApp link below)." +
-        (customer === "failed" ? " (The automatic email to the customer failed.)" : "");
+      ? "A confirmation email was sent to the customer automatically."
+      : customer === "failed"
+        ? "ACTION NEEDED: the automatic confirmation email to the customer failed. Please contact the customer directly (WhatsApp link below)."
+        : "ACTION NEEDED: the customer did not give an email address, so no confirmation email was sent. Please contact the customer directly (WhatsApp link below).";
   const lines = [
     "NEW BOOKING - preliminarily confirmed",
     action,
@@ -211,7 +208,6 @@ export async function notifyBooking(
   }
 
   const from = env["BOOKING_FROM_EMAIL"]?.trim() || DEFAULT_FROM;
-  const bankDetails = (env["BANK_DETAILS"] ?? "").trim();
   const trip = tripNameOf(booking, options);
   const departure = clean(options.departure ?? "", 80);
   const retryDelay = options.retryDelayMs ?? RETRY_DELAY_MS;
@@ -228,10 +224,10 @@ export async function notifyBooking(
   // A customer-mail problem must never stop the owner's e-mail from being sent.
   let customer: "sent" | "skipped" | "failed" = "skipped";
   const customerAddress = clean(booking.email, 255);
-  if (bankDetails && EMAIL_RE.test(customerAddress)) {
+  if (EMAIL_RE.test(customerAddress)) {
     const mail = {
-      ...buildCustomerMail(booking, trip, bankDetails, departure),
-      html: renderCustomerEmail(emailData, bankDetails, { siteUrl }),
+      ...buildCustomerMail(booking, trip, departure),
+      html: renderCustomerEmail(emailData, { siteUrl }),
       // The customer's "reply" reaches the business, not the sender address.
       ...(to[0] ? { replyTo: to[0] } : {}),
     };

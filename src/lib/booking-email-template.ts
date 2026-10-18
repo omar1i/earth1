@@ -52,24 +52,17 @@ ${o.body}
 </td></tr></table></td></tr></table></body></html>`;
 }
 
-/** The confirmation the customer gets (only sent when bank details are configured). */
-export function renderCustomerEmail(d: EmailData, bankDetails: string, opts: Opts = {}): string {
+/** The confirmation the customer gets. It holds the booking summary only: no payment or bank details of any kind. */
+export function renderCustomerEmail(d: EmailData, opts: Opts = {}): string {
   const ar = d.language === "ar"; const start = ar ? "right" : "left";
   const T = ar
-    ? { title: "تم تأكيد حجزك مبدئيًا", hello: `مرحبًا ${d.name}،`, intro: "شكرًا لاختيارك Earth Adventure. هذا ملخص حجزك:", trip: "المغامرة", dep: "الموعد", date: "التاريخ المفضل", people: "عدد المشاركين", ref: "رقم الحجز", bank: "بيانات التحويل البنكي", next: "سيتواصل معك فريقنا قريبًا بخصوص ترتيبات الرحلة. لأي استفسار يمكنك الرد على هذه الرسالة أو مراسلتنا عبر واتساب.", cta: "تواصل معنا عبر واتساب", wa: `مرحبًا Earth Adventure! رقم حجزي هو ${d.ref}.`, footer: "وصلتك هذه الرسالة لأنك أجريت حجزًا عبر موقعنا.", pre: `تم تأكيد حجزك لرحلة ${d.trip} مبدئيًا. بيانات التحويل البنكي بالداخل.` }
-    : { title: "Your booking is preliminarily confirmed", hello: `Hello ${d.name},`, intro: "Thank you for choosing Earth Adventure. Here is a summary of your booking:", trip: "Experience", dep: "Departure", date: "Preferred date", people: "Participants", ref: "Booking reference", bank: "Bank transfer details", next: "Our team will contact you shortly about the trip arrangements. If you have any questions, simply reply to this email or message us on WhatsApp.", cta: "Chat with us on WhatsApp", wa: `Hello Earth Adventure! My booking reference is ${d.ref}.`, footer: "You are receiving this email because you made a booking on our website.", pre: `Your booking for ${d.trip} is preliminarily confirmed. Bank transfer details inside.` };
-  const bankRows = bankDetails.split(/\s*\|\s*|\r?\n/).map((s) => s.trim()).filter(Boolean).map((line) => {
-    const m = /^([^:：]{1,40})[:：]\s*(.+)$/.exec(line);
-    return m
-      ? `<tr><td style="padding:6px 0;font-family:${FONT};font-size:13px;color:${C.muted};width:38%;vertical-align:top;">${esc(m[1])}</td><td dir="ltr" style="padding:6px 0;font-family:${FONT};font-size:15px;font-weight:700;color:${C.navy};text-align:${start};word-break:break-word;">${esc(m[2])}</td></tr>`
-      : `<tr><td colspan="2" style="padding:6px 0;font-family:${FONT};font-size:15px;font-weight:600;color:${C.navy};">${esc(line)}</td></tr>`;
-  }).join("");
+    ? { title: "تم تأكيد حجزك مبدئيًا", hello: `مرحبًا ${d.name}،`, intro: "شكرًا لاختيارك Earth Adventure. هذا ملخص حجزك:", trip: "المغامرة", dep: "الموعد", date: "التاريخ المفضل", people: "عدد المشاركين", ref: "رقم الحجز", next: "سيتواصل معك فريقنا قريبًا بخصوص ترتيبات الرحلة. لأي استفسار يمكنك الرد على هذه الرسالة أو مراسلتنا عبر واتساب.", cta: "تواصل معنا عبر واتساب", wa: `مرحبًا Earth Adventure! رقم حجزي هو ${d.ref}.`, footer: "وصلتك هذه الرسالة لأنك أجريت حجزًا عبر موقعنا.", pre: `تم تأكيد حجزك لرحلة ${d.trip} مبدئيًا.` }
+    : { title: "Your booking is preliminarily confirmed", hello: `Hello ${d.name},`, intro: "Thank you for choosing Earth Adventure. Here is a summary of your booking:", trip: "Experience", dep: "Departure", date: "Preferred date", people: "Participants", ref: "Booking reference", next: "Our team will contact you shortly about the trip arrangements. If you have any questions, simply reply to this email or message us on WhatsApp.", cta: "Chat with us on WhatsApp", wa: `Hello Earth Adventure! My booking reference is ${d.ref}.`, footer: "You are receiving this email because you made a booking on our website.", pre: `Your booking for ${d.trip} is preliminarily confirmed.` };
   const waLink = `${whatsapp}&text=${encodeURIComponent(T.wa)}`;
   const body = `<tr><td align="center" style="padding:14px 28px 4px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr><td align="center" width="54" height="54" bgcolor="${C.green}" style="width:54px;height:54px;border-radius:27px;font-family:${FONT};font-size:28px;line-height:54px;font-weight:800;color:#ffffff;text-align:center;">&#10003;</td></tr></table></td></tr>
 <tr><td align="center" style="padding:14px 28px 4px;font-family:${FONT};font-size:25px;line-height:1.3;font-weight:800;color:${C.navy};">${esc(T.title)}</td></tr>
 <tr><td style="padding:14px 32px 6px;font-family:${FONT};font-size:15px;line-height:1.7;color:${C.navy};"><strong>${esc(T.hello)}</strong><br>${esc(T.intro)}</td></tr>
 <tr><td style="padding:8px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.bg};border-radius:10px;"><tr><td style="padding:6px 18px 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="text-align:${start};">${row(T.trip, d.trip)}${row(T.dep, d.departure)}${row(T.date, d.date)}${row(T.people, d.people)}${row(T.ref, d.ref, true)}</table></td></tr></table></td></tr>
-<tr><td style="padding:16px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${C.border};border-${ar ? "right" : "left"}:5px solid ${C.green};border-radius:10px;"><tr><td style="padding:14px 18px;"><div style="font-family:${FONT};font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:${C.greenDark};padding-bottom:6px;">${esc(T.bank)}</div><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="text-align:${start};">${bankRows}</table></td></tr></table></td></tr>
 <tr><td style="padding:16px 32px 4px;font-family:${FONT};font-size:14px;line-height:1.7;color:${C.muted};">${esc(T.next)}</td></tr>
 <tr><td align="center" style="padding:14px 28px 28px;">${button(waLink, T.cta, "#1fa855")}</td></tr>`;
   return shell({ lang: d.language, title: T.title, preheader: T.pre, body, footer: esc(T.footer) }, opts);
@@ -80,8 +73,10 @@ export function renderOwnerEmail(d: EmailData, customer: "sent" | "skipped" | "f
   const site = (opts.siteUrl ?? DEFAULT_SITE_URL).replace(/\/$/, "");
   const digits = d.phone.replace(/[^0-9]/g, "");
   const callout = customer === "sent"
-    ? { bg: "#eef7dc", bd: C.green, fg: "#3f6212", text: "Bank transfer details were emailed to the customer automatically." }
-    : { bg: "#fff4d6", bd: "#f0b429", fg: "#92400e", text: `Action needed: send the bank transfer details to the customer now.${customer === "failed" ? " (The automatic email to the customer failed.)" : ""}` };
+    ? { bg: "#eef7dc", bd: C.green, fg: "#3f6212", text: "A confirmation email was sent to the customer automatically." }
+    : customer === "failed"
+      ? { bg: "#fff4d6", bd: "#f0b429", fg: "#92400e", text: "Action needed: the automatic confirmation email to the customer failed. Please contact the customer directly." }
+      : { bg: "#fff4d6", bd: "#f0b429", fg: "#92400e", text: "Action needed: the customer did not give an email address, so no confirmation email was sent. Please contact the customer directly." };
   const note = (label: string, v: string) => v ? `<tr><td style="padding:6px 0 2px;font-family:${FONT};font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:${C.muted};">${esc(label)}</td></tr><tr><td style="padding:0 0 10px;font-family:${FONT};font-size:14px;line-height:1.6;color:${C.navy};white-space:pre-wrap;word-break:break-word;">${esc(v)}</td></tr>` : "";
   const buttons = [
     digits ? button(`${whatsapp.split("?")[0]}?phone=${digits}`, "WhatsApp customer", "#1fa855") : "",
