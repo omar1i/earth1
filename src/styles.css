@@ -792,3 +792,10 @@ a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 .policy-dialog-body .policy-list li{margin:9px 0}
 .policy-dialog-body .policy-list li::marker{color:var(--primary)}
 .policy-dialog-body .policy-note{font-size:13px}
+
+/* Smooth first scroll: no animated filters, own compositing layer for the drawing, entrance animations are opacity-only,
+   and nothing animates while the boat panel is off screen. */
+.bt-boat{filter:none}
+.bt-svg{transform:translateZ(0);backface-visibility:hidden}
+@keyframes bt-rise{from{opacity:0}to{opacity:1}}
+.bt-stage.bt-offscreen *,.bt-stage.bt-offscreen *::before,.bt-stage.bt-offscreen *::after{animation-play-state:paused!important}

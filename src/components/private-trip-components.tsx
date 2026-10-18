@@ -82,7 +82,7 @@ function BoatDrawing() {
         </g>
 
         {/* hull */}
-        <path d="M68 150 L420 146 C490 142 545 134 588 120 C575 175 525 214 440 228 L150 228 C104 220 74 190 68 150 Z" fill="url(#bt-hull)" />
+        <path d="M68 150 L420 146 C490 142 545 134 588 120 C575 175 525 214 440 228 L150 228 C104 220 74 190 68 150 Z" fill="url(#bt-hull)" stroke="#0e2b44" strokeOpacity=".4" strokeWidth="1.3" strokeLinejoin="round" />
         <path d="M70 166 L424 162 C492 158 548 148 582 136 L577 150 C545 160 492 172 424 176 L71 181 Z" fill="url(#bt-stripe)" />
         <path d="M70 152 L422 148" stroke="#a9c4d9" strokeWidth="2" />
 
@@ -94,13 +94,13 @@ function BoatDrawing() {
 
         {/* forward cabin with the bathroom */}
         <g className="bt-z bt-z-bath">
-          <path d="M432 146 L438 122 Q474 110 540 114 L568 128 L572 146 Z" fill="url(#bt-hull)" stroke="#bfd6e7" strokeWidth="1.5" />
+          <path d="M432 146 L438 122 Q474 110 540 114 L568 128 L572 146 Z" fill="url(#bt-hull)" stroke="#0e2b44" strokeOpacity=".4" strokeWidth="1.2" />
           <path d="M452 130 L520 124 L538 130 L538 138 L452 140 Z" fill="#0f3a58" opacity=".85" />
           <path d="M456 133 L506 129" stroke="#7fd0ff" strokeWidth="2" strokeLinecap="round" opacity=".7" />
         </g>
 
         {/* poles */}
-        <g stroke="#dcebf6" strokeWidth="4" strokeLinecap="round">
+        <g stroke="#8aa8c0" strokeWidth="4" strokeLinecap="round">
           <path d="M214 76 L210 146" /><path d="M452 70 L450 146" /><path d="M330 98 L330 80" />
         </g>
 
@@ -121,7 +121,7 @@ function BoatDrawing() {
 
         {/* sun canopy */}
         <g className="bt-z bt-z-canopy">
-          <path d="M200 64 L470 58 Q484 58 482 70 L196 78 Q188 70 200 64 Z" fill="url(#bt-roof)" />
+          <path d="M200 64 L470 58 Q484 58 482 70 L196 78 Q188 70 200 64 Z" fill="url(#bt-roof)" stroke="#0e2b44" strokeOpacity=".35" strokeWidth="1.2" strokeLinejoin="round" />
           <path d="M204 72 L476 66" stroke="#7dc918" strokeWidth="3" strokeLinecap="round" opacity=".95" />
         </g>
       </g>
@@ -264,10 +264,19 @@ export function PrivateBoatSection({ boat, fallbackName, embedded = false }: { b
   };
   const pins = zones.filter((z) => specZones.includes(z.id) || amenityZones.includes(z.id));
 
+  const stageRef = useRef<HTMLDivElement>(null);
   const scene = useInView<HTMLDivElement>();
   const tiles = useInView<HTMLDListElement>();
   const chips = useInView<HTMLDivElement>();
   const rtl = lang === 'ar';
+  const hasStageEl = boat.specs.length > 0 || boat.amenities.length > 0;
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([e]) => el.classList.toggle('bt-offscreen', !e.isIntersecting), { rootMargin: '80px 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasStageEl]);
   const hasStage = boat.specs.length > 0 || boat.amenities.length > 0;
 
   const body = (
@@ -287,7 +296,7 @@ export function PrivateBoatSection({ boat, fallbackName, embedded = false }: { b
         </div>
 
         {hasStage && (
-          <div className="bt-stage">
+          <div className="bt-stage" ref={stageRef}>
             <div ref={scene.ref} className={`bt-scene ${scene.cls}`} data-active={active ?? ''}>
               <BoatDrawing />
               {pins.map((z) => {
