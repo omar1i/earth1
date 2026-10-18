@@ -52,8 +52,8 @@ function BoatDrawing() {
         <linearGradient id="bt-hull" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ffffff" /><stop offset="1" stopColor="#cfe0ee" /></linearGradient>
         <linearGradient id="bt-stripe" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#1c6fd0" /><stop offset="1" stopColor="#35a0f0" /></linearGradient>
         <linearGradient id="bt-roof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#f4fbff" /><stop offset="1" stopColor="#b7d3e8" /></linearGradient>
-        <linearGradient id="bt-water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#3bb6e8" stopOpacity=".55" /><stop offset="1" stopColor="#0a3b5c" stopOpacity=".92" /></linearGradient>
-        <linearGradient id="bt-water-back" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#1d7fb3" stopOpacity=".5" /><stop offset="1" stopColor="#082a44" stopOpacity=".9" /></linearGradient>
+        <linearGradient id="bt-water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#35a0f0" stopOpacity=".55" /><stop offset="1" stopColor="#007adb" stopOpacity=".6" /></linearGradient>
+        <linearGradient id="bt-water-back" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#7cc3f5" stopOpacity=".45" /><stop offset="1" stopColor="#1c6fd0" stopOpacity=".5" /></linearGradient>
         <linearGradient id="bt-engine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#0d2236" /><stop offset=".5" stopColor="#27465f" /><stop offset="1" stopColor="#10283d" /></linearGradient>
       </defs>
 
@@ -61,7 +61,7 @@ function BoatDrawing() {
 
       <g className="bt-boat">
         {/* fishing rods */}
-        <g className="bt-rods" stroke="#dbeaf5" strokeWidth="2" strokeLinecap="round" fill="none">
+        <g className="bt-rods" stroke="#0e2b44" strokeWidth="2" strokeLinecap="round" fill="none">
           <path d="M112 146 L34 62" /><path d="M128 146 L62 54" /><path d="M34 62 Q26 120 30 188" strokeWidth="1" opacity=".55" />
         </g>
 
@@ -127,10 +127,10 @@ function BoatDrawing() {
       </g>
 
       {/* fish finder: sonar pings below the hull + a few fish */}
-      <g className="bt-sonar" fill="none" stroke="#b6ff4d" strokeWidth="2">
+      <g className="bt-sonar" fill="none" stroke="#007adb" strokeWidth="2">
         <ellipse cx="300" cy="232" rx="12" ry="4" /><ellipse cx="300" cy="232" rx="12" ry="4" /><ellipse cx="300" cy="232" rx="12" ry="4" />
       </g>
-      <g className="bt-fish" fill="#e9f6ff">
+      <g className="bt-fish" fill="#007adb">
         <path className="bt-fish-1" d="M0 0 C8 -7 20 -7 28 0 C20 7 8 7 0 0 Z M28 0 L37 -6 L37 6 Z" />
         <path className="bt-fish-2" d="M0 0 C8 -7 20 -7 28 0 C20 7 8 7 0 0 Z M28 0 L37 -6 L37 6 Z" />
         <path className="bt-fish-3" d="M0 0 C8 -7 20 -7 28 0 C20 7 8 7 0 0 Z M28 0 L37 -6 L37 6 Z" />
@@ -220,7 +220,7 @@ function People({ text }: { text: string }) {
 
 const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(2)}%`;
 
-// "Our Boat": a dark "deep sea" panel. A drawing of the boat whose parts light up together with the matching cards,
+// "Our Boat": a light brand-coloured panel. A drawing of the boat whose parts light up together with the matching cards,
 // spec cards that count up, and the equipment as floating chips.
 export function PrivateBoatSection({ boat, fallbackName }: { boat: PrivateBoat; fallbackName: string }) {
   const { lang, t } = useLanguage();
