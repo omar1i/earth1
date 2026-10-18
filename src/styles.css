@@ -547,27 +547,49 @@ a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 .trip-kind-tag svg{width:13px;height:13px}
 .policy-section{margin-bottom:0;max-width:900px}.policy-section h2{font-size:26px;margin-bottom:18px}
 .policy-section .policy-list{font-size:16px;line-height:1.8}
-.boat-band{position:relative;overflow:hidden;padding-block:84px;color:#eaf6f8;background:radial-gradient(1100px 520px at 85% -10%,rgba(36,150,176,.35),transparent 60%),linear-gradient(160deg,#07202c 0%,#0b3b4f 55%,#0a2f40 100%)}
-.boat-band:before{content:'';position:absolute;inset:auto 0 0 0;height:90px;opacity:.14;background:repeating-linear-gradient(100deg,#fff 0 2px,transparent 2px 46px);mask-image:linear-gradient(to top,#000,transparent);-webkit-mask-image:linear-gradient(to top,#000,transparent);pointer-events:none}
-.boat-band .container{position:relative}
-.boat-top{display:grid;gap:36px;align-items:center}
-.boat-top.has-image{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:56px}
-.boat-eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--adventure);margin-bottom:18px}
-.boat-eyebrow svg{width:18px;height:18px}
-.boat-intro h2{font-size:44px;line-height:1.15;color:#fff;max-width:640px}
-.boat-tagline{font-size:19px;line-height:1.55;color:#bfe3ea;margin-top:16px;max-width:560px}
-.boat-text{font-size:16px;line-height:1.85;color:rgba(234,246,248,.82);margin-top:16px;max-width:560px}
-.boat-photo{margin:0;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.14);box-shadow:0 24px 60px rgba(0,0,0,.35);aspect-ratio:1.4}
+
+/* Private trip card: same label as the group cards; "Contact Us" always sits at the end of the row, on one line across cards */
+.private-card .experience-actions{min-height:38px}
+.private-card .experience-actions .contact-btn{margin-inline-start:auto}
+.private-card .experience-meta{margin-top:14px}
+.private-card .experience-body>p{margin-bottom:0}
+
+/* Trip-page hero: the small title above the name is always white (it was blue on the dark photo) */
+.image-hero .eyebrow{color:#fff}
+
+/* Private trip page: "Our Boat" (light section, same cards and icons as the rest of the site) */
+.boat-head{display:grid;gap:34px;align-items:center}
+.boat-head.has-image{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:56px}
+.boat-tagline{margin-top:18px;max-width:560px;font-size:19px;font-weight:600;line-height:1.55;color:var(--foreground)}
+.boat-text{margin-top:14px;max-width:560px;font-size:16px;line-height:1.85;color:var(--muted-foreground)}
+.boat-photo{margin:0;border-radius:8px;overflow:hidden;aspect-ratio:1.4;box-shadow:var(--shadow-soft)}
 .boat-photo img{width:100%;height:100%;object-fit:cover}
-.boat-specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin:46px 0 0;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(255,255,255,.04);overflow:hidden}
-.boat-spec{display:flex;align-items:center;gap:14px;padding:20px 22px;border-inline-end:1px solid rgba(255,255,255,.1);border-bottom:1px solid rgba(255,255,255,.1)}
-.boat-spec>svg{width:26px;height:26px;color:var(--adventure)}
-.boat-spec dt{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#9cc7d0;margin:0}
-.boat-spec dd{margin:2px 0 0;font-size:17px;font-weight:700;color:#fff}
-.boat-onboard{margin-top:44px}
-.boat-onboard h3{font-size:20px;color:#fff;margin-bottom:18px}
-.boat-amenities{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-.boat-amenities li{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);font-size:14.5px;line-height:1.4}
-.boat-amenities li svg{width:18px;height:18px;color:var(--adventure)}
-@media(max-width:900px){.boat-top.has-image{grid-template-columns:1fr}.boat-photo{order:-1}.boat-intro h2{font-size:34px}}
-@media(max-width:600px){.boat-band{padding-block:56px}.boat-intro h2{font-size:29px}.boat-tagline{font-size:16px}.boat-text{font-size:14.5px}.boat-specs{grid-template-columns:1fr 1fr;margin-top:32px}.boat-spec{padding:15px 14px;gap:10px}.boat-spec>svg{width:22px;height:22px}.boat-spec dd{font-size:15px}.boat-amenities{grid-template-columns:1fr}}
+.boat-icon{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--primary)}
+.boat-icon svg{width:21px;height:21px}
+.boat-icon-sm{width:34px;height:34px}.boat-icon-sm svg{width:17px;height:17px}
+.boat-specs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:44px 0 0}
+.boat-spec{display:flex;align-items:center;gap:16px;padding:20px 22px;background:var(--background);border:1px solid var(--border);border-radius:8px}
+.boat-spec dt{margin:0;font-size:12.5px;color:var(--muted-foreground)}
+.boat-spec dd{margin:3px 0 0;font-size:17px;font-weight:700;line-height:1.35}
+.boat-onboard{margin-top:46px}
+.boat-onboard h3{margin-bottom:18px;font-size:22px}
+.boat-amenities{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 16px;margin:0;padding:0;list-style:none}
+.boat-amenities li{display:flex;align-items:center;gap:13px;padding:12px 16px;background:var(--background);border:1px solid var(--border);border-radius:8px;font-size:15px;font-weight:600;line-height:1.45}
+@media(max-width:950px){
+  .boat-head.has-image{grid-template-columns:1fr;gap:30px}.boat-photo{order:-1}
+  .boat-tagline{font-size:17px}.boat-text{font-size:15px}
+  .boat-specs{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:32px}
+  .boat-amenities{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:600px){
+  .boat-specs{gap:12px}
+  .boat-spec{flex-direction:column;align-items:flex-start;gap:12px;padding:16px}
+  .boat-spec dd{font-size:15px}
+  .boat-onboard{margin-top:36px}
+  .boat-amenities{grid-template-columns:1fr}
+}
+
+/* "More private trips": the few cards share the full width instead of leaving empty columns */
+.trip-grid-4.trip-grid-fit{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+
+.private-card .experience-actions .text-link{padding:0}

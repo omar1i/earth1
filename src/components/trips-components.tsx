@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { ArrowRight, ArrowUpRight, CalendarDays, Clock, Fish, MapPin, MessageCircle, Tag, Users } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, CalendarDays, Clock, MapPin, MessageCircle, Tag, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/language';
 import { privateTripsIntro, privateTripWhatsapp, whatsapp, type GroupTrip, type PrivateDestination } from '@/lib/content';
@@ -7,9 +7,64 @@ import { useCatalog } from '@/lib/catalog-context';
 import { seatStatus, privateHasPage } from '@/lib/catalog';
 import { ImageSlider } from '@/components/image-slider';
 
-// Private Trips: inspiration cards only. One "Contact Us" button per card opens WhatsApp.
-export function PrivateTripsSection({ destinations }: { destinations?: PrivateDestination[] } = {}) {
+// "Sample price: OMR 450 per group" is long for a small card, so the card shows the plain price and a "Sample" label instead.
+const plainPrice = (text: string) => text.replace(/^(Sample price:|سعر تجريبي:)\s*/i, '');
+
+// One private-trip card. Same look as the group-trip cards: white label, price over the photo, facts row, then the actions.
+export function PrivateTripCard({ d }: { d: PrivateDestination }) {
   const { lang, t } = useLanguage();
+  const page = privateHasPage(d);
+  const media = (
+    <>
+      <img src={d.image} alt={d.name[lang]} loading="lazy" width="600" height="400" />
+      <span className="experience-tag">{d.tag ? d.tag[lang] : t('Private Trip', 'رحلة خاصة')}</span>
+      {d.sample && d.price && <span className="trip-seats trip-seats-closed">{t('Sample', 'تجريبي')}</span>}
+      {d.price && (
+        <div className="trip-overlay">
+          <span className="trip-overlay-price"><Tag aria-hidden="true" />{plainPrice(d.price[lang])}</span>
+        </div>
+      )}
+    </>
+  );
+  const hasFacts = !!(d.location || d.duration || d.maxGuests);
+  return (
+    <article className="experience-card private-card">
+      {page ? (
+        <Link className="experience-image" to="/private-trips/$trip" params={{ trip: d.id }}>{media}</Link>
+      ) : (
+        <div className="experience-image">{media}</div>
+      )}
+      <div className="experience-body">
+        <h3>{page ? <Link to="/private-trips/$trip" params={{ trip: d.id }}>{d.name[lang]}</Link> : d.name[lang]}</h3>
+        <p>{d.description[lang]}</p>
+        {hasFacts && (
+          <div className="experience-meta">
+            {d.duration && <span><Clock />{d.duration[lang]}</span>}
+            {d.maxGuests && <span><Users />{t(`Up to ${d.maxGuests} guests`, `حتى ${d.maxGuests} أشخاص`)}</span>}
+          </div>
+        )}
+        <div className="experience-actions">
+          {page && (
+            <Link className="text-link" to="/private-trips/$trip" params={{ trip: d.id }}>
+              {t('View Details', 'عرض التفاصيل')}
+              <ArrowRight />
+            </Link>
+          )}
+          <Button asChild size="sm" className="contact-btn">
+            <a href={privateTripWhatsapp(d.name.en)} target="_blank" rel="noreferrer">
+              <MessageCircle size={15} />
+              {t('Contact Us', 'تواصل معنا')}
+            </a>
+          </Button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+// Private Trips: ideas for trips designed around the guest. Cards with a trip page link to it; every card has "Contact Us" (WhatsApp).
+export function PrivateTripsSection({ destinations }: { destinations?: PrivateDestination[] } = {}) {
+  const { lang } = useLanguage();
   const catalog = useCatalog();
   const privateDestinations = destinations ?? catalog.privateDestinations;
   return (
@@ -19,48 +74,7 @@ export function PrivateTripsSection({ destinations }: { destinations?: PrivateDe
         <p>{privateTripsIntro.text[lang]}</p>
       </div>
       <div className="trip-grid-4">
-        {privateDestinations.map((d) => {
-          const page = privateHasPage(d);
-          const media = (
-            <>
-              <img src={d.image} alt={d.name[lang]} loading="lazy" width="600" height="400" />
-              {d.tag && <span className="experience-tag trip-kind-tag">{/fish|صيد/i.test(`${d.tag.en} ${d.tag.ar}`) ? <Fish aria-hidden="true" /> : <Tag aria-hidden="true" />}{d.tag[lang]}</span>}
-              {(d.price || d.maxGuests) && (
-                <div className="trip-overlay">
-                  {d.maxGuests ? <span className="trip-overlay-date"><Users aria-hidden="true" />{t(`Up to ${d.maxGuests} guests`, `حتى ${d.maxGuests} أشخاص`)}</span> : <span />}
-                  {d.price && <span className="trip-overlay-price"><Tag aria-hidden="true" />{d.price[lang]}</span>}
-                </div>
-              )}
-            </>
-          );
-          return (
-            <article className="experience-card" key={d.id}>
-              {page ? (
-                <Link className="experience-image" to="/private-trips/$trip" params={{ trip: d.id }}>{media}</Link>
-              ) : (
-                <div className="experience-image">{media}</div>
-              )}
-              <div className="experience-body">
-                <h3>{page ? <Link to="/private-trips/$trip" params={{ trip: d.id }}>{d.name[lang]}</Link> : d.name[lang]}</h3>
-                <p>{d.description[lang]}</p>
-                <div className="experience-actions">
-                  {page && (
-                    <Link className="text-link" to="/private-trips/$trip" params={{ trip: d.id }}>
-                      {t('View Details', 'عرض التفاصيل')}
-                      <ArrowRight />
-                    </Link>
-                  )}
-                  <Button asChild size="sm" className="contact-btn">
-                    <a href={privateTripWhatsapp(d.name.en)} target="_blank" rel="noreferrer">
-                      <MessageCircle size={15} />
-                      {t('Contact Us', 'تواصل معنا')}
-                    </a>
-                  </Button>
-                </div>
-              </div>
-            </article>
-          );
-        })}
+        {privateDestinations.map((d) => <PrivateTripCard key={d.id} d={d} />)}
       </div>
     </section>
   );

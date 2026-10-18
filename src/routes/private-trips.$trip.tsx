@@ -2,11 +2,13 @@ import { createFileRoute, notFound, Link } from '@tanstack/react-router';
 import { ArrowUpRight, Clock, Fish, MapPin, MessageCircle, Tag, Users } from 'lucide-react';
 import { pageHead, bi, cancellationPolicy, privateTripWhatsapp } from '@/lib/content';
 import { loadCatalog } from '@/lib/catalog.functions';
+import { useCatalog } from '@/lib/catalog-context';
 import { useLanguage, headLang } from '@/lib/language';
 import { Button } from '@/components/ui/button';
 import { PrivateBoatSection } from '@/components/private-trip-components';
+import { PrivateTripCard } from '@/components/trips-components';
 
-// Page of one private trip (e.g. the Masirah fishing trip). Everything on it comes from the admin dashboard.
+// Page of one private trip (e.g. the Masirah fishing trip). Built like the group-trip page; everything on it comes from the admin dashboard.
 export const Route = createFileRoute('/private-trips/$trip')({
   loader: async ({ params }) => {
     const { privateDestinations } = await loadCatalog();
@@ -25,11 +27,14 @@ export const Route = createFileRoute('/private-trips/$trip')({
 
 function PrivateTripDetail() {
   const trip = Route.useLoaderData();
+  const { privateDestinations } = useCatalog();
   const { lang, t } = useLanguage();
   if (!trip) return null;
   const policy = trip.cancellation && trip.cancellation.length > 0 ? trip.cancellation : cancellationPolicy.items;
   const customPolicy = !!(trip.cancellation && trip.cancellation.length > 0);
   const isFishing = !!trip.tag && /fish|صيد/i.test(`${trip.tag.en} ${trip.tag.ar}`);
+  const guests = trip.maxGuests ? t(`Up to ${trip.maxGuests} guests`, `حتى ${trip.maxGuests} أشخاص`) : '';
+  const others = privateDestinations.filter((x) => x.id !== trip.id);
   return (
     <>
       <section className="image-hero group-hero">
@@ -59,7 +64,7 @@ function PrivateTripDetail() {
                 <div className="experience-meta">
                   {trip.location && <span><MapPin />{trip.location[lang]}</span>}
                   {trip.duration && <span><Clock />{trip.duration[lang]}</span>}
-                  {trip.maxGuests && <span><Users />{t(`Up to ${trip.maxGuests} guests`, `حتى ${trip.maxGuests} أشخاص`)}</span>}
+                  {guests && <span><Users />{guests}</span>}
                 </div>
               </div>
               {trip.showItinerary && trip.itinerary && trip.itinerary.length > 0 && (
@@ -75,13 +80,24 @@ function PrivateTripDetail() {
                   </ol>
                 </div>
               )}
+              {trip.showCancellation !== false && (
+                <div className="detail-section">
+                  <h2>{cancellationPolicy.title[lang]}</h2>
+                  <ul className="policy-list">{policy.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
+                  {!customPolicy && <p className="policy-note">{cancellationPolicy.note[lang]}</p>}
+                </div>
+              )}
+              <div className="detail-section">
+                <h2>{t('How to book', 'طريقة الحجز')}</h2>
+                <p>{t('Press Book Now to send your booking request and choose your preferred date. Payment and trip details are agreed directly with our team.', 'اضغط احجز الآن لإرسال طلب الحجز واختيار التاريخ المناسب لك. يتم الاتفاق على الدفع وتفاصيل الرحلة مباشرة مع فريقنا.')}</p>
+              </div>
             </div>
             <aside className="booking-aside">
               <div className="eyebrow">{t('Trip details', 'تفاصيل الرحلة')}</div>
               <ul className="aside-facts">
                 {trip.tag && <li>{isFishing ? <Fish size={16} /> : <Tag size={16} />}<span><small>{t('Trip type', 'نوع الرحلة')}</small>{trip.tag[lang]}</span></li>}
-                {trip.price && <li><Tag size={16} /><span><small>{t('Price', 'السعر')}</small>{trip.price[lang]}</span></li>}
-                {trip.maxGuests && <li><Users size={16} /><span><small>{t('Number of guests', 'عدد الأشخاص')}</small>{t(`Up to ${trip.maxGuests} guests`, `حتى ${trip.maxGuests} أشخاص`)}</span></li>}
+                <li><Tag size={16} /><span><small>{t('Price', 'السعر')}</small>{trip.price ? trip.price[lang] : t('Contact for Price', 'تواصل لمعرفة السعر')}</span></li>
+                {guests && <li><Users size={16} /><span><small>{t('Number of guests', 'عدد الأشخاص')}</small>{guests}</span></li>}
                 {trip.duration && <li><Clock size={16} /><span><small>{t('Duration', 'المدة')}</small>{trip.duration[lang]}</span></li>}
               </ul>
               <Button asChild size="lg" className="book-btn">
@@ -99,13 +115,12 @@ function PrivateTripDetail() {
         </div>
       </section>
       {trip.boat && <PrivateBoatSection boat={trip.boat} fallbackName={trip.name[lang]} />}
-      {trip.showCancellation !== false && (
-        <section className="section section-soft group-trip-page">
+      {others.length > 0 && (
+        <section className="section">
           <div className="container">
-            <div className="detail-section policy-section">
-              <h2>{cancellationPolicy.title[lang]}</h2>
-              <ul className="policy-list">{policy.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
-              {!customPolicy && <p className="policy-note">{cancellationPolicy.note[lang]}</p>}
+            <div className="section-header"><h2>{t('More private trips', 'رحلات خاصة أخرى')}</h2></div>
+            <div className="trip-grid-4 trip-grid-fit">
+              {others.map((x) => <PrivateTripCard key={x.id} d={x} />)}
             </div>
           </div>
         </section>
