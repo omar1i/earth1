@@ -593,3 +593,112 @@ a[href*="instagram"]{direction:ltr;unicode-bidi:isolate}
 .trip-grid-4.trip-grid-fit{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
 
 .private-card .experience-actions .text-link{padding:0}
+
+/* =====================================================================
+   Private trip page: "Our Boat" deep-sea panel (drawing with glowing parts, counting spec cards, floating chips)
+   ===================================================================== */
+.bt-stage{position:relative;margin-top:48px;padding:46px 40px 48px;border-radius:26px;color:#eaf5fc;overflow:hidden;isolation:isolate;
+  background:radial-gradient(900px 420px at 88% -8%,rgba(150,230,60,.26),transparent 60%),radial-gradient(700px 500px at -6% 112%,rgba(40,130,230,.38),transparent 62%),linear-gradient(165deg,#0b2d4a 0%,#08243c 52%,#051a2c 100%);
+  box-shadow:0 30px 70px -26px rgba(6,28,48,.6)}
+.bt-stage::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:radial-gradient(circle,rgba(255,255,255,.9) 1px,transparent 1.6px);background-size:48px 48px;opacity:.09;-webkit-mask-image:linear-gradient(180deg,#000,transparent 72%);mask-image:linear-gradient(180deg,#000,transparent 72%)}
+
+/* the drawing */
+.bt-scene{position:relative;direction:ltr;max-width:880px;margin:0 auto;aspect-ratio:640/280}
+.bt-svg{display:block;width:100%;height:100%;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 6%,#000 94%,transparent 100%),linear-gradient(180deg,#000 70%,transparent 100%);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg,transparent 0,#000 6%,#000 94%,transparent 100%),linear-gradient(180deg,#000 70%,transparent 100%);mask-composite:intersect}
+.bt-wave,.bt-boat,.bt-rods,.bt-fish path,.bt-blip{animation-play-state:paused}
+.bt-scene.bt-in .bt-wave,.bt-scene.bt-in .bt-boat,.bt-scene.bt-in .bt-rods,.bt-scene.bt-in .bt-fish path,.bt-scene.bt-in .bt-blip,.bt-scene.bt-in .bt-sonar ellipse{animation-play-state:running}
+.bt-wave{animation:bt-slide 13s linear infinite}
+.bt-wave-front{animation-duration:8s;animation-direction:reverse}
+@keyframes bt-slide{to{transform:translateX(-640px)}}
+.bt-boat{transform-box:fill-box;transform-origin:50% 72%;animation:bt-bob 5.6s ease-in-out infinite}
+@keyframes bt-bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(-.9deg)}}
+.bt-rods{transform-box:fill-box;transform-origin:100% 100%;animation:bt-sway 4.2s ease-in-out infinite}
+@keyframes bt-sway{0%,100%{transform:rotate(0)}50%{transform:rotate(-2.4deg)}}
+.bt-blip{stroke-dasharray:90;animation:bt-blip 2.4s linear infinite}
+@keyframes bt-blip{from{stroke-dashoffset:90}to{stroke-dashoffset:-90}}
+.bt-sonar ellipse{transform-box:fill-box;transform-origin:center;opacity:0;vector-effect:non-scaling-stroke;animation:bt-ping 3.6s ease-out infinite;animation-play-state:paused}
+.bt-sonar ellipse:nth-child(2){animation-delay:1.2s}.bt-sonar ellipse:nth-child(3){animation-delay:2.4s}
+@keyframes bt-ping{0%{transform:scale(.4);opacity:.85}100%{transform:scale(6.5);opacity:0}}
+.bt-fish path{opacity:.5}
+.bt-fish-1{animation:bt-swim1 17s linear infinite}.bt-fish-2{animation:bt-swim2 23s linear infinite -9s}.bt-fish-3{animation:bt-swim3 29s linear infinite -17s}
+@keyframes bt-swim1{from{transform:translate(-60px,256px)}to{transform:translate(700px,250px)}}
+@keyframes bt-swim2{from{transform:translate(700px,266px) scaleX(-1)}to{transform:translate(-60px,262px) scaleX(-1)}}
+@keyframes bt-swim3{from{transform:translate(-60px,272px) scale(.7)}to{transform:translate(700px,268px) scale(.7)}}
+
+/* parts of the boat light up together with their card */
+.bt-z{transition:filter .3s}
+.bt-scene[data-active=sides] .bt-z-sides,.bt-scene[data-active=canopy] .bt-z-canopy,.bt-scene[data-active=finder] .bt-z-finder,
+.bt-scene[data-active=bath] .bt-z-bath,.bt-scene[data-active=well] .bt-z-well,.bt-scene[data-active=engine] .bt-z-engine{filter:drop-shadow(0 0 7px rgba(182,255,77,.95)) brightness(1.18)}
+
+/* glowing dots */
+.bt-pin{position:absolute;z-index:2;display:grid;place-items:center;width:38px;height:38px;padding:0;border:0;background:transparent;cursor:pointer;transform:translate(-50%,-50%);-webkit-tap-highlight-color:transparent}
+.bt-pin-dot{position:relative;width:12px;height:12px;border-radius:50%;background:var(--adventure);box-shadow:0 0 0 3px rgba(182,255,77,.28);transition:background .2s,box-shadow .2s}
+.bt-pin-dot::after{content:'';position:absolute;inset:-7px;border-radius:50%;border:2px solid var(--adventure);animation:bt-pulse 2.2s ease-out infinite}
+@keyframes bt-pulse{0%{transform:scale(.55);opacity:.9}100%{transform:scale(2.2);opacity:0}}
+.bt-pin.is-active .bt-pin-dot,.bt-pin:focus-visible .bt-pin-dot{background:#fff;box-shadow:0 0 0 5px rgba(182,255,77,.65)}
+.bt-pin:focus-visible{outline:2px solid #fff;outline-offset:-6px;border-radius:50%}
+.bt-tip{position:absolute;bottom:calc(100% - 4px);left:50%;width:max-content;max-width:min(220px,60vw);padding:9px 13px;border-radius:12px;background:rgba(5,26,44,.95);border:1px solid rgba(182,255,77,.6);color:#fff;font-size:13px;font-weight:600;line-height:1.5;text-align:start;white-space:normal;opacity:0;pointer-events:none;transform:translate(-50%,6px);transition:opacity .2s,transform .2s;box-shadow:0 12px 30px -10px rgba(0,0,0,.6)}
+.bt-pin.is-active .bt-tip{opacity:1;transform:translate(-50%,0)}
+.bt-pin[data-edge=start] .bt-tip{left:0;transform:translate(-10px,6px)}.bt-pin[data-edge=start].is-active .bt-tip{transform:translate(-10px,0)}
+.bt-pin[data-edge=end] .bt-tip{left:auto;right:0;transform:translate(10px,6px)}.bt-pin[data-edge=end].is-active .bt-tip{transform:translate(10px,0)}
+.bt-hint{margin:4px 0 0;text-align:center;font-size:13px;color:rgba(234,245,252,.6)}
+
+/* spec cards */
+.bt-specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:30px 0 0}
+.bt-tile{position:relative;display:flex;align-items:center;gap:16px;padding:20px 22px;border-radius:18px;overflow:hidden;background:linear-gradient(160deg,rgba(255,255,255,.11),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.15);transition:transform .3s,border-color .3s,box-shadow .3s}
+.bt-tile::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(230px circle at var(--mx,50%) var(--my,-30%),rgba(182,255,77,.22),transparent 62%)}
+@media(hover:hover){.bt-tile:hover::before{opacity:1}.bt-tile:hover{transform:translateY(-3px);border-color:rgba(182,255,77,.45)}}
+.bt-tile.is-active{border-color:rgba(182,255,77,.75);box-shadow:0 0 0 1px rgba(182,255,77,.35),0 16px 36px -16px rgba(182,255,77,.5)}
+.bt-tile-icon{flex:none;display:grid;place-items:center;width:54px;height:54px;border-radius:17px;color:var(--adventure);background:rgba(182,255,77,.14);box-shadow:inset 0 0 0 1px rgba(182,255,77,.32)}
+.bt-tile-icon svg{width:27px;height:27px}
+.bt-tile-body{min-width:0}
+.bt-tile dt{margin:0;font-size:12.5px;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:rgba(234,245,252,.66)}
+.bt-tile dd{margin:5px 0 0;font-size:21px;line-height:1.3;font-weight:750;color:#fff;font-variant-numeric:tabular-nums}
+.bt-num{color:var(--adventure);font-size:1.3em;font-weight:800}
+.bt-people{display:flex;flex-wrap:wrap;gap:4px;margin-top:11px}
+.bt-person{width:14px;height:19px;fill:rgba(255,255,255,.9)}
+.bt-person.bt-crew{fill:var(--adventure)}
+[dir=rtl] .bt-tile dt{letter-spacing:0;text-transform:none}
+
+/* equipment chips */
+.bt-onboard{margin-top:40px}
+.bt-onboard h3{display:flex;align-items:center;gap:14px;margin:0 0 18px;font-size:20px;color:#fff}
+.bt-onboard h3::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.3),transparent)}
+[dir=rtl] .bt-onboard h3::after{background:linear-gradient(270deg,rgba(255,255,255,.3),transparent)}
+.bt-chips{display:flex;flex-wrap:wrap;gap:12px;margin:0;padding:0;list-style:none}
+.bt-chip{outline:none}
+.bt-chip[tabindex]{cursor:pointer}
+.bt-chip-card{display:inline-flex;align-items:center;gap:12px;padding:8px 20px 8px 8px;border-radius:999px;background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.17);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-size:15px;font-weight:600;line-height:1.35;color:#eef7fd;transition:background .25s,border-color .25s,box-shadow .25s;animation:bt-float 6s ease-in-out infinite;animation-delay:calc(var(--f,0)*-1.5s)}
+[dir=rtl] .bt-chip-card{padding:8px 8px 8px 20px}
+.bt-onboard:not(.bt-in) .bt-chip-card{animation-play-state:paused}
+@keyframes bt-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.bt-chip-icon{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;color:var(--adventure);background:rgba(182,255,77,.16)}
+.bt-chip-icon svg{width:18px;height:18px}
+.bt-chip:hover .bt-chip-card,.bt-chip.is-active .bt-chip-card,.bt-chip:focus-visible .bt-chip-card{background:rgba(182,255,77,.15);border-color:rgba(182,255,77,.75);box-shadow:0 0 0 1px rgba(182,255,77,.3),0 12px 28px -12px rgba(182,255,77,.6)}
+
+/* entrance (only for content below the fold; content already on screen is never hidden) */
+.bt-armed:not(.bt-in) .bt-pop,.bt-armed:not(.bt-in) .bt-person{opacity:0}
+.bt-armed.bt-in .bt-pop{animation:bt-rise .75s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--i,0)*90ms)}
+.bt-armed.bt-in .bt-person{animation:bt-rise .55s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(.4s + var(--k,0)*70ms)}
+@keyframes bt-rise{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+.bt-scene.bt-armed .bt-svg{transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
+.bt-scene.bt-armed:not(.bt-in) .bt-svg{opacity:0;transform:translateY(22px)}
+.bt-scene.bt-armed .bt-pin{transition:opacity .6s ease .6s}
+.bt-scene.bt-armed:not(.bt-in) .bt-pin{opacity:0}
+
+@media(max-width:950px){.bt-stage{padding:36px 26px 40px;border-radius:22px}}
+@media(max-width:600px){
+  .bt-stage{margin-top:34px;margin-inline:-6px;padding:26px 16px 30px;border-radius:20px}
+  .bt-scene{margin-inline:-4px}
+  .bt-pin{width:42px;height:42px}
+  .bt-tip{max-width:190px;font-size:12.5px}
+  .bt-specs{grid-template-columns:1fr;gap:12px;margin-top:22px}
+  .bt-tile{padding:16px 18px;gap:14px}
+  .bt-tile-icon{width:48px;height:48px}.bt-tile-icon svg{width:24px;height:24px}
+  .bt-tile dd{font-size:19px}
+  .bt-onboard{margin-top:32px}
+  .bt-chip-card{font-size:14px;padding:7px 16px 7px 7px}[dir=rtl] .bt-chip-card{padding:7px 7px 7px 16px}
+}
+@media(prefers-reduced-motion:reduce){.bt-stage *,.bt-stage *::before,.bt-stage *::after{animation:none!important;transition:none!important}}
