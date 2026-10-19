@@ -961,3 +961,8 @@ html[data-book-bar=on] .site-footer{padding-bottom:calc(84px + env(safe-area-ins
 @keyframes loc-pulse{0%{transform:scale(.6);opacity:.55}100%{transform:scale(2.6);opacity:0}}
 @media(prefers-reduced-motion:reduce){.loc-pulse{animation:none;opacity:.3}}
 @media(max-width:820px){.loc-map,.loc-card.compact .loc-map{min-height:400px}}
+
+/* Location: the real Google map shows directly; this soft brand-coloured panel is only visible for the moment it takes to load */
+.loc-map{position:relative;overflow:hidden}
+.loc-map-wait{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--primary);font-size:13px;font-weight:600;background:linear-gradient(160deg,var(--accent),color-mix(in oklch,var(--adventure) 14%,#fff))}
+.loc-map iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
