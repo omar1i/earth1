@@ -3,6 +3,46 @@ import { MapPin, Navigation, ArrowUpRight, MessageCircle } from 'lucide-react';
 import { business, whatsapp } from '@/lib/content';
 import { useLanguage } from '@/lib/language';
 
+
+// Where the red pin sits on the drawing (viewBox units). Move it here if you want it a little higher/lower or left/right.
+const PIN = { x: 268, y: 126 };
+
+/** A hand-drawn, not-to-scale illustration of Masirah Island with the company pin. */
+function IslandMap({ t }: { t: (en: string, ar: string) => string }) {
+  return (
+    <svg className="loc-svg" viewBox="0 0 400 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label={t('Illustrated map of Masirah Island with the Earth Adventure location', 'خريطة توضيحية لجزيرة مصيرة مع موقع Earth Adventure')}>
+      <g stroke="#9cc4d8" strokeWidth="2" strokeLinecap="round" fill="none" opacity=".9">
+        <path d="M318 200q8-5 16 0t16 0t16 0" />
+        <path d="M330 222q8-5 16 0t16 0" />
+        <path d="M300 300q8-5 16 0t16 0t16 0" />
+        <path d="M284 392q8-5 16 0t16 0" />
+        <path d="M120 150q8-5 16 0t16 0" />
+        <path d="M110 330q8-5 16 0t16 0t16 0" />
+        <path d="M130 440q8-5 16 0t16 0" />
+      </g>
+      <path d="M215 28C245 22 280 40 290 78C298 110 300 140 292 172C284 205 300 232 282 268C266 300 256 330 238 365C224 392 218 425 205 455C198 475 192 492 184 500C176 492 170 470 172 445C176 410 160 380 168 345C176 310 160 280 172 245C182 215 168 190 176 160C184 130 170 100 180 72C186 50 196 34 215 28Z" fill="#f2e9d3" stroke="#1f6f8b" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M233 70C238 150 218 232 207 330S196 450 189 488" fill="none" stroke="#d3c39a" strokeWidth="3" strokeDasharray="2 8" strokeLinecap="round" />
+      <g textAnchor="middle" fill="#1f6f8b" fontWeight="800">
+        <text x="226" y="300" fontSize="19" letterSpacing="2" transform="rotate(-8 226 300)">{t('MASIRAH ISLAND', 'جزيرة مصيرة')}</text>
+      </g>
+      <text x="350" y="410" textAnchor="middle" fontSize="13" fontStyle="italic" fill="#5b8fa6">{t('Arabian Sea', 'بحر العرب')}</text>
+      <g transform="translate(36 46)" fill="#1f6f8b" textAnchor="middle" fontWeight="700">
+        <path d="M0 -16L7 4L0 0L-7 4Z" />
+        <text y="22" fontSize="12">N</text>
+      </g>
+      <g transform={`translate(${PIN.x} ${PIN.y})`}>
+        <ellipse className="loc-pulse" cx="0" cy="0" rx="14" ry="6" fill="#e53935" />
+        <path d="M0 0C-4-8-16-20-16-32A16 16 0 1 1 16-32C16-20 4-8 0 0Z" fill="#e53935" stroke="#fff" strokeWidth="2.5" />
+        <circle cx="0" cy="-32" r="6" fill="#fff" />
+      </g>
+      <g transform={`translate(${PIN.x} ${PIN.y - 68})`}>
+        <rect x="-66" y="-15" width="132" height="30" rx="15" fill="#fff" stroke="#e53935" strokeWidth="2" />
+        <text y="5" textAnchor="middle" fontSize="14" fontWeight="800" fill="#0b2a3a">Earth Adventure</text>
+      </g>
+    </svg>
+  );
+}
+
 /** Company location: embedded map next to the address and "Get directions" / "Open in Google Maps" buttons. */
 export function LocationCard({ compact = false }: { compact?: boolean }) {
   const { lang, t } = useLanguage();
@@ -25,23 +65,18 @@ export function LocationCard({ compact = false }: { compact?: boolean }) {
       </div>
       <div className="loc-map">
         {show ? (
-          <iframe title={t('Earth Adventure location on Google Maps', 'موقع Earth Adventure على خرائط جوجل')} src={business.embedUrl} referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+          <>
+            <iframe title={t('Earth Adventure location on Google Maps', 'موقع Earth Adventure على خرائط جوجل')} src={business.embedUrl} referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+            <button type="button" className="loc-map-back" onClick={() => setShow(false)}>{t('Back to illustration', 'العودة للرسمة')}</button>
+          </>
         ) : (
-          <button type="button" className="loc-map-ph" onClick={() => setShow(true)} aria-label={t('Show the map', 'عرض الخريطة')}>
-            <svg viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
-              <rect width="600" height="400" fill="#e8f1f8" />
-              <path d="M-20 300 C 90 250, 160 330, 260 290 S 440 230, 620 280 L620 420 L-20 420Z" fill="#cfe3f1" />
-              <path d="M-20 340 C 110 300, 200 370, 320 335 S 500 290, 620 330 L620 420 L-20 420Z" fill="#b9d6ea" />
-              <g stroke="#fff" strokeWidth="10" strokeLinecap="round" fill="none">
-                <path d="M40 120 C 160 90, 260 160, 380 120 S 520 70, 590 100" />
-                <path d="M120 20 C 150 100, 110 170, 170 250" />
-                <path d="M330 10 C 350 80, 300 150, 360 230" />
-              </g>
-              <g stroke="#dbe7f0" strokeWidth="2"><path d="M0 200H600M0 60H600M200 0V400M450 0V400" /></g>
-            </svg>
-            <span className="loc-pin"><MapPin size={34} fill="currentColor" aria-hidden="true" /></span>
-            <span className="loc-map-cta">{t('Show map', 'عرض الخريطة')}</span>
-          </button>
+          <>
+            <IslandMap t={t} />
+            <span className="loc-note">{t('Illustration, not to scale', 'رسم توضيحي غير مقياس')}</span>
+            <button type="button" className="loc-map-cta" onClick={() => setShow(true)}>
+              <MapPin size={16} aria-hidden="true" />{t('Open Google Map', 'افتح خريطة جوجل')}
+            </button>
+          </>
         )}
       </div>
     </section>
