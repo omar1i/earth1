@@ -815,3 +815,49 @@ html[data-book-bar=on] .whatsapp-float{bottom:calc(86px + env(safe-area-inset-bo
 html[data-book-bar=on] .site-footer{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 }
 @media(prefers-reduced-motion:reduce){.mobile-book-bar{transition:none}}
+
+/* Home: "Guest stories" (reviews). Swipe on phones, arrows on desktop, nothing moves by itself. */
+.reviews-section{overflow:hidden}
+.reviews-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:end;margin-bottom:34px}
+.rv-score{display:inline-flex;align-items:center;gap:18px;padding:18px 22px;border:1px solid var(--border);border-radius:16px;background:#fff;box-shadow:var(--shadow-soft);color:var(--foreground);transition:border-color .2s,box-shadow .2s}
+.rv-score:hover{border-color:var(--adventure)}
+.rv-score>svg{color:var(--primary);flex:none}
+.rv-score-num{font-family:var(--font-display);font-size:54px;line-height:1;font-weight:800;background:linear-gradient(90deg,var(--primary),oklch(.62 .19 140));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.rv-score-meta{display:flex;flex-direction:column;gap:3px;min-width:0}
+.rv-score-meta strong{font-size:15px;font-weight:700}
+.rv-score-meta small{font-size:12px;color:var(--muted-foreground);max-width:250px;line-height:1.4}
+.rv-stars{display:inline-flex;gap:2px}
+.rv-stars svg{color:var(--adventure);fill:none}
+.rv-stars svg.on{fill:var(--adventure)}
+.rv-track{--cpad:44px;display:flex;gap:18px;overflow-x:auto;margin-inline:calc(-1*var(--cpad));padding:6px var(--cpad) 24px;scroll-padding-inline:var(--cpad);scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.rv-track::-webkit-scrollbar{display:none}
+.rv-track:focus-visible{outline:2px solid var(--primary);outline-offset:-2px;border-radius:12px}
+.rv-card{position:relative;flex:0 0 min(360px,82vw);scroll-snap-align:start;display:flex;flex-direction:column;gap:14px;padding:24px 24px 22px;border:1px solid var(--border);border-radius:18px;background:#fff;box-shadow:var(--shadow-soft);overflow:hidden}
+.rv-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary),var(--adventure))}
+.rv-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.rv-quote{color:var(--primary);opacity:.9}
+.rv-stamp{font-size:11px;font-weight:700;color:var(--foreground);padding:5px 10px;border:1.5px dashed var(--adventure);border-radius:6px;background:color-mix(in oklch,var(--adventure) 10%,#fff);white-space:nowrap}
+.rv-card h3{font-size:17px;line-height:1.35;margin:0;color:var(--foreground)}
+.rv-card blockquote{margin:0;flex:1}
+.rv-card blockquote p{margin:0;font-size:15px;line-height:1.75;color:var(--foreground)}
+.rv-who{display:flex;align-items:center;gap:12px;padding-top:16px;border-top:1.5px dashed var(--border)}
+.rv-avatar{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--primary);font-weight:800;font-size:15px}
+.rv-who-text{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.3}
+.rv-who-text strong{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rv-who-text small{font-size:12px;color:var(--muted-foreground)}
+.rv-who .rv-stars svg{width:13px;height:13px}
+.rv-cta{align-items:flex-start;justify-content:center;border:1.5px dashed var(--adventure);background:color-mix(in oklch,var(--adventure) 7%,#fff);box-shadow:none}
+.rv-cta::before{display:none}
+.rv-cta h3{font-size:22px}
+.rv-cta p{margin:0;color:var(--muted-foreground);font-size:14px}
+.rv-cta-btn{color:#fff;margin-top:6px}
+.rv-cta-btn:hover{color:#fff}
+.rv-cta .text-link{margin-top:2px}
+.rv-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:4px}
+.rv-arrows{display:flex;gap:10px}
+.rv-arrows button{width:42px;height:42px;border-radius:50%;border:1px solid var(--border);background:#fff;color:var(--foreground);display:grid;place-items:center;cursor:pointer;transition:border-color .2s,background .2s,color .2s}
+.rv-arrows button:hover{border-color:var(--adventure);background:color-mix(in oklch,var(--adventure) 10%,#fff)}
+@media(max-width:1150px){.rv-track{--cpad:35px}}
+@media(max-width:900px){.reviews-head{grid-template-columns:1fr;gap:22px;align-items:start}.rv-score{width:100%}.rv-score-meta{flex:1}.rv-score>svg{margin-inline-start:auto}.rv-arrows{display:none}}
+@media(max-width:600px){.rv-track{--cpad:22px}.rv-card{padding:22px 20px 20px}.rv-score-num{font-size:46px}.rv-score{padding:16px 18px;gap:14px}}
+@media(max-width:380px){.rv-track{--cpad:18px}}
