@@ -908,3 +908,20 @@ html[data-book-bar=on] .site-footer{padding-bottom:calc(84px + env(safe-area-ins
 @media(max-width:900px){.rvp-slide{flex-basis:calc((100% - 18px)/2)}}
 @media(max-width:600px){.rvp-slide{flex-basis:88%}.rvp-carousel{padding-inline:0}.rvp-arrow{display:none}.rvp-summary{padding:18px}.rvp-share{width:100%}}
 @media(max-width:600px){.rvp-panel{padding:14px}.rvp-summary{padding:16px;gap:14px}.rvp-summary-main{width:100%;gap:12px}.rvp-logo{width:46px;height:46px;border-radius:12px}.rvp-summary h2{font-size:19px}.rvp-rating strong{font-size:21px}.rvp-rating .rv-stars svg{width:14px;height:14px}}
+
+/* Location card */
+.loc-card{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:0;border-radius:24px;overflow:hidden;background:#fff;border:1px solid var(--border);box-shadow:var(--shadow-soft)}
+.loc-info{padding:clamp(24px,4vw,44px);display:flex;flex-direction:column;gap:14px;justify-content:center}
+.loc-eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--primary);text-transform:uppercase}
+.loc-info h2{font-size:clamp(24px,3vw,34px);margin:0}
+.loc-address{font-style:normal;display:flex;flex-direction:column;gap:2px;color:var(--muted-foreground);line-height:1.6}
+.loc-address strong{color:var(--foreground);font-size:17px}
+.loc-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.loc-btn{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 18px;border-radius:12px;border:1px solid var(--border);background:#fff;color:var(--foreground);font-weight:600;font-size:14px;transition:transform .2s,border-color .2s}
+.loc-btn:hover{transform:translateY(-2px);border-color:var(--primary)}
+.loc-btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.loc-map{min-height:340px;background:var(--accent)}
+.loc-map iframe{display:block;width:100%;height:100%;min-height:340px;border:0}
+.loc-card.compact .loc-map,.loc-card.compact .loc-map iframe{min-height:280px}
+.footer-address{display:flex;align-items:flex-start;gap:6px}
+@media(max-width:820px){.loc-card{grid-template-columns:1fr}.loc-map,.loc-map iframe{min-height:280px}.loc-btn{flex:1 1 auto;justify-content:center}}

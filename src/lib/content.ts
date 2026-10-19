@@ -283,3 +283,16 @@ export const shortTripTerms: {title:Bilingual; sections:TermsSection[]} = {
     ]},
   ],
 };
+
+// Company location: edit the text lines here and they update in the footer, home page and contact page.
+export const business = {
+  lat: 20.6418851, lng: 58.8684616,
+  mapsUrl: 'https://maps.app.goo.gl/YWuLazVbsUbYhz3GA',
+  directionsUrl: 'https://www.google.com/maps/dir/?api=1&destination=20.6418851,58.8684616',
+  embedUrl: 'https://www.google.com/maps?q=20.6418851,58.8684616&z=15&hl=en&output=embed',
+  // Address lines shown on the site, in order. Empty lines are skipped.
+  addressLines: [
+    bi('Masirah Island', 'جزيرة مصيرة'),
+    bi('Sultanate of Oman', 'سلطنة عُمان'),
+  ],
+};
