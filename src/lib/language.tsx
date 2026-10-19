@@ -20,12 +20,21 @@ export function LanguageProvider({children, initial = 'en'}: {children: ReactNod
   document.cookie = `earth-language=${l}; path=/; max-age=31536000; SameSite=Lax`;
   document.documentElement.lang = l; document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
   setLangState(l);
-  void router.invalidate(); // re-run head() so titles and descriptions follow the language
+  // Arabic and English have their own URLs (/ar/...): move to the other one, then refresh titles and descriptions.
+  const { pathname, search, hash } = window.location;
+  const bare = pathname.replace(/^\/ar(?=\/|$)/, '') || '/';
+  const next = (l === 'ar' ? '/ar' + (bare === '/' ? '' : bare) : bare) + search + hash;
+  if (next !== pathname + search + hash) router.history.push(next);
+  void router.invalidate();
  };
  // Wait (at most 0.7 s) for the new language's fonts; instant when they are already loaded.
  const setLang = (l: Language) => {
   void Promise.race([warmFonts(l), new Promise((resolve) => setTimeout(resolve, 700))]).then(() => apply(l));
  };
+ useEffect(() => { // browser back/forward between /ar and English pages
+  setLangState(initial);
+  document.documentElement.lang = initial; document.documentElement.dir = initial === 'ar' ? 'rtl' : 'ltr';
+ }, [initial]);
  useEffect(() => {
   const other: Language = lang === 'ar' ? 'en' : 'ar';
   const run = () => { void warmFonts(other); };

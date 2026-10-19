@@ -3,6 +3,7 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
+  redirect,
   useRouter,
   HeadContent,
   Scripts,
@@ -23,7 +24,7 @@ const fontPreloads = (lang?: string) =>
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LanguageProvider, useLanguage } from "@/lib/language";
-import { detectLanguage } from "@/lib/lang-detect";
+import { savedLanguage, siteOrigin } from "@/lib/lang-detect";
 import { loadCatalog } from "@/lib/catalog.functions";
 import { SiteShell } from "@/components/site-shell";
 import { Button } from "@/components/ui/button";
@@ -90,6 +91,8 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   );
 }
 
+const arPath = (path: string) => "/ar" + (path === "/" ? "" : path);
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: ({ loaderData }) => ({
     meta: [
@@ -106,10 +109,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
       ...fontPreloads(loaderData?.lang),
+      ...(loaderData
+        ? [
+            { rel: "canonical", href: loaderData.origin + (loaderData.lang === "ar" ? arPath(loaderData.path) : loaderData.path) },
+            { rel: "alternate", hrefLang: "en", href: loaderData.origin + loaderData.path },
+            { rel: "alternate", hrefLang: "ar", href: loaderData.origin + arPath(loaderData.path) },
+            { rel: "alternate", hrefLang: "x-default", href: loaderData.origin + loaderData.path },
+          ]
+        : []),
     ],
   }),
   // Trips, prices, images and departures come from the D1 database (built-in content if D1 is not connected).
-  loader: async () => ({ lang: detectLanguage(), catalog: await loadCatalog() }),
+  loader: async ({ location }) => {
+    // The URL decides the language: /ar/... is Arabic, everything else English.
+    const loc = location as { publicHref?: string; href?: string; pathname: string; searchStr?: string };
+    const pub = loc.publicHref ?? loc.href ?? loc.pathname;
+    const isAr = /^\/ar(?:[/?#]|$)/.test(pub);
+    // Returning visitors who chose Arabic before keep getting Arabic (search engines send no cookie).
+    if (!isAr && savedLanguage() === "ar") {
+      throw redirect({ href: "/ar" + (loc.pathname === "/" ? "" : loc.pathname) + (loc.searchStr ?? "") });
+    }
+    return { lang: (isAr ? "ar" : "en") as "ar" | "en", path: loc.pathname, origin: siteOrigin(), catalog: await loadCatalog() };
+  },
   staleTime: 30_000,
   shellComponent: RootShell,
   component: RootComponent,
