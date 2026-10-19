@@ -5,6 +5,7 @@ import { loadCatalog } from '@/lib/catalog.functions';
 import { useCatalog } from '@/lib/catalog-context';
 import { useLanguage, headLang } from '@/lib/language';
 import { Button } from '@/components/ui/button';
+import { MobileBookBar } from '@/components/mobile-book-bar';
 import { GroupTripCard } from '@/components/trips-components';
 import { ImageSlider } from '@/components/image-slider';
 
@@ -147,6 +148,7 @@ function GroupTripDetail() {
           </div>
         </div>
       </section>
+      {canBook && <MobileBookBar experienceId={trip.id} label={t('Price', 'السعر')}>{trip.price[lang]}</MobileBookBar>}
     </>
   );
 }

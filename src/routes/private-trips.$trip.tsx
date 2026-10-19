@@ -6,6 +6,7 @@ import { loadCatalog } from '@/lib/catalog.functions';
 import { useCatalog } from '@/lib/catalog-context';
 import { useLanguage, headLang } from '@/lib/language';
 import { Button } from '@/components/ui/button';
+import { MobileBookBar } from '@/components/mobile-book-bar';
 import { PrivateBoatSection } from '@/components/private-trip-components';
 import { PrivateTripCard } from '@/components/trips-components';
 
@@ -179,6 +180,7 @@ function PrivateTripDetail() {
           </div>
         </section>
       )}
+      <MobileBookBar experienceId={trip.id} label={t('Price', 'السعر')}>{trip.price ? trip.price[lang] : t('Contact for Price', 'تواصل لمعرفة السعر')}</MobileBookBar>
     </>
   );
 }
