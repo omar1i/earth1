@@ -4,6 +4,7 @@ import { ArrowUpRight, ChevronLeft, ChevronRight, MessageCircle, Quote, Star } f
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/language';
 import { whatsapp } from '@/lib/content';
+import tripadvisorLogo from '@/assets/tripadvisor-logo.webp';
 import { reviews, tripadvisor, type GuestReview } from '@/lib/reviews';
 
 export function Stars({ n }: { n: number }) {
@@ -81,7 +82,7 @@ export function ReviewsSummary() {
   return (
     <div className="rvp-summary">
       <div className="rvp-summary-main">
-        <span className="rvp-logo" aria-hidden="true"><Star size={26} fill="currentColor" /></span>
+        <img className="rvp-logo" src={tripadvisorLogo} alt="Tripadvisor" width={54} height={54} loading="lazy" decoding="async" />
         <div>
           <h2>{t('Tripadvisor Reviews', 'تقييمات Tripadvisor')}</h2>
           <a className="rvp-rating" href={tripadvisor.url} target="_blank" rel="noreferrer" aria-label={t('Read all reviews on Tripadvisor', 'اقرأ كل التقييمات على Tripadvisor')}>

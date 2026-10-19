@@ -873,7 +873,7 @@ html[data-book-bar=on] .site-footer{padding-bottom:calc(84px + env(safe-area-ins
 .rvp-panel{padding:clamp(18px,3vw,34px);border-radius:24px;background:linear-gradient(180deg,color-mix(in oklch,var(--accent) 55%,#fff),#fff);border:1px solid var(--border)}
 .rvp-summary{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:22px 26px;border-radius:20px;background:#fff;box-shadow:var(--shadow-soft);margin-bottom:22px}
 .rvp-summary-main{display:flex;align-items:center;gap:16px;min-width:0}
-.rvp-logo{flex:none;width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:var(--adventure);color:var(--foreground)}
+.rvp-logo{flex:none;width:54px;height:54px;border-radius:14px;object-fit:cover;display:block}
 .rvp-summary h2{font-size:clamp(20px,2.6vw,28px);margin-bottom:4px}
 .rvp-rating{display:inline-flex;align-items:center;gap:10px;color:var(--foreground)}
 .rvp-rating strong{font-family:var(--font-display);font-size:24px;font-weight:800}
