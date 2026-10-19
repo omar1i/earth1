@@ -872,12 +872,12 @@ html[data-book-bar=on] .site-footer{padding-bottom:calc(84px + env(safe-area-ins
 /* Reviews page: Tripadvisor-style summary + slider */
 .rvp-panel{padding:clamp(18px,3vw,34px);border-radius:24px;background:linear-gradient(180deg,color-mix(in oklch,var(--accent) 55%,#fff),#fff);border:1px solid var(--border)}
 .rvp-summary{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:22px 26px;border-radius:20px;background:#fff;box-shadow:var(--shadow-soft);margin-bottom:22px}
-.rvp-summary-main{display:flex;align-items:center;gap:16px;min-width:0}
+.rvp-summary-main{display:flex;align-items:center;gap:16px;min-width:0;max-width:100%}.rvp-summary-main>div{min-width:0;flex:1}
 .rvp-logo{flex:none;width:54px;height:54px;border-radius:14px;object-fit:cover;display:block}
 .rvp-summary h2{font-size:clamp(20px,2.6vw,28px);margin-bottom:4px}
-.rvp-rating{display:inline-flex;align-items:center;gap:10px;color:var(--foreground)}
+.rvp-rating{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;max-width:100%;color:var(--foreground)}
 .rvp-rating strong{font-family:var(--font-display);font-size:24px;font-weight:800}
-.rvp-rating span{color:var(--muted-foreground);font-size:15px}
+.rvp-rating span{color:var(--muted-foreground);font-size:15px;white-space:nowrap}
 .rvp-summary small{display:block;margin-top:4px;font-size:12px;color:var(--muted-foreground)}
 .rvp-share{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border-radius:12px;background:var(--adventure);color:var(--foreground);font-weight:700;transition:transform .2s,box-shadow .2s}
 .rvp-share:hover{transform:translateY(-2px);box-shadow:0 8px 20px color-mix(in oklch,var(--adventure) 45%,transparent)}
@@ -907,3 +907,4 @@ html[data-book-bar=on] .site-footer{padding-bottom:calc(84px + env(safe-area-ins
 @media(max-width:1150px){.rvp-slide{flex-basis:calc((100% - 36px)/3)}}
 @media(max-width:900px){.rvp-slide{flex-basis:calc((100% - 18px)/2)}}
 @media(max-width:600px){.rvp-slide{flex-basis:88%}.rvp-carousel{padding-inline:0}.rvp-arrow{display:none}.rvp-summary{padding:18px}.rvp-share{width:100%}}
+@media(max-width:600px){.rvp-panel{padding:14px}.rvp-summary{padding:16px;gap:14px}.rvp-summary-main{width:100%;gap:12px}.rvp-logo{width:46px;height:46px;border-radius:12px}.rvp-summary h2{font-size:19px}.rvp-rating strong{font-size:21px}.rvp-rating .rv-stars svg{width:14px;height:14px}}
