@@ -17,6 +17,7 @@ import { Route as DestinationsRouteImport } from './routes/destinations'
 import { Route as ExperiencesRouteImport } from './routes/experiences'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as CategoriesCategoryRouteImport } from './routes/categories.$category'
 import { Route as DestinationsIndexRouteImport } from './routes/destinations.index'
@@ -64,6 +65,11 @@ const GalleryRoute = GalleryRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReviewsRoute = ReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/experiences': typeof ExperiencesRouteWithChildren
   '/gallery': typeof GalleryRoute
   '/privacy': typeof PrivacyRoute
+  '/reviews': typeof ReviewsRoute
   '/terms': typeof TermsRoute
   '/categories/$category': typeof CategoriesCategoryRoute
   '/destinations/$destination': typeof DestinationsDestinationRoute
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/privacy': typeof PrivacyRoute
+  '/reviews': typeof ReviewsRoute
   '/terms': typeof TermsRoute
   '/categories/$category': typeof CategoriesCategoryRoute
   '/destinations/$destination': typeof DestinationsDestinationRoute
@@ -151,6 +159,7 @@ export interface FileRoutesById {
   '/experiences': typeof ExperiencesRouteWithChildren
   '/gallery': typeof GalleryRoute
   '/privacy': typeof PrivacyRoute
+  '/reviews': typeof ReviewsRoute
   '/terms': typeof TermsRoute
   '/categories/$category': typeof CategoriesCategoryRoute
   '/destinations/$destination': typeof DestinationsDestinationRoute
@@ -171,6 +180,7 @@ export interface FileRouteTypes {
     | '/experiences'
     | '/gallery'
     | '/privacy'
+    | '/reviews'
     | '/terms'
     | '/categories/$category'
     | '/destinations/$destination'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/privacy'
+    | '/reviews'
     | '/terms'
     | '/categories/$category'
     | '/destinations/$destination'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/experiences'
     | '/gallery'
     | '/privacy'
+    | '/reviews'
     | '/terms'
     | '/categories/$category'
     | '/destinations/$destination'
@@ -224,6 +236,7 @@ export interface RootRouteChildren {
   ExperiencesRoute: typeof ExperiencesRouteWithChildren
   GalleryRoute: typeof GalleryRoute
   PrivacyRoute: typeof PrivacyRoute
+  ReviewsRoute: typeof ReviewsRoute
   TermsRoute: typeof TermsRoute
   CategoriesCategoryRoute: typeof CategoriesCategoryRoute
   GroupTripsTripRoute: typeof GroupTripsTripRoute
@@ -286,6 +299,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reviews': {
+      id: '/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof ReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -384,6 +404,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExperiencesRoute: ExperiencesRouteWithChildren,
   GalleryRoute: GalleryRoute,
   PrivacyRoute: PrivacyRoute,
+  ReviewsRoute: ReviewsRoute,
   TermsRoute: TermsRoute,
   CategoriesCategoryRoute: CategoriesCategoryRoute,
   GroupTripsTripRoute: GroupTripsTripRoute,
