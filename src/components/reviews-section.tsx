@@ -1,10 +1,8 @@
-import { useRef } from 'react';
-import { Link } from '@tanstack/react-router';
-import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, MessageCircle, Quote, Star } from 'lucide-react';
+import { ArrowUpRight, MessageCircle, Quote, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/language';
 import { whatsapp } from '@/lib/content';
-import { reviews, tripadvisor, type GuestReview } from '@/lib/reviews';
+import { tripadvisor, type GuestReview } from '@/lib/reviews';
 
 export function Stars({ n }: { n: number }) {
   const { t } = useLanguage();
@@ -72,48 +70,5 @@ export function ReviewCta() {
         {t('Or send us a note', 'أو أرسل لنا ملاحظة')}
       </a>
     </article>
-  );
-}
-
-// Home page teaser: rating strip + swipeable cards + link to the full /reviews page. No auto-moving parts (only swipe / arrows).
-export function ReviewsSection() {
-  const { t } = useLanguage();
-  const track = useRef<HTMLDivElement>(null);
-  const scrollBy = (dir: 1 | -1) => {
-    const el = track.current;
-    if (!el) return;
-    const card = el.querySelector<HTMLElement>('.rv-card');
-    el.scrollBy({ left: dir * ((card?.offsetWidth ?? 320) + 18), behavior: 'smooth' });
-  };
-
-  return (
-    <section className="section reviews-section" aria-labelledby="reviews-title">
-      <div className="container">
-        <div className="reviews-head">
-          <div>
-            <div className="eyebrow">{t('Guest stories', 'قصص ضيوفنا')}</div>
-            <h2 id="reviews-title" className="section-title">{t('What our guests say', 'ماذا يقول ضيوفنا')}</h2>
-            <p className="section-intro">{t('Real words from real adventures, shared by our guests on Tripadvisor.', 'كلمات حقيقية من مغامرات حقيقية، شاركها ضيوفنا على Tripadvisor.')}</p>
-          </div>
-          <ReviewScore />
-        </div>
-
-        <div className="rv-track" ref={track} tabIndex={0} role="region" aria-label={t('Guest reviews', 'تقييمات الضيوف')}>
-          {reviews.map((r) => <ReviewCard key={r.id} r={r} />)}
-          <ReviewCta />
-        </div>
-
-        <div className="rv-foot">
-          <Link className="text-link" to="/reviews">
-            {t('See all guest stories', 'شاهد كل القصص')}
-            <ArrowRight size={14} />
-          </Link>
-          <div className="rv-arrows">
-            <button type="button" onClick={() => scrollBy(-1)} aria-label={t('Scroll left', 'تمرير لليسار')}><ChevronLeft size={20} /></button>
-            <button type="button" onClick={() => scrollBy(1)} aria-label={t('Scroll right', 'تمرير لليمين')}><ChevronRight size={20} /></button>
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
