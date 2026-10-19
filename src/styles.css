@@ -868,3 +868,42 @@ html[data-book-bar=on] .site-footer{padding-bottom:calc(84px + env(safe-area-ins
 .rv-grid .rv-card{flex:none;min-width:0}
 .rv-note{margin-top:28px;font-size:12px;color:var(--muted-foreground)}
 @media(max-width:600px){.rv-grid{grid-template-columns:1fr}.reviews-page-top .rv-score{width:100%}.reviews-page-top .rv-score>svg{margin-inline-start:auto}}
+
+/* Reviews page: Tripadvisor-style summary + slider */
+.rvp-panel{padding:clamp(18px,3vw,34px);border-radius:24px;background:linear-gradient(180deg,color-mix(in oklch,var(--accent) 55%,#fff),#fff);border:1px solid var(--border)}
+.rvp-summary{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:22px 26px;border-radius:20px;background:#fff;box-shadow:var(--shadow-soft);margin-bottom:22px}
+.rvp-summary-main{display:flex;align-items:center;gap:16px;min-width:0}
+.rvp-logo{flex:none;width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:var(--adventure);color:var(--foreground)}
+.rvp-summary h2{font-size:clamp(20px,2.6vw,28px);margin-bottom:4px}
+.rvp-rating{display:inline-flex;align-items:center;gap:10px;color:var(--foreground)}
+.rvp-rating strong{font-family:var(--font-display);font-size:24px;font-weight:800}
+.rvp-rating span{color:var(--muted-foreground);font-size:15px}
+.rvp-summary small{display:block;margin-top:4px;font-size:12px;color:var(--muted-foreground)}
+.rvp-share{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border-radius:12px;background:var(--adventure);color:var(--foreground);font-weight:700;transition:transform .2s,box-shadow .2s}
+.rvp-share:hover{transform:translateY(-2px);box-shadow:0 8px 20px color-mix(in oklch,var(--adventure) 45%,transparent)}
+.rvp-carousel{position:relative;padding-inline:26px}
+.rvp-viewport{overflow:hidden;padding:6px 4px 18px;margin-inline:-4px}
+.rvp-track{display:flex;gap:18px}
+.rvp-slide{flex:0 0 calc((100% - 54px)/4);min-width:0;display:flex}
+.rvp-card{flex:1;display:flex;flex-direction:column;gap:12px;padding:26px 24px 22px;border-radius:20px;background:#fff;box-shadow:var(--shadow-soft);transition:transform .25s,box-shadow .25s}
+.rvp-card:hover{transform:translateY(-3px)}
+.rvp-card h3{font-size:16px;line-height:1.35}
+.rvp-card p{font-size:15px;line-height:1.7;color:var(--foreground);display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;min-height:calc(1.7em*3)}
+.rvp-card p.open{display:block;-webkit-line-clamp:unset}
+.rvp-more{align-self:flex-start;background:none;border:0;padding:0;color:var(--primary);font-weight:600;text-decoration:underline;cursor:pointer}
+.rvp-who{margin-top:auto;padding-top:18px;display:flex;align-items:center;gap:12px}
+.rvp-avatar{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),oklch(.62 .19 140));color:#fff;font-weight:800;font-size:18px}
+.rvp-who-text{display:flex;flex-direction:column;flex:1;min-width:0;line-height:1.3}
+.rvp-who-text strong{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rvp-who-text small{font-size:12px;color:var(--muted-foreground)}
+.rvp-quote{flex:none;color:var(--adventure)}
+.rvp-arrow{position:absolute;top:calc(50% - 30px);z-index:2;width:42px;height:42px;border-radius:50%;border:1px solid var(--border);background:#fff;color:var(--foreground);display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow-soft);transition:opacity .2s,border-color .2s}
+.rvp-arrow:hover:not(:disabled){border-color:var(--primary)}
+.rvp-arrow:disabled{opacity:.35;cursor:default}
+.rvp-arrow.prev{inset-inline-start:-8px}.rvp-arrow.next{inset-inline-end:-8px}
+.rvp-dots{display:flex;justify-content:center;gap:8px;margin-top:6px}
+.rvp-dots button{width:8px;height:8px;padding:0;border:0;border-radius:99px;background:color-mix(in oklch,var(--primary) 25%,#fff);cursor:pointer;transition:width .25s,background .25s}
+.rvp-dots button.on{width:24px;background:var(--primary)}
+@media(max-width:1150px){.rvp-slide{flex-basis:calc((100% - 36px)/3)}}
+@media(max-width:900px){.rvp-slide{flex-basis:calc((100% - 18px)/2)}}
+@media(max-width:600px){.rvp-slide{flex-basis:88%}.rvp-carousel{padding-inline:0}.rvp-arrow{display:none}.rvp-summary{padding:18px}.rvp-share{width:100%}}

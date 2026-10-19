@@ -2,8 +2,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import { bi, pageHead } from '@/lib/content';
 import { useLanguage, headLang } from '@/lib/language';
 import { PageHeading } from '@/components/experience-components';
-import { ReviewCard, ReviewCta, ReviewScore } from '@/components/reviews-section';
-import { reviews, tripadvisor } from '@/lib/reviews';
+import { ReviewsCarousel, ReviewsSummary } from '@/components/reviews-section';
+import { tripadvisor } from '@/lib/reviews';
 
 export const Route = createFileRoute('/reviews')({
   head: ({ matches }) =>
@@ -29,12 +29,9 @@ function Reviews() {
       />
       <section className="section">
         <div className="container">
-          <div className="reviews-page-top">
-            <ReviewScore />
-          </div>
-          <div className="rv-grid">
-            {reviews.map((r) => <ReviewCard key={r.id} r={r} />)}
-            <ReviewCta />
+          <div className="rvp-panel">
+            <ReviewsSummary />
+            <ReviewsCarousel />
           </div>
           <p className="rv-note">
             {t(
