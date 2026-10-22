@@ -1029,3 +1029,19 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 @media (prefers-reduced-motion:reduce){
   .site-header{transition:none}
 }
+
+/* ==========================================================================
+   Hero -> white section: rounded "folded" top edge (adobe.com style)
+   The white rail slides up over the bottom of the hero photo with big rounded top corners.
+   ========================================================================== */
+:root{--hero-curve:36px}
+.hero-rail{
+  position:relative;
+  z-index:3;
+  margin-top:calc(-1 * var(--hero-curve));
+  border-radius:var(--hero-curve) var(--hero-curve) 0 0;
+}
+/* keep the text at the bottom of the hero clear of the overlapping curve */
+.hero-bottom{margin-bottom:var(--hero-curve)}
+@media (max-width:950px){:root{--hero-curve:28px}}
+@media (max-width:600px){:root{--hero-curve:24px}}
