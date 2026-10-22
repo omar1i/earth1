@@ -15,13 +15,13 @@ export const aboutText = {
         'اكتشف العالم معنا، قم بزيارة بلدان جديدة وتعرف على ثقافاتها. رحلاتنا مليئة بالحماس والإثارة. ستشعر بمتعة المغامرة. يمكن تخصيص الرحلات حسب طلباتكم.',
       ),
       bi(
-        'Each trip has a minimum of 6 and a maximum of 16 guests. Trips in countries abroad include reservations in good-quality hotels and transportation. Our trips have a friendly environment: you will meet new friends and won’t have to worry about travelling alone.',
-        'كل رحلة لها حد أدنى 6 عملاء وحد أقصى 16 عميلاً. الرحلات في الدول الخارجية سيكون لها حجوزات في فنادق ذات جودة عالية ووسائل نقل. رحلاتنا تتميز ببيئة ودية حيث ستتعرف على أصدقاء جدد ولن تقلق بشأن السفر بمفردك.',
+        'Group trips have a minimum of 6 and a maximum of 16 guests, while private trips can be arranged for any group size, even a single traveller. Trips in countries abroad include reservations in good-quality hotels and transportation. Our trips have a friendly environment: you will meet new friends and won’t have to worry about travelling alone.',
+        'الرحلات الجماعية لها حد أدنى 6 عملاء وحد أقصى 16 عميلاً، أما الرحلات الخاصة فيمكن تنظيمها لأي عدد، حتى لشخص واحد. الرحلات في الدول الخارجية سيكون لها حجوزات في فنادق ذات جودة عالية ووسائل نقل. رحلاتنا تتميز ببيئة ودية حيث ستتعرف على أصدقاء جدد ولن تقلق بشأن السفر بمفردك.',
       ),
     ],
     facts: [
       { value: bi('Oman', 'عُمان'), label: bi('Local team', 'فريق محلي') },
-      { value: bi('6–16', '6–16'), label: bi('Guests per trip', 'عميلاً في كل رحلة') },
+      { value: bi('1–16', '1–16'), label: bi('Guests per trip', 'عميلاً في كل رحلة') },
       { value: bi('Custom', 'مخصصة'), label: bi('Trips tailored to you', 'رحلات حسب طلبك') },
     ],
   },
