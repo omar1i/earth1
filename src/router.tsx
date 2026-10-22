@@ -7,15 +7,19 @@ import { routeTree } from "./routeTree.gen";
 // A new router is created per request, so `prefix` is never shared between visitors.
 export const getRouter = () => {
   const queryClient = new QueryClient();
+  const touchOnly = typeof window !== "undefined" && !!window.matchMedia?.("(hover: none)").matches;
   let prefix = "";
 
   const router = createRouter({
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
-    // Start loading a page's data as soon as a visitor hovers / touches its link, so the click feels instant
-    // instead of waiting ~1s for the database. Loaded data is reused for 30s (same as the root loader).
-    defaultPreload: "intent",
+    // Start loading a page's data before the click, so navigation feels instant instead of waiting ~1s for the database.
+    //  - computers (mouse): as soon as the pointer hovers a link ("intent")
+    //  - phones / tablets (touch, no hover): as soon as a link appears on screen ("viewport"), because a tap
+    //    gives no earlier warning than the tap itself.
+    // Loaded data is reused for 30s (same as the root loader).
+    defaultPreload: touchOnly ? "viewport" : "intent",
     defaultPreloadDelay: 50,
     defaultPreloadStaleTime: 30_000,
     defaultStaleTime: 30_000,
