@@ -1031,22 +1031,27 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 }
 
 /* ==========================================================================
-   Hero -> white section: rounded "folded" top edge (adobe.com style)
-   The white sheet slides up over the bottom of the hero photo with big rounded top corners,
-   and continues into the next section with no divider line, so it reads as one white sheet.
+   Hero -> white sheet (adobe.com style)
+   - The hero photo stays pinned behind while you scroll
+   - Everything after it lives in .home-sheet: a white sheet with big rounded top corners
+     that slides UP over the photo as you scroll
    ========================================================================== */
 :root{--hero-curve:40px}
-.hero-rail{
+.hero{position:sticky;top:0;z-index:0}
+.home-sheet{
   position:relative;
   z-index:3;
   margin-top:calc(-1 * var(--hero-curve));
+  border-radius:var(--hero-curve) var(--hero-curve) 0 0;
+  background:var(--background);
+}
+.hero-rail{
   padding-top:calc(var(--hero-curve) / 2);
   min-height:calc(80px + var(--hero-curve) / 2);
   border-bottom:0;
-  border-radius:var(--hero-curve) var(--hero-curve) 0 0;
-  background:#fff;
+  background:transparent;
 }
-/* keep the text at the bottom of the hero clear of the overlapping curve */
+/* keep the text at the bottom of the hero clear of the overlapping sheet */
 .hero-bottom{margin-bottom:var(--hero-curve)}
 @media (max-width:950px){:root{--hero-curve:30px}}
 @media (max-width:600px){:root{--hero-curve:26px}}
