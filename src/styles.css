@@ -1055,3 +1055,14 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 .hero-bottom{margin-bottom:var(--hero-curve)}
 @media (max-width:950px){:root{--hero-curve:30px}}
 @media (max-width:600px){:root{--hero-curve:26px}}
+
+/* Hero dims as the white sheet rises over it, so the eye moves down to the content (--hero-dim: 0 -> 1, set on scroll) */
+.hero:before{
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:5;
+  pointer-events:none;
+  background:oklch(.13 .05 245);
+  opacity:calc(var(--hero-dim, 0) * .85);
+}

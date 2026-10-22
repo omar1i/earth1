@@ -113,6 +113,7 @@ export function MobileEffects() {
       scanRaf = requestAnimationFrame(() => {
         scanRaf = 0;
         scan();
+        update();
       });
     };
     scan();
@@ -127,6 +128,14 @@ export function MobileEffects() {
       ticking = false;
       // Header glass state works on every screen size (desktop too).
       document.querySelector('.site-header')?.setAttribute('data-scrolled', String(window.scrollY > 8));
+      // Home hero: dim it while the white sheet slides up over it (adobe.com style).
+      const hero = document.querySelector<HTMLElement>('.hero');
+      if (hero) {
+        const dim = Math.min(1, Math.max(0, window.scrollY / (hero.offsetHeight * 0.85)));
+        root.style.setProperty('--hero-dim', dim.toFixed(3));
+      } else {
+        root.style.removeProperty('--hero-dim');
+      }
       if (!phone.matches) {
         root.removeAttribute('data-scroll-dir');
         return;
