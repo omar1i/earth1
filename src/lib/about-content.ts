@@ -15,8 +15,8 @@ export const aboutText = {
         'اكتشف العالم معنا، قم بزيارة بلدان جديدة وتعرف على ثقافاتها. رحلاتنا مليئة بالحماس والإثارة. ستشعر بمتعة المغامرة. يمكن تخصيص الرحلات حسب طلباتكم.',
       ),
       bi(
-        'Group trips have a minimum of 6 and a maximum of 16 guests, while private trips can be arranged for any group size, even a single traveller. Trips in countries abroad include reservations in good-quality hotels and transportation. Our trips have a friendly environment: you will meet new friends and won’t have to worry about travelling alone.',
-        'الرحلات الجماعية لها حد أدنى 6 عملاء وحد أقصى 16 عميلاً، أما الرحلات الخاصة فيمكن تنظيمها لأي عدد، حتى لشخص واحد. الرحلات في الدول الخارجية سيكون لها حجوزات في فنادق ذات جودة عالية ووسائل نقل. رحلاتنا تتميز ببيئة ودية حيث ستتعرف على أصدقاء جدد ولن تقلق بشأن السفر بمفردك.',
+        'Group trips have a minimum of 6 and a maximum of 16 guests, while private trips can be arranged for any group size, even a single traveller. We work with good-quality hotels and arrange comfortable transportation, in a friendly environment where you will meet new friends and won’t have to worry about travelling alone.',
+        'الرحلات الجماعية لها حد أدنى 6 عملاء وحد أقصى 16 عميلاً، أما الرحلات الخاصة فيمكن تنظيمها لأي عدد، حتى لشخص واحد. نتعامل مع فنادق ذات جودة عالية ونوفر وسائل نقل مريحة، في أجواء ودية حيث ستتعرف على أصدقاء جدد ولن تقلق بشأن السفر بمفردك.',
       ),
     ],
     facts: [
