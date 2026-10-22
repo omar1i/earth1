@@ -1023,11 +1023,13 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
   /* Phones: a lighter blur (it is re-drawn on every scroll frame over the moving hero photo) */
   .site-header[data-scrolled=true]{
     border-radius:20px;
-    background:color-mix(in oklch,var(--background) 88%,transparent);
+    background:color-mix(in oklch,var(--background) 72%,transparent);
     -webkit-backdrop-filter:blur(10px);
     backdrop-filter:blur(10px);
     box-shadow:0 8px 24px oklch(.28 .05 245 / .16),inset 0 1px 0 rgb(255 255 255 / .85);
   }
+  /* the open menu needs a calmer background so its links stay easy to read */
+  .site-header[data-scrolled=true]:has(.mobile-nav){background:color-mix(in oklch,var(--background) 94%,transparent)}
   .mobile-nav{max-height:calc(100dvh - 110px - env(safe-area-inset-top,0px))}
 }
 @media (max-width:380px){
