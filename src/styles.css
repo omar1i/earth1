@@ -1002,7 +1002,7 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
   width:min(calc(100% - 2 * var(--hdr-inset)),1480px);
   border-color:rgb(255 255 255 / .65);
   border-radius:22px;
-  background:color-mix(in oklch,var(--background) 62%,transparent);
+  background:color-mix(in oklch,var(--background) 78%,transparent);
   -webkit-backdrop-filter:blur(22px) saturate(180%);
   backdrop-filter:blur(22px) saturate(180%);
   box-shadow:
@@ -1047,7 +1047,7 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
     z-index:5;
     pointer-events:none;
     background:oklch(.13 .05 245);
-    opacity:calc(var(--hero-dim, 0) * .85);
+    opacity:calc(var(--hero-dim, 0) * .6);
   }
   .home-sheet{
     position:relative;
@@ -1064,4 +1064,7 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
   }
   /* keep the text at the bottom of the hero clear of the overlapping sheet */
   .hero-bottom{margin-bottom:var(--hero-curve)}
+  /* tighter gap between the white rail and the "Oman Trips" heading */
+  .home-sheet .region-section{padding-top:16px}
+  .home-sheet .region-panel{margin-top:12px}
 }
