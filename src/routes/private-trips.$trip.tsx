@@ -42,6 +42,17 @@ function PrivateTripDetail() {
   if (!trip) return null;
   const policy = trip.cancellation && trip.cancellation.length > 0 ? trip.cancellation : cancellationPolicy.items;
   const customPolicy = !!(trip.cancellation && trip.cancellation.length > 0);
+  // Custom policies are often saved as one long paragraph: show one bullet per line / sentence.
+  // (The default policy is already a list of separate points, so it is left as is.)
+  const policyPoints = customPolicy
+    ? policy.flatMap((item) =>
+        item[lang]
+          .replace(/([.\u061F?!])\s+/g, '$1\n')
+          .split(/\n+/)
+          .map((x) => x.trim())
+          .filter(Boolean),
+      )
+    : policy.map((item) => item[lang]);
   const isFishing = !!trip.tag && /fish|صيد/i.test(`${trip.tag.en} ${trip.tag.ar}`);
   const guests = trip.maxGuests ? t(`Up to ${trip.maxGuests} guests`, `حتى ${trip.maxGuests} أشخاص`) : '';
   const others = privateDestinations.filter((x) => x.id !== trip.id);
@@ -142,7 +153,7 @@ function PrivateTripDetail() {
                 {active === 'policy' && hasPolicy && (
                   <div className="detail-section">
                     <h2>{cancellationPolicy.title[lang]}</h2>
-                    <ul className="policy-list">{policy.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
+                    <ul className="policy-list">{policyPoints.map((text, i) => <li key={i}>{text}</li>)}</ul>
                     {!customPolicy && <p className="policy-note">{cancellationPolicy.note[lang]}</p>}
                   </div>
                 )}
