@@ -262,8 +262,7 @@
   .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px color-mix(in oklch,var(--primary) 16%,transparent)}
 
   /* Header: glass + shadow after scrolling, thin reading-progress line */
-  .site-header{transition:box-shadow .3s,background-color .3s}
-  .site-header[data-scrolled=true]{background:color-mix(in oklch,var(--background) 90%,transparent);-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px);box-shadow:0 6px 24px oklch(.28 .05 245 / .10)}
+  /* (header glass + shadow now live in the "Floating glass header" block at the end of this file) */
   .site-header:after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:3px;transform-origin:left center;transform:scaleX(var(--scroll,0));background:linear-gradient(90deg,var(--primary),var(--adventure));pointer-events:none}
   [dir=rtl] .site-header:after{transform-origin:right center}
 
@@ -966,3 +965,60 @@ html[data-book-bar=on] .site-footer{padding-bottom:calc(84px + env(safe-area-ins
 .loc-map{position:relative;overflow:hidden}
 .loc-map-wait{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--primary);font-size:13px;font-weight:600;background:linear-gradient(160deg,var(--accent),color-mix(in oklch,var(--adventure) 14%,#fff))}
 .loc-map iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+/* ==========================================================================
+   Floating glass header (desktop + mobile)
+   - Sticky, but floats a little below the top edge of the screen (never glued to it)
+   - Rounded "liquid glass" bar: translucent + blur + soft edge highlight, like adobe.com
+   - Page content scrolls underneath it and shows through the blur
+   ========================================================================== */
+:root{--hdr-gap:12px}
+html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
+.site-header{
+  position:sticky;
+  top:calc(var(--hdr-gap) + env(safe-area-inset-top,0px));
+  z-index:40;
+  width:calc(100% - 32px);
+  max-width:1480px;
+  margin:var(--hdr-gap) auto var(--hdr-gap);
+  border:1px solid rgb(255 255 255 / .65);
+  border-radius:22px;
+  overflow:hidden;
+  background:color-mix(in oklch,var(--background) 66%,transparent);
+  -webkit-backdrop-filter:blur(22px) saturate(180%);
+  backdrop-filter:blur(22px) saturate(180%);
+  box-shadow:
+    0 10px 34px oklch(.28 .05 245 / .14),
+    0 1px 3px oklch(.28 .05 245 / .08),
+    inset 0 1px 0 rgb(255 255 255 / .85),
+    inset 0 -1px 0 rgb(255 255 255 / .25);
+  transition:background-color .3s,box-shadow .3s;
+}
+/* Browsers without backdrop-filter: nearly opaque so text stays readable */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .site-header{background:color-mix(in oklch,var(--background) 94%,transparent)}
+}
+.site-header .header-inner{padding:10px 30px}
+.site-header[data-scrolled=true]{
+  background:color-mix(in oklch,var(--background) 58%,transparent);
+  box-shadow:
+    0 14px 40px oklch(.28 .05 245 / .20),
+    0 1px 3px oklch(.28 .05 245 / .10),
+    inset 0 1px 0 rgb(255 255 255 / .85),
+    inset 0 -1px 0 rgb(255 255 255 / .25);
+}
+.site-header:after{bottom:0}
+.mobile-nav{background:transparent;border-top:1px solid color-mix(in oklch,var(--border) 70%,transparent)}
+
+@media (max-width:1150px){
+  .site-header .header-inner{padding:10px 22px}
+}
+@media (max-width:950px){
+  :root{--hdr-gap:10px}
+  .site-header{width:calc(100% - 24px);border-radius:20px}
+  .site-header .header-inner{padding:8px 12px 8px 16px}
+  .mobile-nav{max-height:calc(100dvh - 110px - env(safe-area-inset-top,0px))}
+}
+@media (max-width:380px){
+  .site-header{width:calc(100% - 16px)}
+}

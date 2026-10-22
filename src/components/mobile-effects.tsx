@@ -125,6 +125,8 @@ export function MobileEffects() {
     let ticking = false;
     const update = () => {
       ticking = false;
+      // Header glass state works on every screen size (desktop too).
+      document.querySelector('.site-header')?.setAttribute('data-scrolled', String(window.scrollY > 8));
       if (!phone.matches) {
         root.removeAttribute('data-scroll-dir');
         return;
@@ -133,7 +135,6 @@ export function MobileEffects() {
       const max = root.scrollHeight - window.innerHeight;
       root.style.setProperty('--scroll', String(max > 0 ? Math.min(1, y / max) : 0));
       root.style.setProperty('--hero-y', String(Math.min(70, y * 0.25)));
-      document.querySelector('.site-header')?.setAttribute('data-scrolled', String(y > 8));
       const delta = y - lastY;
       if (Math.abs(delta) > 8) {
         const atBottom = max > 0 && y >= max - 8;
