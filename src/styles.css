@@ -1020,7 +1020,14 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 
 @media (max-width:950px){
   :root{--hdr-gap:10px;--hdr-inset:12px}
-  .site-header[data-scrolled=true]{border-radius:20px}
+  /* Phones: a lighter blur (it is re-drawn on every scroll frame over the moving hero photo) */
+  .site-header[data-scrolled=true]{
+    border-radius:20px;
+    background:color-mix(in oklch,var(--background) 88%,transparent);
+    -webkit-backdrop-filter:blur(10px);
+    backdrop-filter:blur(10px);
+    box-shadow:0 8px 24px oklch(.28 .05 245 / .16),inset 0 1px 0 rgb(255 255 255 / .85);
+  }
   .mobile-nav{max-height:calc(100dvh - 110px - env(safe-area-inset-top,0px))}
 }
 @media (max-width:380px){

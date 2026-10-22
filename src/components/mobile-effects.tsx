@@ -113,8 +113,6 @@ export function MobileEffects() {
       scanRaf = requestAnimationFrame(() => {
         scanRaf = 0;
         scan();
-        // Cheap: only clear the hero-dim value when we are no longer on a page with a hero.
-        if (!document.querySelector('.hero')) root.style.removeProperty('--hero-dim');
       });
     };
     scan();
@@ -125,26 +123,34 @@ export function MobileEffects() {
     /* ---------- scroll state: header, progress, parallax, floating button ---------- */
     let lastY = window.scrollY;
     let ticking = false;
+    let headerScrolled: boolean | null = null;
     const update = () => {
       ticking = false;
-      // Header glass state works on every screen size (desktop too).
-      document.querySelector('.site-header')?.setAttribute('data-scrolled', String(window.scrollY > 8));
-      // Home hero: dim it while the white sheet slides up over it (adobe.com style).
+      // 1) READ first (no layout flush in the middle of the frame)
+      const y = Math.max(0, window.scrollY);
+      const header = document.querySelector<HTMLElement>('.site-header');
       const hero = document.querySelector<HTMLElement>('.hero');
-      if (hero) {
-        const dim = Math.min(1, Math.max(0, window.scrollY / (hero.offsetHeight * 0.85)));
-        root.style.setProperty('--hero-dim', dim.toFixed(3));
-      } else {
-        root.style.removeProperty('--hero-dim');
+      const isPhone = phone.matches;
+      const heroH = !isPhone && hero ? hero.offsetHeight : 0;
+      // 2) then WRITE. Values go on the element that uses them (not on <html>), so the browser
+      //    only re-styles that small part of the page on every scroll frame.
+      // Header glass state works on every screen size; only touch the DOM when it actually changes.
+      const scrolled = y > 8;
+      if (header && scrolled !== headerScrolled) {
+        headerScrolled = scrolled;
+        header.setAttribute('data-scrolled', String(scrolled));
       }
-      if (!phone.matches) {
+      // Laptop hero: dim it while the white sheet slides up over it (adobe.com style).
+      if (hero && !isPhone && heroH) {
+        hero.style.setProperty('--hero-dim', Math.min(1, y / (heroH * 0.85)).toFixed(3));
+      }
+      if (!isPhone) {
         root.removeAttribute('data-scroll-dir');
         return;
       }
-      const y = Math.max(0, window.scrollY);
       const max = root.scrollHeight - window.innerHeight;
-      root.style.setProperty('--scroll', String(max > 0 ? Math.min(1, y / max) : 0));
-      root.style.setProperty('--hero-y', String(Math.min(70, y * 0.25)));
+      header?.style.setProperty('--scroll', String(max > 0 ? Math.min(1, y / max) : 0));
+      hero?.style.setProperty('--hero-y', String(Math.min(70, y * 0.25)));
       const delta = y - lastY;
       if (Math.abs(delta) > 8) {
         const atBottom = max > 0 && y >= max - 8;
