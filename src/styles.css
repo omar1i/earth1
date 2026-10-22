@@ -1075,3 +1075,12 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
   .home-sheet .region-section{padding-top:16px}
   .home-sheet .region-panel{margin-top:12px}
 }
+
+/* Hero photo now sits inside <picture> (phones get a portrait crop that keeps the boat and cliffs in view) */
+.hero>picture{display:block;position:absolute;inset:0}
+.hero>picture>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+@media(max-width:600px){
+  .hero>picture>img{object-position:62% 50%}
+  /* show the first screen immediately on phones instead of fading it in */
+  .hero-inner,.hero-actions,.hero-whatsapp,.hero-bottom,.hero-swap{animation:none}
+}
