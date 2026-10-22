@@ -113,7 +113,8 @@ export function MobileEffects() {
       scanRaf = requestAnimationFrame(() => {
         scanRaf = 0;
         scan();
-        update();
+        // Cheap: only clear the hero-dim value when we are no longer on a page with a hero.
+        if (!document.querySelector('.hero')) root.style.removeProperty('--hero-dim');
       });
     };
     scan();

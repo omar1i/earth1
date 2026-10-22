@@ -13,7 +13,12 @@ export const getRouter = () => {
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
-    defaultPreloadStaleTime: 0,
+    // Start loading a page's data as soon as a visitor hovers / touches its link, so the click feels instant
+    // instead of waiting ~1s for the database. Loaded data is reused for 30s (same as the root loader).
+    defaultPreload: "intent",
+    defaultPreloadDelay: 50,
+    defaultPreloadStaleTime: 30_000,
+    defaultStaleTime: 30_000,
     rewrite: {
       input: ({ url }) => {
         if (url.pathname === "/ar" || url.pathname.startsWith("/ar/")) {
