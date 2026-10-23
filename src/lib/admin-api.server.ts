@@ -443,8 +443,14 @@ const uploadImage: Handler = async ({ db, request }) => {
 // Photo optimizer (Account page): list stored photos, then replace a photo with a smaller version of itself.
 // The photo keeps the same id, so every trip / gallery / page that uses it keeps working.
 const listImages: Handler = async ({ db }) => {
-  const rows = await db.prepare('SELECT id, mime, size_bytes FROM images ORDER BY size_bytes DESC').all<{ id: string; mime: string; size_bytes: number }>();
-  return json({ images: rows.results ?? [] });
+  // Real stored size = the bigger of the saved size_bytes and the size worked out from the stored data (base64 is 4/3 of the bytes).
+  const rows = await db.prepare('SELECT id, mime, size_bytes, length(data_base64) AS b64_len FROM images ORDER BY b64_len DESC').all<{ id: string; mime: string; size_bytes: number | null; b64_len: number | null }>();
+  const images = (rows.results ?? []).map((r) => ({
+    id: r.id,
+    mime: r.mime,
+    size_bytes: Math.max(Number(r.size_bytes) || 0, Math.round((Number(r.b64_len) || 0) * 0.75)),
+  }));
+  return json({ images });
 };
 const replaceImage: Handler = async ({ db, request, params }) => {
   const buf = new Uint8Array(await request.arrayBuffer());

@@ -581,7 +581,8 @@ function photoOptimizer(){
     if(!confirm('Replace the stored photos with smaller versions? This cannot be undone.'))return;
     btn.disabled=true;errs.textContent='';out.textContent='Looking for photos…';
     api('GET','/images').then(function(r){
-      var todo=(r.images||[]).filter(function(x){return x.mime==='image/jpeg'&&x.size_bytes>150000});
+      var all=r.images||[];
+      var todo=all.filter(function(x){return x.size_bytes>(x.mime==='image/png'?250000:120000)});
       var done=0,saved=0,changed=0,failed=0;
       function step(){
         if(done>=todo.length){out.textContent='Finished. '+changed+' photo(s) made smaller, '+mb(saved)+' saved'+(failed?' ('+failed+' could not be processed).':'.');btn.disabled=false;return}
@@ -594,7 +595,11 @@ function photoOptimizer(){
           .catch(function(){failed++})
           .then(function(){done++;step()});
       }
-      if(!todo.length){out.textContent='Nothing to do: all photos are already small.';btn.disabled=false;return}
+      if(!todo.length){
+        out.textContent=all.length
+          ?'Nothing to do. Found '+all.length+' stored photo(s); the largest is '+Math.round(all[0].size_bytes/1024)+' KB ('+all[0].mime.replace('image/','')+'), which is already small.'
+          :'The database has no stored photos (the pictures may be hosted somewhere else).';
+        btn.disabled=false;return}
       step();
     }).catch(function(e){out.textContent='';errs.appendChild(errBox(e));btn.disabled=false});
   }
