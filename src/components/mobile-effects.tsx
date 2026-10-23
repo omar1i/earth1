@@ -150,7 +150,7 @@ export function MobileEffects() {
       }
       const max = root.scrollHeight - window.innerHeight;
       header?.style.setProperty('--scroll', String(max > 0 ? Math.min(1, y / max) : 0));
-      hero?.style.setProperty('--hero-y', String(Math.min(70, y * 0.25)));
+      hero?.style.setProperty('--hero-y', String(Math.min(40, y * 0.15)));
       const delta = y - lastY;
       if (Math.abs(delta) > 8) {
         const atBottom = max > 0 && y >= max - 8;

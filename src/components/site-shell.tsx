@@ -6,7 +6,7 @@ import { useLanguage } from '@/lib/language';
 import { categories, whatsapp, instagram, business, isMasirahTrip } from '@/lib/content';
 import { useCatalog } from '@/lib/catalog-context';
 import { privateHasPage } from '@/lib/catalog';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/logo.webp';
 import { MobileEffects } from '@/components/mobile-effects';
 export function SiteShell({children}: {children:ReactNode}) {
  const {lang,setLang,t} = useLanguage(); const [open,setOpen]=useState(false); const {privateDestinations}=useCatalog(); const masirah=privateDestinations.find(d=>isMasirahTrip(d)&&privateHasPage(d));

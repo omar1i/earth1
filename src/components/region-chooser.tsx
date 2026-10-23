@@ -76,7 +76,7 @@ export function RegionChooser() {
           aria-label={boxes.find((b) => b.id === region)?.title}
         >
           <div className="region-panel-head">
-            <h3>{boxes.find((b) => b.id === region)?.title}</h3>
+            <h2>{boxes.find((b) => b.id === region)?.title}</h2>
             {region === "oman" ? (
               <Link className="text-link" to="/destinations">
                 {t("View all trips", "عرض كل الرحلات")}

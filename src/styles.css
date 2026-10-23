@@ -29,7 +29,7 @@
 .region-check{position:absolute;top:16px;inset-inline-end:16px;width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:var(--primary);color:#fff;opacity:0;transform:scale(.6);transition:opacity .25s,transform .25s}
 .region-card[aria-pressed=true] .region-check{opacity:1;transform:none}
 .region-panel{margin-top:34px;animation:region-in .5s cubic-bezier(.2,.7,.2,1) both}
-.region-panel-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px}.region-panel-head h3{margin:0;font-size:22px}
+.region-panel-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px}.region-panel-head h2{margin:0;font-size:22px}
 @keyframes region-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @media (max-width:720px){.region-cards{grid-template-columns:1fr}.region-card{min-height:160px}.region-panel-head{flex-direction:column;align-items:flex-start}}
 @media (prefers-reduced-motion:reduce){.region-panel{animation:none}.region-card,.region-card::before,.region-check{transition:none}.region-card:hover{transform:none}}
@@ -71,12 +71,12 @@
 
 /* Oman Trips heading: centred, green, all caps. "View all experiences" stays at the end of the row. */
 .region-panel-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:end}
-.region-panel-head h3{grid-column:2;text-align:center;text-transform:uppercase;color:var(--adventure);font-size:46px;line-height:1.1}
+.region-panel-head h2{grid-column:2;text-align:center;text-transform:uppercase;color:var(--adventure);font-size:46px;line-height:1.1}
 .region-panel-head .text-link{grid-column:3;justify-self:end}
 @media (max-width:720px){
   .region-panel-head{grid-template-columns:1fr;justify-items:center;row-gap:6px}
-  .region-panel-head h3,.region-panel-head .text-link{grid-column:1;justify-self:center}
-  .region-panel-head h3{font-size:34px}
+  .region-panel-head h2,.region-panel-head .text-link{grid-column:1;justify-self:center}
+  .region-panel-head h2{font-size:34px}
 }
 
 /* Private Trips + Group Trips titles: blue, green dash beside it, bold intro text */
@@ -225,7 +225,7 @@
   /* A8 (white text on blue buttons) moved to the global fixes block at the end of this file. */
 
   /* A9. Long uppercase headings can no longer push the page sideways on 320-360px phones. */
-  .region-panel-head h3{font-size:clamp(26px,8.2vw,34px);overflow-wrap:anywhere}
+  .region-panel-head h2{font-size:clamp(26px,8.2vw,34px);overflow-wrap:anywhere}
 
   /* A10. Floating WhatsApp: never on top of the booking form / success box. */
   body:has(.booking-form) .whatsapp-float,body:has(.success-box) .whatsapp-float{display:none}
@@ -275,7 +275,7 @@
   .mobile-menu-button svg{animation:m-icon-pop .32s cubic-bezier(.3,1.6,.5,1) both}
 
   /* Hero: slow cinematic zoom + parallax, staggered entrance */
-  .hero>img{top:-14%;bottom:auto;height:128%;transform:translate3d(0,calc(var(--hero-y,0) * 1px),0);will-change:transform;animation:m-kenburns 18s ease-out both}
+  .hero>img{top:-7%;bottom:auto;height:114%;object-position:70% 50%;transform:translate3d(0,calc(var(--hero-y,0) * 1px),0);will-change:transform;animation:m-kenburns 18s ease-out both}
   .region-mini{animation:m-drop .7s .1s cubic-bezier(.2,.7,.2,1) both}
   .hero-actions{animation:reveal .8s .28s cubic-bezier(.2,.7,.2,1) both}
   .hero-whatsapp{animation:reveal .8s .42s cubic-bezier(.2,.7,.2,1) both}
@@ -320,7 +320,7 @@
 @keyframes m-menu-in{from{opacity:0;translate:0 -10px}to{opacity:1;translate:0 0}}
 @keyframes m-menu-item{from{opacity:0;translate:0 -8px}to{opacity:1;translate:0 0}}
 @keyframes m-icon-pop{from{opacity:0;rotate:-80deg;scale:.5}to{opacity:1;rotate:0deg;scale:1}}
-@keyframes m-kenburns{from{scale:1.12}to{scale:1}}
+@keyframes m-kenburns{from{scale:1.05}to{scale:1}}
 @keyframes m-drop{from{opacity:0;translate:0 -12px}to{opacity:1;translate:0 0}}
 @keyframes m-pulse{0%{transform:scale(1);opacity:.75}100%{transform:scale(1.6);opacity:0}}
 
@@ -1086,3 +1086,7 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
   /* show the first screen immediately on phones instead of fading it in */
   .hero-inner,.hero-actions,.hero-whatsapp,.hero-bottom,.hero-swap{animation:none}
 }
+
+/* Accessibility: text colours that were slightly too light on white (contrast below 4.5:1) */
+.eyebrow,.loc-eyebrow{color:color-mix(in oklch,var(--primary) 80%,#000)}
+.loc-btn.primary{background:color-mix(in oklch,var(--primary) 84%,#000);border-color:color-mix(in oklch,var(--primary) 84%,#000)}
