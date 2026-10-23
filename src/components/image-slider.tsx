@@ -1,4 +1,4 @@
-import { useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/lib/language';
 
@@ -9,6 +9,9 @@ import { useLanguage } from '@/lib/language';
  * - Works in Arabic (RTL) and English (LTR).
  * - `renderSlide` lets a card wrap every photo in its own link, so tapping a photo still opens the trip.
  */
+// 1x1 transparent picture shown in slides that have not been loaded yet.
+const BLANK = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+
 export function ImageSlider({
   images,
   alt,
@@ -28,6 +31,15 @@ export function ImageSlider({
   const trackRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const count = images.length;
+  // Performance: only the first photo and the one next to the visible one are downloaded.
+  // The rest load when the visitor swipes / taps the arrows (they stay loaded afterwards).
+  const [seen, setSeen] = useState<number[]>(() => [0, 1]);
+  const markSeen = (...ids: number[]) =>
+    setSeen((prev) => {
+      const add = ids.filter((i) => i >= 0 && i < count && !prev.includes(i));
+      return add.length ? [...prev, ...add] : prev;
+    });
+  useEffect(() => { markSeen(index - 1, index, index + 1); }, [index]); // eslint-disable-line react-hooks/exhaustive-deps
   const rtl = lang === 'ar';
 
   const onScroll = () => {
@@ -41,6 +53,8 @@ export function ImageSlider({
     const el = trackRef.current;
     if (!el) return;
     const target = ((i % count) + count) % count; // wraps around at both ends
+    // load every photo the smooth scroll will pass over, so no blank frames appear on the way
+    markSeen(...Array.from({ length: Math.abs(target - index) + 1 }, (_, k) => Math.min(index, target) + k));
     const sign = getComputedStyle(el).direction === 'rtl' ? -1 : 1;
     el.scrollTo({ left: sign * target * el.clientWidth, behavior: 'smooth' });
   };
@@ -52,9 +66,10 @@ export function ImageSlider({
     <div className={fit === 'contain' ? 'slider slider-contain' : 'slider'} role="group" aria-roledescription="carousel" aria-label={alt}>
       <div className="slider-track" ref={trackRef} onScroll={onScroll}>
         {images.map((src, i) => {
+          const ready = seen.includes(i);
           const img = (
             <img
-              src={src}
+              src={ready ? src : BLANK}
               alt={i === 0 ? alt : `${alt} (${i + 1}/${count})`}
               loading={eager && i === 0 ? 'eager' : 'lazy'}
               fetchPriority={eager && i === 0 ? 'high' : undefined}
@@ -64,7 +79,7 @@ export function ImageSlider({
             />
           );
           return (
-            <div className="slider-slide" key={src + i} aria-hidden={i !== index} style={fit === 'contain' ? ({ '--bg': `url("${src}")` } as CSSProperties) : undefined}>
+            <div className="slider-slide" key={src + i} aria-hidden={i !== index} style={fit === 'contain' && ready ? ({ '--bg': `url("${src}")` } as CSSProperties) : undefined}>
               {renderSlide ? renderSlide(img, i === index) : img}
             </div>
           );
