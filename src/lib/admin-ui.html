@@ -571,6 +571,36 @@ function bookingCard(b,reload){
     h('div',{class:'row mt'},save,cancel,resend,del),err);
 }
 
+/* ---------- photo optimizer: shrink the photos that are already stored (same address, smaller file) ---------- */
+function photoOptimizer(){
+  var info=h('p',{class:'hint'},'Makes the photos already on the website smaller, so pages open faster. Every photo keeps the same address, so nothing else has to be changed. A photo is only replaced when the new version is clearly smaller. This cannot be undone.');
+  var out=h('div',{class:'hint mt'});var errs=h('div');
+  var btn=h('button',{class:'btn',type:'button',on:{click:run}},'Optimize all photos');
+  function mb(n){return (n/1048576).toFixed(2)+' MB'}
+  function run(){
+    if(!confirm('Replace the stored photos with smaller versions? This cannot be undone.'))return;
+    btn.disabled=true;errs.textContent='';out.textContent='Looking for photos…';
+    api('GET','/images').then(function(r){
+      var todo=(r.images||[]).filter(function(x){return x.mime==='image/jpeg'&&x.size_bytes>150000});
+      var done=0,saved=0,changed=0,failed=0;
+      function step(){
+        if(done>=todo.length){out.textContent='Finished. '+changed+' photo(s) made smaller, '+mb(saved)+' saved'+(failed?' ('+failed+' could not be processed).':'.');btn.disabled=false;return}
+        var item=todo[done];
+        out.textContent='Working… '+(done+1)+' / '+todo.length+' · saved so far: '+mb(saved);
+        fetch('/api/images/'+item.id,{credentials:'same-origin'}).then(function(res){if(!res.ok)throw new Error('download');return res.blob()})
+          .then(function(b){return shrink(b)})
+          .then(function(blob){return api('PUT','/images/'+item.id,undefined,{body:blob,type:blob.type})})
+          .then(function(d){if(d.replaced){changed++;saved+=d.before-d.after}})
+          .catch(function(){failed++})
+          .then(function(){done++;step()});
+      }
+      if(!todo.length){out.textContent='Nothing to do: all photos are already small.';btn.disabled=false;return}
+      step();
+    }).catch(function(e){out.textContent='';errs.appendChild(errBox(e));btn.disabled=false});
+  }
+  return h('div',{class:'card',style:'max-width:560px;margin-top:16px'},h('h2',null,'Photo optimizer'),info,h('div',{class:'mt'},btn),out,errs);
+}
+
 /* ---------- account ---------- */
 function accountView(main){
   main.textContent='';
@@ -579,6 +609,7 @@ function accountView(main){
     api('POST','/password',{current:cur.value,next:nw.value}).then(function(){toast('Password changed. Other sessions were logged out.');cur.value='';nw.value='';btn.disabled=false}).catch(function(e){err.appendChild(errBox(e));btn.disabled=false})}}},'Change password');
   main.appendChild(h('h1',null,'Account'));
   main.appendChild(h('div',{class:'card',style:'max-width:460px'},h('h2',null,'Change password'),field('Current password',cur),field('New password (min. 10 characters, letters and numbers)',nw),err,h('div',{class:'mt'},btn)));
+  main.appendChild(photoOptimizer());
 }
 
 boot();

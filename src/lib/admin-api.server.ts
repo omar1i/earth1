@@ -440,6 +440,26 @@ const uploadImage: Handler = async ({ db, request }) => {
   return json({ url: `/api/images/${id}` }, 201);
 };
 
+// Photo optimizer (Account page): list stored photos, then replace a photo with a smaller version of itself.
+// The photo keeps the same id, so every trip / gallery / page that uses it keeps working.
+const listImages: Handler = async ({ db }) => {
+  const rows = await db.prepare('SELECT id, mime, size_bytes FROM images ORDER BY size_bytes DESC').all<{ id: string; mime: string; size_bytes: number }>();
+  return json({ images: rows.results ?? [] });
+};
+const replaceImage: Handler = async ({ db, request, params }) => {
+  const buf = new Uint8Array(await request.arrayBuffer());
+  if (buf.byteLength === 0) return fail('No image received.');
+  if (buf.byteLength > MAX_IMAGE_BYTES) return fail('Image is too large (max about 1.2 MB).', 413);
+  const mime = sniffImage(buf);
+  if (!mime) return fail('Only JPEG, PNG or WebP images are allowed.', 415);
+  const current = await db.prepare('SELECT size_bytes FROM images WHERE id = ?1').bind(params[0]).first<{ size_bytes: number }>();
+  if (!current) return fail('Image not found.', 404);
+  // Never make a photo bigger: keep the original if the new version is not clearly smaller.
+  if (buf.byteLength >= current.size_bytes * 0.9) return json({ replaced: false, before: current.size_bytes, after: buf.byteLength });
+  await db.prepare('UPDATE images SET mime = ?1, data_base64 = ?2, size_bytes = ?3 WHERE id = ?4').bind(mime, toBase64(buf), buf.byteLength, params[0]).run();
+  return json({ replaced: true, before: current.size_bytes, after: buf.byteLength });
+};
+
 // --- About-page pictures --------------------------------------------------------------------------
 const getSiteImagesAdmin: Handler = async ({ db }) => json({ images: await readSiteImagesWith(db) });
 const siteImageSchema = z.object({
@@ -538,6 +558,8 @@ const routes: { method: string; pattern: RegExp; handler: Handler }[] = [
   { method: 'DELETE', pattern: /^\/api\/admin\/bookings\/([A-Za-z0-9-]{8,64})$/, handler: deleteBooking },
   { method: 'POST', pattern: /^\/api\/admin\/bookings\/([A-Za-z0-9-]{8,64})\/resend-email$/, handler: resendEmail },
   { method: 'POST', pattern: /^\/api\/admin\/images$/, handler: uploadImage },
+  { method: 'GET', pattern: /^\/api\/admin\/images$/, handler: listImages },
+  { method: 'PUT', pattern: /^\/api\/admin\/images\/([a-f0-9]{16,64})$/, handler: replaceImage },
   { method: 'GET', pattern: /^\/api\/admin\/site-images$/, handler: getSiteImagesAdmin },
   { method: 'PUT', pattern: /^\/api\/admin\/site-images$/, handler: putSiteImage },
   { method: 'GET', pattern: /^\/api\/admin\/gallery$/, handler: getGalleryAdmin },
