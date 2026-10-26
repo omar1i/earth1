@@ -1090,3 +1090,6 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 /* Accessibility: text colours that were slightly too light on white (contrast below 4.5:1) */
 .eyebrow,.loc-eyebrow{color:color-mix(in oklch,var(--primary) 80%,#000)}
 .loc-btn.primary{background:color-mix(in oklch,var(--primary) 84%,#000);border-color:color-mix(in oklch,var(--primary) 84%,#000)}
+
+/* TEST: stop the slow zoom animation on the phone hero photo. Delete these lines to undo. */
+@media(max-width:950px){.hero>img{animation:none;will-change:auto}}
