@@ -16,7 +16,7 @@ const FLIGHT_BOOKING_URL = 'https://www.salamair.com';
 const MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MONTHS_AR = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
 const FISHING_BEST = [9, 10, 11, 0, 1, 2, 3, 4]; // fishing season: 1 October to the end of May (no trips June - September)
-const WINDY = [3, 4, 5, 6, 7, 8]; // Apr - Sep
+const WINDY = [5, 6, 7, 8]; // Jun - Sep
 
 // Plays the route drawing once, when it scrolls into view. Without JavaScript, or with reduced motion, it is simply shown.
 function useReveal<T extends HTMLElement>() {
@@ -277,7 +277,7 @@ export function AboutMasirah({ tripId, tripName, photos = {} }: { tripId: string
             </ol>
             <ul className="am-legend">
               <li><span className="am-swatch am-swatch-best" />{t('Fishing season: October to May', 'موسم الصيد: من أكتوبر إلى مايو')}</li>
-              <li><span className="am-swatch am-swatch-wind" />{t('Strong, steady winds: April to September', 'رياح قوية وثابتة: من أبريل إلى سبتمبر')}</li>
+              <li><span className="am-swatch am-swatch-wind" />{t('Strong, steady winds: June to September', 'رياح قوية وثابتة: من يونيو إلى سبتمبر')}</li>
               {now !== null && <li><span className="am-swatch am-swatch-now" />{t('This month', 'هذا الشهر')}</li>}
             </ul>
             <p className="am-season-note">
