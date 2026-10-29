@@ -304,6 +304,12 @@ var ABOUT_SLOTS=[
   ['why','Why us','Picture beside the "Why us" text. If empty, the section is text only.'],
   ['founder','Founder portrait','Portrait photo (a vertical photo works best). If empty, a monogram circle is shown.']
 ];
+var FISH_SLOTS=[
+  ['fishTuna','Tuna','Photo of a tuna (landscape photo works best). If empty, a drawing of a tuna is shown.'],
+  ['fishKingfish','Kingfish','Photo of a kingfish (landscape photo works best). If empty, a drawing of a kingfish is shown.'],
+  ['fishGrouper','Grouper','Photo of a grouper (landscape photo works best). If empty, a drawing of a grouper is shown.'],
+  ['fishReef','Reef fish','Photo of a reef fish (landscape photo works best). If empty, a drawing of a reef fish is shown.']
+];
 function aboutView(main){
   loading(main);
   api('GET','/site-images').then(function(d){
@@ -315,15 +321,21 @@ function aboutView(main){
       var p=imagePicker(imgs[sl[0]]||'','Press "Save pictures" at the bottom to publish it.');pickers[sl[0]]=p;
       main.appendChild(h('div',{class:'card mt'},h('h2',null,sl[1]),h('p',{class:'hint'},sl[2]),p));
     });
+    main.appendChild(h('h2',{class:'mt'},'Masirah fishing trip page: fish photos'));
+    main.appendChild(h('p',{class:'muted'},'These photos appear in the "What you can catch in Masirah" part of the Masirah fishing trip page. Each photo should be up to about 1.2 MB. A photo you leave empty keeps its drawing.'));
+    FISH_SLOTS.forEach(function(sl){
+      var p=imagePicker(imgs[sl[0]]||'','Press "Save pictures" at the bottom to publish it.');pickers[sl[0]]=p;
+      main.appendChild(h('div',{class:'card mt'},h('h2',null,sl[1]),h('p',{class:'hint'},sl[2]),p));
+    });
     var g=galleryPicker(imgs.gallery||[],{label:'Photos',countText:' photo(s) in the gallery.',emptyText:'No photos yet. The gallery section stays hidden until you add some.',saveHint:'Press "Save pictures" at the bottom to publish them.'});
     main.appendChild(h('div',{class:'card mt'},h('h2',null,'Photo gallery'),h('p',{class:'hint'},'Up to 12 photos, shown as a mosaic on computers and a swipeable strip on phones. Visitors can tap a photo to view it full screen. Use ◀ ▶ to change the order.'),g));
     var msg=h('div');
     var btn=h('button',{class:'btn',type:'button',on:{click:function(){
       btn.disabled=true;msg.textContent='';
-      var keys=ABOUT_SLOTS.map(function(sl){return sl[0]}).concat(['gallery']);
+      var keys=ABOUT_SLOTS.concat(FISH_SLOTS).map(function(sl){return sl[0]}).concat(['gallery']);
       keys.reduce(function(chain,k){return chain.then(function(){
         return api('PUT','/site-images',{key:k,value:k==='gallery'?g.get():pickers[k].get()});
-      })},Promise.resolve()).then(function(){btn.disabled=false;toast('Saved. The About page now shows these pictures.')})
+      })},Promise.resolve()).then(function(){btn.disabled=false;toast('Saved. The website now shows these pictures.')})
         .catch(function(e){btn.disabled=false;msg.appendChild(errBox(e))});
     }}},'Save pictures');
     main.appendChild(h('div',{class:'mt'},btn,msg,h('p',{class:'hint'},'Visitors may need to refresh the About page to see the new pictures.')));

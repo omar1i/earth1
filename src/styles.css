@@ -1093,3 +1093,131 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 
 /* TEST: stop the slow zoom animation on the phone hero photo. Delete these lines to undo. */
 @media(max-width:950px){.hero>img{animation:none;will-change:auto}}
+
+/* ===== About Masirah section (Masirah fishing trip page) ===== */
+.about-masirah .am-head{max-width:760px;margin-bottom:52px}
+.about-masirah .am-head h2{font-size:38px;line-height:1.25}
+.about-masirah .am-head p{margin-top:16px;font-size:17px;line-height:1.85;color:var(--muted-foreground)}
+.am-block+.am-block{margin-top:72px}
+.am-head+.am-block{margin-top:0}
+.am-block>h3{display:flex;align-items:center;gap:12px;font-size:28px;margin-bottom:26px}
+.am-block>h3:before{content:'';flex:none;width:22px;height:2px;background:var(--adventure)}
+.about-masirah h4{font-size:18px;line-height:1.3;margin-bottom:8px}
+[dir=rtl] .about-masirah h2,[dir=rtl] .about-masirah h3,[dir=rtl] .about-masirah h4{font-family:'Cairo',sans-serif;line-height:1.5}
+
+/* 1. Why Masirah */
+.am-reasons{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.am-reason{display:flex;flex-direction:column;gap:16px;padding:24px;background:var(--background);border:1px solid var(--border);border-radius:8px}
+.am-reason p{font-size:14.5px;line-height:1.75;color:var(--muted-foreground)}
+
+/* 2. How to get there: the route, then the three ways */
+.am-route{position:relative;display:grid;grid-template-columns:auto minmax(70px,1fr) auto minmax(70px,1fr) auto;align-items:start;padding:62px 40px 30px;background:var(--background);border:1px solid var(--border);border-radius:8px}
+.am-stop{display:flex;flex-direction:column;align-items:center;gap:12px;min-width:92px;text-align:center}
+.am-stop strong{font-size:15px;font-weight:700;white-space:nowrap}
+.am-dot{width:16px;height:16px;border-radius:50%;background:var(--background);border:3px solid var(--primary)}
+.am-stop-end .am-dot{background:var(--adventure);border-color:var(--adventure);box-shadow:0 0 0 5px color-mix(in srgb,var(--adventure) 28%,transparent)}
+.am-leg{position:relative;height:16px}
+.am-leg:before,.am-leg:after{content:'';position:absolute;inset-inline:0;top:50%;height:3px;margin-top:-1.5px;border-radius:3px}
+.am-leg:before{background:var(--border)}
+.am-leg:after{background:var(--primary);transform-origin:left center;transition:transform 1.1s cubic-bezier(.3,.6,.2,1)}
+.am-leg-sea:before{background:repeating-linear-gradient(90deg,var(--border) 0 8px,transparent 8px 14px)}
+.am-leg-sea:after{background:repeating-linear-gradient(90deg,var(--adventure) 0 8px,transparent 8px 14px);transition-delay:.9s}
+[dir=rtl] .am-leg:after{transform-origin:right center}
+.am-route.is-armed .am-leg:after{transform:scaleX(0)}
+.am-route.is-armed.is-on .am-leg:after{transform:scaleX(1)}
+.am-leg-label{position:absolute;inset-inline:0;bottom:calc(100% + 12px);display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:600;color:var(--muted-foreground);white-space:nowrap}
+.am-leg-label svg{width:16px;height:16px;color:var(--primary)}
+.am-leg-sea .am-leg-label svg{color:color-mix(in srgb,var(--adventure) 65%,#000)}
+.am-route-note{margin-top:18px;font-size:15px;color:var(--muted-foreground)}
+.am-ways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:26px}
+.am-way{display:flex;flex-direction:column;gap:12px;padding:26px;background:var(--background);border:1px solid var(--border);border-radius:8px}
+.am-way h4{margin:4px 0 0}
+.am-way p{font-size:14.5px;line-height:1.75;color:var(--muted-foreground)}
+.am-way .text-link{margin-top:auto;padding-top:6px}
+.about-masirah .notice.am-tip{margin-top:18px;padding:18px 22px;font-size:14.5px;line-height:1.75;background:var(--background);border:1px solid var(--border);border-inline-start:3px solid var(--adventure);border-radius:6px}
+
+/* 3. Best time: twelve months, two bars each */
+.am-season{background:var(--background);border:1px solid var(--border);border-radius:8px;padding:30px 30px 28px}
+.am-months{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px}
+.am-month{display:flex;flex-direction:column;gap:6px;padding:8px 4px 4px;text-align:center;border-radius:8px}
+.am-month-name{font-size:12.5px;font-weight:650;color:var(--muted-foreground)}
+.am-month.is-now{background:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 45%,transparent)}
+.am-month.is-now .am-month-name{color:var(--primary)}
+.am-bar{display:block;height:10px;border-radius:5px;background:var(--secondary)}
+.am-bar-fish.best{background:color-mix(in srgb,var(--adventure) 42%,var(--background))}
+.am-bar-fish.peak{background:var(--adventure)}
+.am-bar-wind.on{background:var(--primary)}
+.am-legend{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:11px}
+.am-legend li{display:flex;align-items:center;gap:12px;font-size:14.5px;font-weight:600}
+.am-swatch{flex:none;width:28px;height:10px;border-radius:5px}
+.am-swatch-best{background:color-mix(in srgb,var(--adventure) 42%,var(--background))}
+.am-swatch-peak{background:var(--adventure)}
+.am-swatch-wind{background:var(--primary)}
+.am-swatch-now{height:18px;border-radius:6px;background:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 45%,transparent)}
+.am-season-note{margin-top:18px;max-width:720px;font-size:14.5px;line-height:1.75;color:var(--muted-foreground)}
+.am-season .am-season-note{margin-top:20px}
+
+/* 4. Fish */
+.am-fish-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.am-fish-card{display:flex;flex-direction:column;overflow:hidden;background:var(--background);border:1px solid var(--border);border-radius:8px}
+.am-fish-stage{display:grid;place-items:center;height:118px;background:linear-gradient(180deg,var(--accent),color-mix(in srgb,var(--accent) 55%,var(--background)));border-bottom:1px solid var(--border)}
+.am-fish-art{width:150px;height:auto;overflow:visible}
+.am-fish-stage.has-photo{display:block;height:190px;background:var(--secondary)}
+.am-fish-photo{display:block;width:100%;height:100%;object-fit:cover}
+.am-fish-grid.with-photos .am-fish-stage{height:190px}
+.am-fish-body{fill:var(--primary)}
+.am-fish-belly{fill:color-mix(in srgb,var(--primary) 28%,#fff)}
+.am-fish-tail,.am-fish-fin{fill:color-mix(in srgb,var(--primary) 78%,#000)}
+.am-fish-line{fill:none;stroke:var(--adventure);stroke-width:2.4;stroke-linecap:round}
+.am-fish-eye{fill:#fff}
+.am-fish-pupil{fill:var(--foreground)}
+.am-fish-body-text{display:flex;flex-direction:column;gap:6px;padding:20px 22px 22px}
+.am-fish-body-text p{font-size:14.5px;line-height:1.75;color:var(--muted-foreground)}
+.am-fish-note{align-self:flex-start;margin-top:8px;padding:5px 11px;border-radius:999px;background:color-mix(in srgb,var(--adventure) 24%,var(--background));font-size:12.5px;font-weight:650;line-height:1.5}
+
+/* Closing call to action: same light card look as the rest of the page */
+.am-cta{position:relative;display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;margin-top:72px;padding:34px 38px;border-radius:8px;border:1px solid var(--border);background:linear-gradient(135deg,var(--accent),var(--background) 70%);overflow:hidden}
+.am-cta:before{content:'';position:absolute;inset-block:0;inset-inline-start:0;width:4px;background:var(--adventure)}
+.am-cta h3{font-size:26px;margin-bottom:8px}
+.am-cta p{max-width:520px;font-size:15px;line-height:1.75;color:var(--muted-foreground)}
+.am-cta-actions{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+
+@media(max-width:1100px){
+  .am-reasons,.am-fish-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:950px){
+  .about-masirah .am-head h2{font-size:32px}
+  .am-ways{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .am-route{grid-template-columns:1fr;padding:26px 24px}
+  .am-stop{flex-direction:row;gap:16px;min-width:0;text-align:start}
+  .am-stop strong{white-space:normal}
+  .am-leg{width:16px;height:78px}
+  .am-leg:before,.am-leg:after{inset-inline-start:50%;inset-inline-end:auto;margin:0;margin-inline-start:-1.5px;top:0;bottom:0;width:3px;height:auto}
+  .am-leg:after,[dir=rtl] .am-leg:after{transform-origin:top center}
+  .am-leg-sea:before{background:repeating-linear-gradient(180deg,var(--border) 0 8px,transparent 8px 14px)}
+  .am-leg-sea:after{background:repeating-linear-gradient(180deg,var(--adventure) 0 8px,transparent 8px 14px)}
+  .am-route.is-armed .am-leg:after{transform:scaleY(0)}
+  .am-route.is-armed.is-on .am-leg:after{transform:scaleY(1)}
+  .am-leg-label{inset-inline:auto;inset-inline-start:34px;top:50%;bottom:auto;transform:translateY(-50%);justify-content:flex-start;width:max-content;white-space:nowrap}
+  .am-months{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 8px}
+  .am-season{padding:22px 18px}
+}
+@media(max-width:600px){
+  .about-masirah .am-head{margin-bottom:38px}
+  .about-masirah .am-head h2{font-size:29px}
+  .about-masirah .am-head p{font-size:15px}
+  .am-block+.am-block{margin-top:52px}
+  .am-block>h3{font-size:23px;margin-bottom:20px}
+  .am-reasons,.am-fish-grid{grid-template-columns:1fr}
+  .am-reason{flex-direction:row;align-items:flex-start;gap:16px;padding:20px}
+  .am-way{padding:22px}
+  .am-cta{margin-top:52px;padding:26px 22px}
+  .am-cta h3{font-size:22px}
+  .am-cta-actions{width:100%}
+  .am-cta .book-btn{width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  .am-leg:after{transition:none}
+}

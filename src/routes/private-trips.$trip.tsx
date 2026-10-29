@@ -8,6 +8,10 @@ import { useLanguage, headLang } from '@/lib/language';
 import { Button } from '@/components/ui/button';
 import { MobileBookBar } from '@/components/mobile-book-bar';
 import { PrivateBoatSection } from '@/components/private-trip-components';
+import { AboutMasirah } from '@/components/about-masirah';
+import { getSiteImages } from '@/lib/site-images.functions';
+import type { SiteImages } from '@/lib/site-images';
+import { resolveImage } from '@/lib/catalog';
 import { PrivateTripCard } from '@/components/trips-components';
 
 // Page of one private trip (e.g. the Masirah fishing trip). Built like the group-trip page; everything on it comes from the admin dashboard.
@@ -16,7 +20,9 @@ export const Route = createFileRoute('/private-trips/$trip')({
     const { privateDestinations } = await loadCatalog();
     const trip = privateDestinations.find((x) => x.id === params.trip);
     if (!trip) throw notFound();
-    return trip;
+    // The fish photos shown in the "About Masirah" section are chosen in the admin panel (About page tab).
+    const siteImages: SiteImages = trip.id === 'masirah-island' ? await getSiteImages() : {};
+    return { ...trip, siteImages };
   },
   head: ({ loaderData, matches }) => {
     const l = headLang(matches);
@@ -181,6 +187,18 @@ function PrivateTripDetail() {
           </div>
         </div>
       </section>
+      {trip.id === 'masirah-island' && (
+        <AboutMasirah
+          tripId={trip.id}
+          tripName={trip.name.en}
+          photos={{
+            tuna: resolveImage(trip.siteImages.fishTuna),
+            kingfish: resolveImage(trip.siteImages.fishKingfish),
+            grouper: resolveImage(trip.siteImages.fishGrouper),
+            reef: resolveImage(trip.siteImages.fishReef),
+          }}
+        />
+      )}
       {others.length > 0 && (
         <section className="section">
           <div className="container">
