@@ -15,7 +15,7 @@ const FLIGHT_BOOKING_URL = 'https://www.salamair.com';
 // Months run January (0) to December (11).
 const MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MONTHS_AR = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-const FISHING_BEST = [9, 10, 11, 0, 1, 2]; // Oct - Mar
+const FISHING_BEST = [9, 10, 11, 0, 1, 2, 3, 4]; // fishing season: 1 October to the end of May (no trips June - September)
 const WINDY = [3, 4, 5, 6, 7, 8]; // Apr - Sep
 
 // Plays the route drawing once, when it scrolls into view. Without JavaScript, or with reduced motion, it is simply shown.
@@ -118,7 +118,7 @@ export function AboutMasirah({ tripId, tripName, photos = {} }: { tripId: string
     {
       Icon: Fish,
       title: t('A real fishing community', 'مجتمع صيد حقيقي'),
-      text: t("Most of the island's roughly 12,000 people come from fishing families, and the local fleet works all year.", 'معظم سكان الجزيرة، ونحو 12 ألفًا، من أسر الصيادين، وأسطول الصيد المحلي يعمل طوال العام.'),
+      text: t("Most of the island's roughly 12,000 people come from fishing families, and fishing is part of everyday life here.", 'معظم سكان الجزيرة، ونحو 12 ألفًا، من أسر الصيادين، والصيد جزء من الحياة اليومية هنا.'),
     },
     {
       Icon: Waves,
@@ -276,14 +276,14 @@ export function AboutMasirah({ tripId, tripName, photos = {} }: { tripId: string
               ))}
             </ol>
             <ul className="am-legend">
-              <li><span className="am-swatch am-swatch-best" />{t('Best months for sport fishing: October to March', 'أفضل أشهر الصيد الرياضي: من أكتوبر إلى مارس')}</li>
+              <li><span className="am-swatch am-swatch-best" />{t('Fishing season: October to May', 'موسم الصيد: من أكتوبر إلى مايو')}</li>
               <li><span className="am-swatch am-swatch-wind" />{t('Strong, steady winds: April to September', 'رياح قوية وثابتة: من أبريل إلى سبتمبر')}</li>
               {now !== null && <li><span className="am-swatch am-swatch-now" />{t('This month', 'هذا الشهر')}</li>}
             </ul>
             <p className="am-season-note">
               {t(
-                'These are rough guides, not promises. The local fleet fishes all year, and the sea decides each day. Tell us your dates and we will tell you honestly what to expect.',
-                'هذه إرشادات تقريبية وليست وعودًا. أسطول الصيد المحلي يعمل طوال العام، والبحر هو من يقرر كل يوم. أخبرنا بتواريخك ونخبرك بصراحة بما تتوقعه.',
+                'Our fishing season starts on 1 October and runs until the end of May. There are no fishing trips from June to September. The sea still decides each day, so tell us your dates and we will tell you honestly what to expect.',
+                'يبدأ موسم الصيد لدينا من أول أكتوبر ويستمر حتى نهاية مايو. ولا توجد رحلات صيد من يونيو إلى سبتمبر. والبحر هو من يقرر كل يوم، فأخبرنا بتواريخك ونخبرك بصراحة بما تتوقعه.',
               )}
             </p>
           </div>
