@@ -15,7 +15,6 @@ const FLIGHT_BOOKING_URL = 'https://www.salamair.com';
 // Months run January (0) to December (11).
 const MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MONTHS_AR = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-const TUNA_PEAK = [10, 11, 0, 1, 2]; // Nov - Mar
 const FISHING_BEST = [9, 10, 11, 0, 1, 2]; // Oct - Mar
 const WINDY = [3, 4, 5, 6, 7, 8]; // Apr - Sep
 
@@ -139,7 +138,7 @@ export function AboutMasirah({ tripId, tripName, photos = {} }: { tripId: string
       name: t('Tuna', 'التونة'),
       alt: t('Tuna caught on a fishing trip in Masirah Island, Oman', 'تونة من رحلة صيد في جزيرة مصيرة، عُمان'),
       text: t('Fast and powerful, and the main target on many deep-sea trips.', 'سريعة وقوية، وهدف رئيسي في كثير من رحلات عرض البحر.'),
-      note: t('Strongest from November to March', 'في ذروتها من نوفمبر إلى مارس'),
+      note: t('Season starts from the beginning of February', 'يبدأ الموسم من أول فبراير'),
     },
     {
       kind: 'kingfish',
@@ -271,14 +270,13 @@ export function AboutMasirah({ tripId, tripName, photos = {} }: { tripId: string
               {months.map((name, i) => (
                 <li key={i} className={`am-month${now === i ? ' is-now' : ''}`}>
                   <span className="am-month-name">{name}</span>
-                  <span className={`am-bar am-bar-fish${TUNA_PEAK.includes(i) ? ' peak' : FISHING_BEST.includes(i) ? ' best' : ''}`} />
+                  <span className={`am-bar am-bar-fish${FISHING_BEST.includes(i) ? ' best' : ''}`} />
                   <span className={`am-bar am-bar-wind${WINDY.includes(i) ? ' on' : ''}`} />
                 </li>
               ))}
             </ol>
             <ul className="am-legend">
               <li><span className="am-swatch am-swatch-best" />{t('Best months for sport fishing: October to March', 'أفضل أشهر الصيد الرياضي: من أكتوبر إلى مارس')}</li>
-              <li><span className="am-swatch am-swatch-peak" />{t('Tuna at their strongest: November to March', 'التونة في ذروتها: من نوفمبر إلى مارس')}</li>
               <li><span className="am-swatch am-swatch-wind" />{t('Strong, steady winds: April to September', 'رياح قوية وثابتة: من أبريل إلى سبتمبر')}</li>
               {now !== null && <li><span className="am-swatch am-swatch-now" />{t('This month', 'هذا الشهر')}</li>}
             </ul>

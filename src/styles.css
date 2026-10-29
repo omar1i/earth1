@@ -1144,14 +1144,12 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 .am-month.is-now{background:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 45%,transparent)}
 .am-month.is-now .am-month-name{color:var(--primary)}
 .am-bar{display:block;height:10px;border-radius:5px;background:var(--secondary)}
-.am-bar-fish.best{background:color-mix(in srgb,var(--adventure) 42%,var(--background))}
-.am-bar-fish.peak{background:var(--adventure)}
+.am-bar-fish.best{background:var(--adventure)}
 .am-bar-wind.on{background:var(--primary)}
 .am-legend{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:11px}
 .am-legend li{display:flex;align-items:center;gap:12px;font-size:14.5px;font-weight:600}
 .am-swatch{flex:none;width:28px;height:10px;border-radius:5px}
-.am-swatch-best{background:color-mix(in srgb,var(--adventure) 42%,var(--background))}
-.am-swatch-peak{background:var(--adventure)}
+.am-swatch-best{background:var(--adventure)}
 .am-swatch-wind{background:var(--primary)}
 .am-swatch-now{height:18px;border-radius:6px;background:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 45%,transparent)}
 .am-season-note{margin-top:18px;max-width:720px;font-size:14.5px;line-height:1.75;color:var(--muted-foreground)}
