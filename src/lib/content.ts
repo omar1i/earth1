@@ -72,7 +72,15 @@ export function pageHead(lang: Language, title: Bilingual, description: Bilingua
 // ---------------------------------------------------------------------------------------------
 export const privateTripsIntro = {
   title: bi('Private Trips','الرحلات الخاصة'),
-  text: bi('Trips designed around your wishes and interests, whether you want to travel with family or friends, or plan a personal experience. You choose the destination, the activities and the kind of experience that suits you, and we arrange a travel programme that fits your needs and lets you enjoy your trip your own way.','رحلات تُصمَّم حسب رغبتك واهتماماتك، سواء كنت تبي تسافر مع الأهل أو الأصدقاء أو تخطط لتجربة خاصة. تختار الوجهة والأنشطة ونوع التجربة اللي تناسبك، ونرتب لك برنامج سفر يناسب احتياجاتك ويخليك تستمتع برحلتك على طريقتك.'),
+  lead: bi('Your journey starts with your ideas, and we turn it into an exceptional experience!','رحلتك تبدأ من أفكارك، ونحن نحولها إلى تجربة استثنائية!'),
+  text: bi('We design private trips that match your interests and aspirations, whether you are planning an adventure with family, a trip with friends, or a unique experience of your own.','نصمّم لك رحلات خاصة تتناسب مع اهتماماتك وتطلعاتك، سواء كنت تخطط لمغامرة مع الأهل، أو رحلة مع الأصدقاء، أو تجربة فريدة بطابعك الخاص.'),
+  steps: [
+    bi('Choose your destination','اختر وجهتك'),
+    bi('Pick the activities you love','حدد الأنشطة التي تحبها'),
+    bi('Let us handle the details','دعنا نهتم بالتفاصيل'),
+  ] as Bilingual[],
+  after: bi('So we can build you a complete programme where you live every moment just the way you like.','لنصنع لك برنامجاً متكاملاً تعيش فيه كل لحظة كما تحب.'),
+  closing: bi('Because the best trips are the ones designed around your mood!','لأن أجمل الرحلات هي التي تُصمَّم على مزاجك!'),
 };
 export type BoatSpec = {label:Bilingual; value:Bilingual};
 // "Our Boat" section of a private trip page. Everything is optional and editable in the admin dashboard.

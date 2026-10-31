@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { ArrowRight, ArrowUpRight, CalendarDays, Clock, MapPin, MessageCircle, Tag, Users } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, CalendarDays, Clock, Heart, MapPin, MessageCircle, Sparkles, Tag, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/language';
 import { isMasirahTrip, privateTripsIntro, privateTripWhatsapp, tripRegion, whatsapp, type GroupTrip, type PrivateDestination } from '@/lib/content';
@@ -80,7 +80,20 @@ export function PrivateTripsSection({ destinations }: { destinations?: PrivateDe
     <section className="trip-part" aria-labelledby="private-trips-title">
       <div className="trip-part-head trip-part-head-main">
         <h3 id="private-trips-title">{privateTripsIntro.title[lang]}</h3>
-        <p>{privateTripsIntro.text[lang]}</p>
+      </div>
+      <div className="pt-intro">
+        <p className="pt-lead">{privateTripsIntro.lead[lang]}</p>
+        <p className="pt-text">{privateTripsIntro.text[lang]}</p>
+        <ol className="pt-steps">
+          {[MapPin, Heart, Sparkles].map((Icon, i) => (
+            <li key={i}>
+              <span className="pt-step-icon"><Icon aria-hidden="true" /><b>{i + 1}</b></span>
+              <span className="pt-step-label">{privateTripsIntro.steps[i][lang]}</span>
+            </li>
+          ))}
+        </ol>
+        <p className="pt-after">{privateTripsIntro.after[lang]}</p>
+        <p className="pt-closing"><Sparkles aria-hidden="true" />{privateTripsIntro.closing[lang]}</p>
       </div>
       <div className="trip-grid-4">
         {privateDestinations.map((d) => <PrivateTripCard key={d.id} d={d} />)}
