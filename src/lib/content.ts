@@ -84,6 +84,21 @@ export const privateTripsIntro = {
   closing: bi('Because the best trips are designed around how you want to feel.','لأن أجمل الرحلات هي التي تُصمَّم على مزاجك!'),
   closingHighlight: bi('how you want to feel','مزاجك'),
 };
+
+// Group Trips intro: same editorial layout as the private trips intro (see TripsIntro).
+export const groupTripsIntro = {
+  title: bi('Group Trips','الرحلات الجماعية'),
+  lead: bi('Every journey is better together.','الرحلة أجمل حين نعيشها معًا.'),
+  leadHighlight: bi('together','معًا'),
+  text: bi('Organized trips where you travel with a group, enjoy a variety of experiences and activities, and meet people from different countries and cultures.','رحلات منظمة تسافر فيها مع مجموعة من الأشخاص، وتستمتع بتجارب وأنشطة متنوعة، وتتعرّف على أشخاص من دول وثقافات مختلفة.'),
+  steps: [
+    bi('Discover new destinations','اكتشف وجهات جديدة'),
+    bi('Enjoy varied experiences and activities','استمتع بتجارب وأنشطة متنوعة'),
+    bi('Meet people from different cultures','تعرّف على أشخاص من ثقافات مختلفة'),
+  ] as Bilingual[],
+  closing: bi('United by a love of travel and a spirit of adventure.','يجمعكم حب السفر وروح المغامرة.'),
+  closingHighlight: bi('a spirit of adventure','روح المغامرة'),
+};
 export type BoatSpec = {label:Bilingual; value:Bilingual};
 // "Our Boat" section of a private trip page. Everything is optional and editable in the admin dashboard.
 export type PrivateBoat = {name:Bilingual; tagline:Bilingual; description:Bilingual; image?:string; specs:BoatSpec[]; amenities:Bilingual[]};

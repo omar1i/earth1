@@ -1,9 +1,9 @@
 import type { CSSProperties } from 'react';
 import { Link } from '@tanstack/react-router';
-import { ArrowRight, ArrowUpRight, CalendarDays, Clock, Heart, MapPin, MessageCircle, Sparkles, Tag, Users } from 'lucide-react';
+import { type LucideIcon, ArrowRight, ArrowUpRight, CalendarDays, Clock, Heart, MapPin, MessageCircle, Sparkles, Tag, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useLanguage } from '@/lib/language';
-import { isMasirahTrip, privateTripsIntro, privateTripWhatsapp, tripRegion, whatsapp, type GroupTrip, type PrivateDestination } from '@/lib/content';
+import { useLanguage, type Bilingual } from '@/lib/language';
+import { isMasirahTrip, groupTripsIntro, privateTripsIntro, privateTripWhatsapp, tripRegion, whatsapp, type GroupTrip, type PrivateDestination } from '@/lib/content';
 import { useCatalog } from '@/lib/catalog-context';
 import { seatStatus, privateHasPage } from '@/lib/catalog';
 import { ImageSlider } from '@/components/image-slider';
@@ -79,6 +79,47 @@ function highlight(text: string, word: string) {
   return <>{text.slice(0, i)}<em>{word}</em>{text.slice(i + word.length)}</>;
 }
 
+type IntroContent = {
+  lead: Bilingual; leadHighlight: Bilingual; text: Bilingual; steps: Bilingual[];
+  after?: Bilingual; closing: Bilingual; closingHighlight: Bilingual;
+};
+
+// Shared editorial intro for the private and group trip sections.
+function TripsIntro({ content, icons }: { content: IntroContent; icons: LucideIcon[] }) {
+  const { lang } = useLanguage();
+  return (
+    <div className="pt-intro">
+      <div className="pt-main">
+        <div className="pt-copy">
+          <p className="pt-lead">{highlight(content.lead[lang], content.leadHighlight[lang])}</p>
+          <p className="pt-text">{content.text[lang]}</p>
+        </div>
+        <div className="pt-path">
+          <ol className="pt-steps">
+            {content.steps.map((step, i) => {
+              const Icon = icons[i % icons.length];
+              return (
+                <li key={i} style={{ '--i': i } as CSSProperties}>
+                  <span className="pt-node"><Icon aria-hidden="true" /></span>
+                  <span className="pt-step-body">
+                    <small>{`0${i + 1}`}</small>
+                    <span className="pt-step-label">{step[lang]}</span>
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+          {content.after && <p className="pt-after">{content.after[lang]}</p>}
+        </div>
+      </div>
+      <p className="pt-closing">
+        <Sparkles aria-hidden="true" />
+        <span>{highlight(content.closing[lang], content.closingHighlight[lang])}</span>
+      </p>
+    </div>
+  );
+}
+
 // Private Trips: ideas for trips designed around the guest. Cards with a trip page link to it; every card has "Contact Us" (WhatsApp).
 export function PrivateTripsSection({ destinations }: { destinations?: PrivateDestination[] } = {}) {
   const { lang } = useLanguage();
@@ -89,32 +130,7 @@ export function PrivateTripsSection({ destinations }: { destinations?: PrivateDe
       <div className="trip-part-head trip-part-head-main">
         <h3 id="private-trips-title">{privateTripsIntro.title[lang]}</h3>
       </div>
-      <div className="pt-intro">
-        <div className="pt-main">
-          <div className="pt-copy">
-            <p className="pt-lead">{highlight(privateTripsIntro.lead[lang], privateTripsIntro.leadHighlight[lang])}</p>
-            <p className="pt-text">{privateTripsIntro.text[lang]}</p>
-          </div>
-          <div className="pt-path">
-            <ol className="pt-steps">
-              {[MapPin, Heart, Sparkles].map((Icon, i) => (
-                <li key={i} style={{ '--i': i } as CSSProperties}>
-                  <span className="pt-node"><Icon aria-hidden="true" /></span>
-                  <span className="pt-step-body">
-                    <small>{`0${i + 1}`}</small>
-                    <span className="pt-step-label">{privateTripsIntro.steps[i][lang]}</span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-            <p className="pt-after">{privateTripsIntro.after[lang]}</p>
-          </div>
-        </div>
-        <p className="pt-closing">
-          <Sparkles aria-hidden="true" />
-          <span>{highlight(privateTripsIntro.closing[lang], privateTripsIntro.closingHighlight[lang])}</span>
-        </p>
-      </div>
+      <TripsIntro content={privateTripsIntro} icons={[MapPin, Heart, Sparkles]} />
       <div className="trip-grid-4">
         {privateDestinations.map((d) => <PrivateTripCard key={d.id} d={d} />)}
       </div>
@@ -189,16 +205,16 @@ export function GroupTripCard({ trip }: { trip: GroupTrip }) {
 
 // Group Trips: scheduled trips guests can join; every trip has its own detail page.
 export function GroupTripsSection({ trips }: { trips?: GroupTrip[] } = {}) {
-  const { t } = useLanguage();
+  const { lang } = useLanguage();
   const catalog = useCatalog();
   // Without an explicit list, show the Oman group trips; international ones live under the International tab.
   const groupTrips = trips ?? catalog.groupTrips.filter((g) => tripRegion(g) === 'oman');
   return (
     <section className="trip-part trip-part-group" aria-labelledby="group-trips-title">
       <div className="trip-part-head trip-part-head-main">
-        <h3 id="group-trips-title">{t('Group Trips', 'الرحلات الجماعية')}</h3>
-        <p>{t('Organized trips where you travel with a group of people to discover new destinations, enjoy a variety of experiences and activities, and meet people from different countries and cultures, united by a love of travel and a spirit of adventure.', 'رحلات منظمة تسافر فيها مع مجموعة من الأشخاص لاكتشاف وجهات جديدة، والاستمتاع بتجارب وأنشطة متنوعة، والتعرّف على أشخاص من دول وثقافات مختلفة يجمعكم حب السفر وروح المغامرة.')}</p>
+        <h3 id="group-trips-title">{groupTripsIntro.title[lang]}</h3>
       </div>
+      <TripsIntro content={groupTripsIntro} icons={[MapPin, Sparkles, Users]} />
       <div className="experience-grid">
         {groupTrips.map((trip) => (
           <GroupTripCard key={trip.id} trip={trip} />
