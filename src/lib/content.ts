@@ -72,17 +72,17 @@ export function pageHead(lang: Language, title: Bilingual, description: Bilingua
 // ---------------------------------------------------------------------------------------------
 export const privateTripsIntro = {
   title: bi('Private Trips','الرحلات الخاصة'),
-  lead: bi('Your journey starts with your ideas, and we turn it into an exceptional experience!','رحلتك تبدأ من أفكارك، ونحن نحولها إلى تجربة استثنائية!'),
+  lead: bi('Your trip starts with your ideas. We turn them into an extraordinary experience.','رحلتك تبدأ من أفكارك، ونحن نحولها إلى تجربة استثنائية!'),
   leadHighlight: bi('ideas','أفكارك'),
-  text: bi('We design private trips that match your interests and aspirations, whether you are planning an adventure with family, a trip with friends, or a unique experience of your own.','نصمّم لك رحلات خاصة تتناسب مع اهتماماتك وتطلعاتك، سواء كنت تخطط لمغامرة مع الأهل، أو رحلة مع الأصدقاء، أو تجربة فريدة بطابعك الخاص.'),
+  text: bi('We design private trips around your interests and aspirations, whether it’s an adventure with family, a getaway with friends, or a one-of-a-kind experience that’s entirely your own.','نصمّم لك رحلات خاصة تتناسب مع اهتماماتك وتطلعاتك، سواء كنت تخطط لمغامرة مع الأهل، أو رحلة مع الأصدقاء، أو تجربة فريدة بطابعك الخاص.'),
   steps: [
     bi('Choose your destination','اختر وجهتك'),
     bi('Pick the activities you love','حدد الأنشطة التي تحبها'),
-    bi('Let us handle the details','دعنا نهتم بالتفاصيل'),
+    bi('Leave the details to us','دعنا نهتم بالتفاصيل'),
   ] as Bilingual[],
-  after: bi('So we can build you a complete programme where you live every moment just the way you like.','لنصنع لك برنامجاً متكاملاً تعيش فيه كل لحظة كما تحب.'),
-  closing: bi('Because the best trips are the ones designed around your mood!','لأن أجمل الرحلات هي التي تُصمَّم على مزاجك!'),
-  closingHighlight: bi('your mood','مزاجك'),
+  after: bi('We’ll shape it all into a complete itinerary, so you can enjoy every moment exactly the way you like.','لنصنع لك برنامجاً متكاملاً تعيش فيه كل لحظة كما تحب.'),
+  closing: bi('Because the best trips are designed around how you want to feel.','لأن أجمل الرحلات هي التي تُصمَّم على مزاجك!'),
+  closingHighlight: bi('how you want to feel','مزاجك'),
 };
 export type BoatSpec = {label:Bilingual; value:Bilingual};
 // "Our Boat" section of a private trip page. Everything is optional and editable in the admin dashboard.

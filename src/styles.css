@@ -1221,26 +1221,26 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 }
 
 /* Private trips intro: editorial layout on the site's own white background */
-.pt-intro{margin:4px 0 38px}
-.pt-main{display:grid;gap:28px}
-.pt-lead{margin:0 0 14px;font-size:clamp(25px,6.4vw,40px);line-height:1.35;font-weight:800;letter-spacing:0;color:var(--foreground);text-wrap:balance}
+.pt-intro{margin:0 0 30px}
+.pt-main{display:grid;gap:22px}
+.pt-lead{margin:0 0 10px;font-size:clamp(21px,5.2vw,28px);line-height:1.4;font-weight:800;letter-spacing:0;color:var(--foreground);text-wrap:balance}
 .pt-lead em,.pt-closing em{font-style:normal;color:var(--primary)}
 .pt-lead em{background:linear-gradient(transparent 66%,color-mix(in oklch,var(--adventure) 38%,transparent) 66%)}
-.pt-text{margin:0;max-width:48ch;font-size:15px;line-height:1.95;color:var(--muted-foreground)}
+.pt-text{margin:0;max-width:52ch;font-size:14px;line-height:1.85;color:var(--muted-foreground)}
 .pt-steps{list-style:none;margin:0;padding:0}
-.pt-steps li{position:relative;display:grid;grid-template-columns:46px 1fr;align-items:center;gap:16px;padding-bottom:22px}
+.pt-steps li{position:relative;display:grid;grid-template-columns:38px 1fr;align-items:center;gap:14px;padding-bottom:16px}
 .pt-steps li:last-child{padding-bottom:0}
-.pt-steps li:not(:last-child):before{content:'';position:absolute;inset-inline-start:22.5px;top:50px;bottom:4px;border-inline-start:1.5px dashed color-mix(in oklch,var(--primary) 35%,transparent)}
-.pt-node{width:46px;height:46px;border-radius:999px;display:grid;place-items:center;color:var(--primary);background:color-mix(in oklch,var(--primary) 8%,#fff);border:1.5px solid color-mix(in oklch,var(--primary) 45%,transparent)}
-.pt-node svg{width:21px;height:21px}
+.pt-steps li:not(:last-child):before{content:'';position:absolute;inset-inline-start:18.5px;top:42px;bottom:4px;border-inline-start:1.5px dashed color-mix(in oklch,var(--primary) 35%,transparent)}
+.pt-node{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:var(--primary);background:color-mix(in oklch,var(--primary) 8%,#fff);border:1.5px solid color-mix(in oklch,var(--primary) 45%,transparent)}
+.pt-node svg{width:18px;height:18px}
 .pt-step-body{display:flex;flex-direction:column;gap:1px}
-.pt-step-body small{font-size:12px;font-weight:700;letter-spacing:2px;color:color-mix(in oklch,var(--adventure) 80%,#000);direction:ltr;text-align:start}
-.pt-step-label{font-size:17px;font-weight:700;line-height:1.5;color:var(--foreground)}
-.pt-after{margin:18px 0 0;font-size:14.5px;line-height:1.9;color:var(--muted-foreground)}
-.pt-closing{display:flex;align-items:flex-start;gap:12px;margin:30px 0 0;padding-top:24px;border-top:1px solid var(--border);font-size:clamp(20px,5vw,30px);font-weight:800;line-height:1.5;color:var(--foreground)}
-.pt-closing svg{flex:none;width:26px;height:26px;margin-top:5px;color:var(--adventure)}
+.pt-step-body small{font-size:11px;font-weight:700;letter-spacing:2px;color:color-mix(in oklch,var(--adventure) 80%,#000);direction:ltr;text-align:start}
+.pt-step-label{font-size:15px;font-weight:700;line-height:1.5;color:var(--foreground)}
+.pt-after{margin:14px 0 0;font-size:13.5px;line-height:1.8;color:var(--muted-foreground)}
+.pt-closing{display:flex;align-items:flex-start;gap:12px;margin:24px 0 0;padding-top:18px;border-top:1px solid var(--border);font-size:clamp(16px,4.2vw,20px);font-weight:800;line-height:1.5;color:var(--foreground)}
+.pt-closing svg{flex:none;width:20px;height:20px;margin-top:4px;color:var(--adventure)}
 .pt-closing em{background:linear-gradient(transparent 64%,color-mix(in oklch,var(--adventure) 38%,transparent) 64%)}
-@media(min-width:860px){.pt-main{grid-template-columns:1.2fr .8fr;gap:56px;align-items:center}.pt-closing{margin-top:36px;padding-top:28px}}
+@media(min-width:860px){.pt-main{grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}.pt-closing{margin-top:28px;padding-top:20px}}
 @media(prefers-reduced-motion:no-preference){
  @keyframes pt-up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
  .pt-copy,.pt-steps li,.pt-after,.pt-closing{animation:pt-up .7s cubic-bezier(.2,.7,.2,1) both}
