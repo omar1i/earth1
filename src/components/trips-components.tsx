@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { Link } from '@tanstack/react-router';
 import { ArrowRight, ArrowUpRight, CalendarDays, Clock, Heart, MapPin, MessageCircle, Sparkles, Tag, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -71,6 +72,13 @@ export function PrivateTripCard({ d }: { d: PrivateDestination }) {
   );
 }
 
+// Wraps one word of a sentence in <em> so it can be styled as the accent word.
+function highlight(text: string, word: string) {
+  const i = text.indexOf(word);
+  if (i < 0) return text;
+  return <>{text.slice(0, i)}<em>{word}</em>{text.slice(i + word.length)}</>;
+}
+
 // Private Trips: ideas for trips designed around the guest. Cards with a trip page link to it; every card has "Contact Us" (WhatsApp).
 export function PrivateTripsSection({ destinations }: { destinations?: PrivateDestination[] } = {}) {
   const { lang } = useLanguage();
@@ -82,18 +90,30 @@ export function PrivateTripsSection({ destinations }: { destinations?: PrivateDe
         <h3 id="private-trips-title">{privateTripsIntro.title[lang]}</h3>
       </div>
       <div className="pt-intro">
-        <p className="pt-lead">{privateTripsIntro.lead[lang]}</p>
-        <p className="pt-text">{privateTripsIntro.text[lang]}</p>
-        <ol className="pt-steps">
-          {[MapPin, Heart, Sparkles].map((Icon, i) => (
-            <li key={i}>
-              <span className="pt-step-icon"><Icon aria-hidden="true" /><b>{i + 1}</b></span>
-              <span className="pt-step-label">{privateTripsIntro.steps[i][lang]}</span>
-            </li>
-          ))}
-        </ol>
-        <p className="pt-after">{privateTripsIntro.after[lang]}</p>
-        <p className="pt-closing"><Sparkles aria-hidden="true" />{privateTripsIntro.closing[lang]}</p>
+        <div className="pt-main">
+          <div className="pt-copy">
+            <p className="pt-lead">{highlight(privateTripsIntro.lead[lang], privateTripsIntro.leadHighlight[lang])}</p>
+            <p className="pt-text">{privateTripsIntro.text[lang]}</p>
+          </div>
+          <div className="pt-path">
+            <ol className="pt-steps">
+              {[MapPin, Heart, Sparkles].map((Icon, i) => (
+                <li key={i} style={{ '--i': i } as CSSProperties}>
+                  <span className="pt-node"><Icon aria-hidden="true" /></span>
+                  <span className="pt-step-body">
+                    <small>{`0${i + 1}`}</small>
+                    <span className="pt-step-label">{privateTripsIntro.steps[i][lang]}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <p className="pt-after">{privateTripsIntro.after[lang]}</p>
+          </div>
+        </div>
+        <p className="pt-closing">
+          <Sparkles aria-hidden="true" />
+          <span>{highlight(privateTripsIntro.closing[lang], privateTripsIntro.closingHighlight[lang])}</span>
+        </p>
       </div>
       <div className="trip-grid-4">
         {privateDestinations.map((d) => <PrivateTripCard key={d.id} d={d} />)}

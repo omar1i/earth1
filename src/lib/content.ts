@@ -73,6 +73,7 @@ export function pageHead(lang: Language, title: Bilingual, description: Bilingua
 export const privateTripsIntro = {
   title: bi('Private Trips','الرحلات الخاصة'),
   lead: bi('Your journey starts with your ideas, and we turn it into an exceptional experience!','رحلتك تبدأ من أفكارك، ونحن نحولها إلى تجربة استثنائية!'),
+  leadHighlight: bi('ideas','أفكارك'),
   text: bi('We design private trips that match your interests and aspirations, whether you are planning an adventure with family, a trip with friends, or a unique experience of your own.','نصمّم لك رحلات خاصة تتناسب مع اهتماماتك وتطلعاتك، سواء كنت تخطط لمغامرة مع الأهل، أو رحلة مع الأصدقاء، أو تجربة فريدة بطابعك الخاص.'),
   steps: [
     bi('Choose your destination','اختر وجهتك'),
@@ -81,6 +82,7 @@ export const privateTripsIntro = {
   ] as Bilingual[],
   after: bi('So we can build you a complete programme where you live every moment just the way you like.','لنصنع لك برنامجاً متكاملاً تعيش فيه كل لحظة كما تحب.'),
   closing: bi('Because the best trips are the ones designed around your mood!','لأن أجمل الرحلات هي التي تُصمَّم على مزاجك!'),
+  closingHighlight: bi('your mood','مزاجك'),
 };
 export type BoatSpec = {label:Bilingual; value:Bilingual};
 // "Our Boat" section of a private trip page. Everything is optional and editable in the admin dashboard.
@@ -99,7 +101,7 @@ export type PrivateDestination = {
   sample?:boolean;
 };
 export const privateDestinations: PrivateDestination[] = [
-  {id:'wadi-al-arbaeen', name:bi('Wadi Al Arbaeen','وادي العربيين'), image:wadi, description:bi('A hidden valley of rugged rock walls and natural pools. Hike, take a swim stop, and enjoy quiet time in nature with your group.','وادٍ مخفي بجدران صخرية وبرك طبيعية. امشِ في الوادي واستمتع بالسباحة وبالهدوء في الطبيعة مع مجموعتك.')},
+  {id:'wadi-al-arbaeen', name:bi('Wadi Al Arbaeen','وادي العربيين'), image:wadi, description:bi('Hidden in the embrace of nature lies a valley ringed by rock walls and adorned with natural pools. Wander the rocky paths, swim in the valley’s waters, and enjoy moments of calm and relaxation far from the noise of everyday life, with the people you love 🌿','بين أحضان الطبيعة، يختبئ وادٍ تحيط به الجدران الصخرية، وتزينه البرك المائية الطبيعية. رحلة بين الممرات الصخرية، وسباحة في مياه الوادي، ولحظات من الهدوء والاسترخاء بعيداً عن صخب الحياة، برفقة من تحب 🌿')},
   {id:'jabal-akhdar', name:bi('Jabal Akhdar','الجبل الأخضر'), image:mountains, description:bi('Cool mountain air, terraced orchards and wide canyon viewpoints. Ideal for scenic hikes, village walks and a slower pace above the clouds.','هواء جبلي منعش ومدرجات زراعية وإطلالات واسعة على الأخاديد. مثالي للمشي في الطبيعة وجولات القرى وإيقاع أهدأ فوق الغيوم.')},
   {id:'masirah-island', name:bi('Masirah Island','جزيرة مصيرة'), image:coast, description:bi('Long empty beaches, clear water and an easy island pace. Plan time for fishing, beach camping and watching the coast from the sea.','شواطئ طويلة هادئة ومياه صافية وإيقاع جزيرة مريح. خطط لوقت للصيد والتخييم على الشاطئ ومشاهدة الساحل من البحر.'),
    // SAMPLE details: replace the price, guest number, itinerary and boat facts with the real ones in the admin dashboard.
