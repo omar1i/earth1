@@ -1234,7 +1234,7 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 .pt-node{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:var(--primary);background:color-mix(in oklch,var(--primary) 8%,#fff);border:1.5px solid color-mix(in oklch,var(--primary) 45%,transparent)}
 .pt-node svg{width:18px;height:18px}
 .pt-step-body{display:flex;flex-direction:column;gap:1px}
-.pt-step-body small{font-size:11px;font-weight:700;letter-spacing:2px;color:color-mix(in oklch,var(--adventure) 80%,#000);direction:ltr;text-align:start}
+.pt-step-body small{font-size:11px;font-weight:700;letter-spacing:2px;color:color-mix(in oklch,var(--adventure) 80%,#000);align-self:flex-start}
 .pt-step-label{font-size:15px;font-weight:700;line-height:1.5;color:var(--foreground)}
 .pt-after{margin:14px 0 0;font-size:13.5px;line-height:1.8;color:var(--muted-foreground)}
 .pt-closing{display:flex;align-items:flex-start;gap:12px;margin:24px 0 0;padding-top:18px;border-top:1px solid var(--border);font-size:clamp(16px,4.2vw,20px);font-weight:800;line-height:1.5;color:var(--foreground)}
@@ -1246,3 +1246,7 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
  .pt-copy,.pt-steps li,.pt-after,.pt-closing{animation:pt-up .7s cubic-bezier(.2,.7,.2,1) both}
  .pt-steps li{animation-delay:calc(.15s + var(--i,0)*.12s)}.pt-after{animation-delay:.6s}.pt-closing{animation-delay:.75s}
 }
+
+/* More breathing room under the big region title ("Oman Trips") */
+.region-panel-head{margin-bottom:64px}
+@media(max-width:600px){.region-panel-head{margin-bottom:40px}}
