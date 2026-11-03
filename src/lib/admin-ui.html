@@ -443,7 +443,7 @@ function editor(main,t,schedules,bookingCount,isNew){
     var n=name.get(),d=desc.get(),l=loc.get(),du=dur.get(),sz=size.get(),ac=acc.get();
     var body={kind:kind,name_en:n.en,name_ar:n.ar,description_en:d.en,description_ar:d.ar,image:img.get(),
       price:price.value===''?null:Number(price.value),price_type:price.value===''?'contact':ptype.value,
-      is_active:active.checked,is_sample:sample.checked,sort_order:Number(order.value)||0,region:kind==='experience'?region.value:'oman',
+      is_active:active.checked,is_sample:sample.checked,sort_order:Number(order.value)||0,region:kind==='private'?'oman':region.value,
       category:kind==='experience'?cat.value:null,
       location_en:l.en,location_ar:l.ar,duration_en:du.en,duration_ar:du.ar,group_size_en:sz.en,group_size_ar:sz.ar,accommodation_en:ac.en,accommodation_ar:ac.ar,
       max_group:maxg.value===''?null:Number(maxg.value),itinerary:itin.get(),inclusions:inc.get(),exclusions:exc.get(),requirements:req.get(),terms:terms.get()};
@@ -465,6 +465,7 @@ function editor(main,t,schedules,bookingCount,isNew){
   out.appendChild(h('div',{class:'card'},name,desc,img,gallery,
     h('div',{class:'grid g3'},
       kind==='experience'?field('Section',cat):null,
+      kind==='group'?field('Region',region,'Choose International for trips abroad (e.g. Kyrgyzstan) so they show under the International tab.'):null,
       field('Price (OMR)',price,'Leave empty to show “Contact for Price”.'),field('Price applies',ptype),
       field('Display order',order,'Lower numbers appear first.'),
       field('Web address ',slug,isNew?'Letters, numbers and dashes. Cannot be changed later.':'Fixed after creation.')),
