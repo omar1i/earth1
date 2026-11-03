@@ -1250,3 +1250,9 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 /* More breathing room under the big region title ("Oman Trips") */
 .region-panel-head{margin-bottom:64px}
 @media(max-width:600px){.region-panel-head{margin-bottom:40px}}
+
+/* Trip itinerary: short readable lines, with stay and meals set apart */
+.itinerary p + p{margin-top:8px}
+.itinerary .itinerary-meta{color:var(--foreground);font-weight:500}
+.itinerary .itinerary-meta b{color:var(--primary);font-weight:700}
+.itinerary p:not(.itinerary-meta) + .itinerary-meta{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}

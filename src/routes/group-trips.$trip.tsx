@@ -86,12 +86,15 @@ function GroupTripDetail() {
                   {trip.itinerary.map((step, i) => (
                     <li key={i}>
                       <strong>{step.title[lang]}</strong>
-                      <p>{step.text[lang]}</p>
+                      {step.text[lang].split('\n').filter(Boolean).map((line, j) => {
+                        const m = line.match(/^(الإقامة|الوجبات|Stay|Meals):\s*(.*)$/);
+                        return m ? <p key={j} className="itinerary-meta"><b>{m[1]}:</b> {m[2]}</p> : <p key={j}>{line}</p>;
+                      })}
                     </li>
                   ))}
                 </ol>
               </div>
-              {lists.map(([title, items]) => (
+              {lists.filter(([, items]) => items.length > 0).map(([title, items]) => (
                 <div className="detail-section" key={title}>
                   <h2>{title}</h2>
                   <ul>{items.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
@@ -114,7 +117,10 @@ function GroupTripDetail() {
               </div>
               <div className="detail-section">
                 <h2>{t('How to join', 'طريقة الانضمام')}</h2>
-                <p>{t('Press Book Now to send your booking request and reserve your seat. Payment and trip details are agreed directly with our team.', 'اضغط احجز الآن لإرسال طلب الحجز وحجز مقعدك. يتم الاتفاق على الدفع وتفاصيل الرحلة مباشرة مع فريقنا.')}</p>
+                <p>
+                  {t('Press Book Now to send your booking request and reserve your seat, or book through the company’s ', 'اضغط احجز الآن لإرسال طلب الحجز وحجز مقعدك، أو عن طريق ')}
+                  <a className="text-link" href="https://api.whatsapp.com/send?phone=96891915594" target="_blank" rel="noopener noreferrer">{t('WhatsApp', 'واتساب الشركة')}</a>.
+                </p>
               </div>
             </div>
             <aside className="booking-aside">

@@ -67,7 +67,7 @@ describe('International group trip (Kyrgyzstan, women only)', () => {
     expect(tripRegion(kg)).toBe('international');
     expect(kg.sample).toBe(false);
     expect(kg.startDate).toBe('2027-05-22');
-    expect(kg.price.en).toBe('OMR 555 per person');
+    expect(kg.price.en).toBe('OMR 690 per person');
     expect(kg.itinerary).toHaveLength(8);
     expect(kg.gallery!.length).toBeGreaterThan(1);
   });
