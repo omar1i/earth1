@@ -1,0 +1,160 @@
+import { createFileRoute, notFound, Link } from '@tanstack/react-router';
+import { ArrowUpRight, CalendarDays, Clock, MapPin, Tag, Users } from 'lucide-react';
+import { pageHead, bi, cancellationPolicy, tripRegion } from '@/lib/content';
+import { loadCatalog } from '@/lib/catalog.functions';
+import { useCatalog } from '@/lib/catalog-context';
+import { useLanguage, headLang } from '@/lib/language';
+import { Button } from '@/components/ui/button';
+import { MobileBookBar } from '@/components/mobile-book-bar';
+import { GroupTripCard } from '@/components/trips-components';
+import { ImageSlider } from '@/components/image-slider';
+
+export const Route = createFileRoute('/group-trips/$trip')({
+  loader: async ({ params }) => {
+    const { groupTrips } = await loadCatalog();
+    const trip = groupTrips.find((x) => x.id === params.trip);
+    if (!trip) throw notFound();
+    return trip;
+  },
+  head: ({ loaderData, matches }) => {
+    const trip = loaderData;
+    const l = headLang(matches);
+    return trip
+      ? pageHead(l, trip.name, trip.description)
+      : pageHead(l, bi('Trip not found', 'الرحلة غير موجودة'), bi('This trip is unavailable.', 'هذه الرحلة غير متاحة.'));
+  },
+  component: GroupTripDetail,
+});
+
+function GroupTripDetail() {
+  const trip = Route.useLoaderData();
+  const { groupTrips } = useCatalog();
+  const { lang, t } = useLanguage();
+  if (!trip) return null;
+  const photos = trip.gallery && trip.gallery.length > 0 ? trip.gallery : [trip.image];
+  const upcoming = (trip.schedules ?? []).filter((s) => s.bookable || s.soldOut);
+  const hasSchedules = !!trip.schedules;
+  const canBook = !hasSchedules || (trip.schedules ?? []).some((s) => s.bookable);
+  const fullyBooked = hasSchedules && !canBook && (trip.schedules ?? []).length > 0 && (trip.schedules ?? []).every((s) => s.soldOut);
+  const international = tripRegion(trip) === 'international';
+  const sameRegion = groupTrips.filter((x) => x.id !== trip.id && tripRegion(x) === tripRegion(trip));
+  const lists = [
+    [t('What’s included', 'ما يشمله السعر'), trip.inclusions],
+    [t('What’s not included', 'ما لا يشمله السعر'), trip.exclusions],
+    [t('Notes', 'ملاحظات'), trip.terms],
+  ] as const;
+
+  return (
+    <>
+      <section className={photos.length > 1 ? 'image-hero has-slider' : 'image-hero group-hero'}>
+        {photos.length > 1 ? (
+          <ImageSlider images={photos} alt={trip.name[lang]} fit="contain" eager dots="bottom" />
+        ) : (
+          <img src={trip.image} alt={trip.name[lang]} width="1440" height="1024" fetchPriority="high" />
+        )}
+        <div className="container image-hero-content">
+          <div className="eyebrow text-primary-foreground">{t('Group Trip', 'رحلة جماعية')}</div>
+          <h1>{trip.name[lang]}</h1>
+        </div>
+      </section>
+      <section className="section group-trip-page">
+        <div className="container">
+          <div className="breadcrumbs">
+            <Link to="/" search={{ trips: international ? 'international' : 'oman' }}>{international ? t('International Trips', 'رحلات دولية') : t('Oman Trips', 'رحلات عمان')}</Link>
+            <span>/</span>
+            <span>{trip.name[lang]}</span>
+          </div>
+          {trip.sample && (
+            <p className="notice sample-notice">
+              {t('Sample content: the date, price and terms on this page are placeholders and will be confirmed before the trip is announced.', 'محتوى تجريبي: التاريخ والسعر والشروط في هذه الصفحة أمثلة وسيتم تأكيدها قبل الإعلان عن الرحلة.')}
+            </p>
+          )}
+          <div className="detail-layout">
+            <div className="detail-copy">
+              <div className="detail-section">
+                <h2>{t('About this trip', 'نبذة عن الرحلة')}</h2>
+                <p>{trip.description[lang]}</p>
+                <div className="experience-meta">
+                  <span><MapPin />{trip.location[lang]}</span>
+                  <span><Clock />{trip.duration[lang]}</span>
+                  <span><Users />{trip.groupSize[lang]}</span>
+                </div>
+              </div>
+              <div className="detail-section">
+                <h2>{t('Trip Details', 'تفاصيل الرحلة')}</h2>
+                <ol className="itinerary">
+                  {trip.itinerary.map((step, i) => (
+                    <li key={i}>
+                      <strong>{step.title[lang]}</strong>
+                      {step.text[lang].split('\n').filter(Boolean).map((line, j) => {
+                        const m = line.match(/^(الإقامة|الوجبات|Stay|Meals):\s*(.*)$/);
+                        return m ? <p key={j} className="itinerary-meta"><b>{m[1]}:</b> {m[2]}</p> : <p key={j}>{line}</p>;
+                      })}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              {lists.filter(([, items]) => items.length > 0).map(([title, items]) => (
+                <div className="detail-section" key={title}>
+                  <h2>{title}</h2>
+                  <ul>{items.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
+                </div>
+              ))}
+              <div className="detail-section">
+                <h2>{cancellationPolicy.title[lang]}</h2>
+                {international ? (
+                  // International trips follow the Terms & Conditions for International Trips (page /terms).
+                  <p>
+                    {t('Payment, cancellation and refund terms for international trips are set out in our ', 'شروط الدفع والإلغاء والاسترداد للرحلات الدولية موضحة في ')}
+                    <Link className="hl-link" to="/terms">{t('Terms & Conditions for International Trips', 'شروط وأحكام الرحلات الدولية')}</Link>.
+                  </p>
+                ) : (
+                  <>
+                    <ul className="policy-list">{cancellationPolicy.items.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
+                    <p className="policy-note">{cancellationPolicy.note[lang]}</p>
+                  </>
+                )}
+              </div>
+              <div className="detail-section">
+                <h2>{t('How to join', 'طريقة الانضمام')}</h2>
+                <p>
+                  {t('Press Book Now to send your booking request and reserve your seat, or book through the company’s ', 'اضغط احجز الآن لإرسال طلب الحجز وحجز مقعدك، أو عن طريق ')}
+                  <a className="hl-link" href="https://api.whatsapp.com/send?phone=96891915594" target="_blank" rel="noopener noreferrer">{t('WhatsApp', 'واتساب الشركة')}</a>.
+                </p>
+              </div>
+            </div>
+            <aside className="booking-aside">
+              <div className="eyebrow">{t('Trip details', 'تفاصيل الرحلة')}</div>
+              <ul className="aside-facts">
+                <li><CalendarDays size={16} /><span><small>{t('Trip date', 'تاريخ الرحلة')}</small>{upcoming.length > 0 ? upcoming.map((s) => (<span key={s.id} style={{ display: 'block' }}>{s.label[lang]} · {s.soldOut ? t('Fully booked', 'محجوز بالكامل') : t(`${s.seatsLeft} seats left`, `المقاعد المتبقية: ${s.seatsLeft}`)}</span>)) : trip.date[lang]}</span></li>
+                <li><Tag size={16} /><span><small>{t('Price', 'السعر')}</small>{trip.price[lang]}</span></li>
+                <li><Clock size={16} /><span><small>{t('Duration', 'المدة')}</small>{trip.duration[lang]}</span></li>
+              </ul>
+              {canBook ? (
+                <Button asChild size="lg" className="book-btn">
+                  <Link to="/book" search={{ experience: trip.id }}>
+                    {t('Book Now', 'احجز الآن')}
+                    <ArrowUpRight size={17} />
+                  </Link>
+                </Button>
+              ) : (
+                <Button size="lg" className="book-btn" disabled>
+                  {fullyBooked ? t('Fully booked', 'محجوز بالكامل') : t('No open departures', 'لا توجد مواعيد متاحة حاليًا')}
+                </Button>
+              )}
+            </aside>
+          </div>
+        </div>
+      </section>
+      <section className="section section-soft">
+        <div className="container">
+          <div className="section-header"><h2>{t('More group trips', 'رحلات جماعية أخرى')}</h2></div>
+          <div className="experience-grid">
+            {sameRegion.map((x) => <GroupTripCard key={x.id} trip={x} />)}
+          </div>
+        </div>
+      </section>
+      {canBook && <MobileBookBar experienceId={trip.id} label={t('Price', 'السعر')}>{trip.price[lang]}</MobileBookBar>}
+    </>
+  );
+}
