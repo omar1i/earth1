@@ -422,7 +422,7 @@ function editor(main,t,schedules,bookingCount,isNew){
   var maxg=h('input',{type:'number',min:'1',step:'1',value:t.max_group||''});
   var itin=listEditor(kind==='group'?'Itinerary (day by day)':kind==='private'?'Itinerary (hour by hour or day by day)':'Itinerary (optional)',parseJson(t.itinerary),true);
   var inc=listEditor('What’s included',parseJson(t.inclusions),false),exc=listEditor('What’s not included',parseJson(t.exclusions),false);
-  var req=listEditor('Requirements & recommended items',parseJson(t.requirements),false),terms=listEditor('Terms & Conditions for this trip',parseJson(t.terms),false);
+  var req=listEditor('Requirements & recommended items',parseJson(t.requirements),false),terms=listEditor('Terms & Conditions for this trip',parseJson(t.terms),false),pricing=listEditor('Price lines (shown in a separate box before What\u2019s included, e.g. Double room: OMR 690 per person)',parseJson(t.pricing),false);
   /* private trips: label on the photo, itinerary + cancellation switches, "Our boat" section */
   var pd=kind==='private'?parseObj(t.details):{};var pb=pd.boat||{};
   var ptag=kind==='private'?biField('Label on the photo',pd.tag&&pd.tag.en,pd.tag&&pd.tag.ar,false,'Short text shown on the trip card photo, e.g. “Fishing Trip” / “رحلة صيد”. Leave empty for no label.'):null;
@@ -446,7 +446,7 @@ function editor(main,t,schedules,bookingCount,isNew){
       is_active:active.checked,is_sample:sample.checked,sort_order:Number(order.value)||0,region:kind==='private'?'oman':region.value,
       category:kind==='experience'?cat.value:null,
       location_en:l.en,location_ar:l.ar,duration_en:du.en,duration_ar:du.ar,group_size_en:sz.en,group_size_ar:sz.ar,accommodation_en:ac.en,accommodation_ar:ac.ar,
-      max_group:maxg.value===''?null:Number(maxg.value),itinerary:itin.get(),inclusions:inc.get(),exclusions:exc.get(),requirements:req.get(),terms:terms.get()};
+      max_group:maxg.value===''?null:Number(maxg.value),itinerary:itin.get(),inclusions:inc.get(),exclusions:exc.get(),requirements:req.get(),terms:terms.get(),pricing:pricing.get()};
     if(gallery)body.images=gallery.get();
     if(kind==='private'){body.details={tag:ptag.get(),show_itinerary:showItin.checked,show_cancellation:showCancel.checked,cancellation:customCancel.get(),
       boat:{enabled:boatOn.checked,name:boatName.get(),tagline:boatTag.get(),description:boatDesc.get(),image:boatImg.get(),specs:boatSpecs.get(),amenities:boatAmen.get()}}}
@@ -488,7 +488,7 @@ function editor(main,t,schedules,bookingCount,isNew){
   if(kind!=='private'){
     out.appendChild(h('div',{class:'card'},h('h2',null,'Trip details'),loc,dur,
       kind==='group'?size:h('div',{class:'grid g3'},field('Max group size',maxg)),
-      kind==='experience'?acc:null,itin,inc,exc,kind==='experience'?req:null,kind==='group'?terms:null));
+      kind==='experience'?acc:null,itin,kind==='group'?pricing:null,inc,exc,kind==='experience'?req:null,kind==='group'?terms:null));
   }
   out.appendChild(h('div',{class:'row'},save,del));out.appendChild(err);
   if(!isNew&&kind==='group')out.appendChild(schedulesCard(t,schedules));

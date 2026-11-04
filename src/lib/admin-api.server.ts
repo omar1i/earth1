@@ -107,7 +107,7 @@ const tripSchema = z.object({
   price: z.number().min(0).max(1_000_000).nullish().transform((v) => v ?? null),
   price_type: z.enum(['fixed', 'person', 'group', 'contact']).default('contact'),
   itinerary: z.array(itineraryItem).max(60).default([]),
-  inclusions: biList.default([]), exclusions: biList.default([]), requirements: biList.default([]), terms: biList.default([]),
+  inclusions: biList.default([]), exclusions: biList.default([]), requirements: biList.default([]), terms: biList.default([]), pricing: biList.default([]),
   is_sample: z.boolean().default(false),
   is_active: z.boolean().default(true),
   sort_order: z.number().int().min(-100000).max(100000).default(0),
@@ -137,14 +137,14 @@ const TRIP_COLUMNS = [
   'category', 'region', 'destination', 'name_en', 'name_ar', 'description_en', 'description_ar', 'image', 'images', 'details',
   'location_en', 'location_ar', 'duration_en', 'duration_ar', 'group_size_en', 'group_size_ar', 'max_group',
   'accommodation_en', 'accommodation_ar', 'price', 'price_type', 'itinerary', 'inclusions', 'exclusions',
-  'requirements', 'terms', 'is_sample', 'is_active', 'sort_order',
+  'requirements', 'terms', 'pricing', 'is_sample', 'is_active', 'sort_order',
 ] as const;
 
 function tripValues(v: TripInput, cols: readonly string[] = TRIP_COLUMNS): unknown[] {
   const r = v as unknown as Record<string, unknown>;
   return cols.map((c) => {
     const x = r[c];
-    if (c === 'itinerary' || c === 'inclusions' || c === 'exclusions' || c === 'requirements' || c === 'terms' || c === 'images') return JSON.stringify(x ?? []);
+    if (c === 'itinerary' || c === 'inclusions' || c === 'exclusions' || c === 'requirements' || c === 'terms' || c === 'pricing' || c === 'images') return JSON.stringify(x ?? []);
     if (c === 'details') return JSON.stringify(x ?? {});
     if (c === 'is_sample' || c === 'is_active') return x ? 1 : 0;
     return x === undefined ? null : x;

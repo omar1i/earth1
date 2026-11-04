@@ -17,7 +17,7 @@ export type TripRow = {
   group_size_en: string | null; group_size_ar: string | null; max_group: number | null;
   accommodation_en: string | null; accommodation_ar: string | null;
   price: number | null; price_type: 'fixed' | 'person' | 'group' | 'contact';
-  itinerary: string; inclusions: string; exclusions: string; requirements: string; terms: string;
+  itinerary: string; inclusions: string; exclusions: string; requirements: string; terms: string; pricing?: string;
   is_sample: number; is_active: number; sort_order: number;
 };
 export type ScheduleRow = {
@@ -181,6 +181,7 @@ export function buildCatalog(rows: CatalogRows): Catalog {
         inclusions: parseList(t.inclusions).map(toBi),
         exclusions: parseList(t.exclusions).map(toBi),
         terms: parseList(t.terms).map(toBi),
+        pricing: parseList(t.pricing).map(toBi),
         sample, schedules,
       });
     } else {

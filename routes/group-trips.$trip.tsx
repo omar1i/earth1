@@ -94,6 +94,12 @@ function GroupTripDetail() {
                   ))}
                 </ol>
               </div>
+              {trip.pricing && trip.pricing.length > 0 && (
+                <div className="detail-section price-box">
+                  <h2>{t('Price', 'السعر')}</h2>
+                  <ul className="price-list">{trip.pricing.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
+                </div>
+              )}
               {lists.filter(([, items]) => items.length > 0).map(([title, items]) => (
                 <div className="detail-section" key={title}>
                   <h2>{title}</h2>
@@ -106,7 +112,7 @@ function GroupTripDetail() {
                   // International trips follow the Terms & Conditions for International Trips (page /terms).
                   <p>
                     {t('Payment, cancellation and refund terms for international trips are set out in our ', 'شروط الدفع والإلغاء والاسترداد للرحلات الدولية موضحة في ')}
-                    <Link className="hl-link" to="/terms">{t('Terms & Conditions for International Trips', 'شروط وأحكام الرحلات الدولية')}</Link>.
+                    <Link className="text-link" to="/terms">{t('Terms & Conditions for International Trips', 'شروط وأحكام الرحلات الدولية')}</Link>.
                   </p>
                 ) : (
                   <>
@@ -119,7 +125,7 @@ function GroupTripDetail() {
                 <h2>{t('How to join', 'طريقة الانضمام')}</h2>
                 <p>
                   {t('Press Book Now to send your booking request and reserve your seat, or book through the company’s ', 'اضغط احجز الآن لإرسال طلب الحجز وحجز مقعدك، أو عن طريق ')}
-                  <a className="hl-link" href="https://api.whatsapp.com/send?phone=96891915594" target="_blank" rel="noopener noreferrer">{t('WhatsApp', 'واتساب الشركة')}</a>.
+                  <a className="text-link" href="https://api.whatsapp.com/send?phone=96891915594" target="_blank" rel="noopener noreferrer">{t('WhatsApp', 'واتساب الشركة')}</a>.
                 </p>
               </div>
             </div>

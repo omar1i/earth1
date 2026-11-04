@@ -94,6 +94,12 @@ function GroupTripDetail() {
                   ))}
                 </ol>
               </div>
+              {trip.pricing && trip.pricing.length > 0 && (
+                <div className="detail-section price-box">
+                  <h2>{t('Price', 'السعر')}</h2>
+                  <ul className="price-list">{trip.pricing.map((item, i) => <li key={i}>{item[lang]}</li>)}</ul>
+                </div>
+              )}
               {lists.filter(([, items]) => items.length > 0).map(([title, items]) => (
                 <div className="detail-section" key={title}>
                   <h2>{title}</h2>
