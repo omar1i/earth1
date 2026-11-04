@@ -39,8 +39,8 @@ function GroupTripDetail() {
   const international = tripRegion(trip) === 'international';
   const sameRegion = groupTrips.filter((x) => x.id !== trip.id && tripRegion(x) === tripRegion(trip));
   const lists = [
-    [t('What’s included', 'ما يشمله السعر'), trip.inclusions],
-    [t('What’s not included', 'ما لا يشمله السعر'), trip.exclusions],
+    [t('Included', 'شامل'), trip.inclusions],
+    [t('Not included', 'غير شامل'), trip.exclusions],
     [t('Notes', 'ملاحظات'), trip.terms],
   ] as const;
 
