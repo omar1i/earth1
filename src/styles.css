@@ -1256,7 +1256,3 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 .itinerary .itinerary-meta{color:var(--foreground);font-weight:500}
 .itinerary .itinerary-meta b{color:var(--primary);font-weight:700}
 .itinerary p:not(.itinerary-meta) + .itinerary-meta{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}
-
-/* Highlighted links on group trip pages (WhatsApp, international terms): bigger, brand colour, marker underline */
-.hl-link{font-size:1.25em;font-weight:800;line-height:1.6;color:var(--primary);text-decoration:none;padding:0 3px;background:linear-gradient(transparent 62%,color-mix(in oklch,var(--adventure) 38%,transparent) 62%)}
-.hl-link:hover{filter:brightness(.88)}
