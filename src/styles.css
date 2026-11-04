@@ -1257,9 +1257,6 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 .itinerary .itinerary-meta b{color:var(--primary);font-weight:700}
 .itinerary p:not(.itinerary-meta) + .itinerary-meta{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}
 
-/* Price box on group trip pages (shown before "What's included") */
-.detail-section.price-box{background:var(--accent);border:1px solid var(--border);border-inline-start:4px solid var(--adventure);border-radius:var(--radius);padding:24px 28px}
-.detail-section.price-box h2{margin-bottom:14px}
-.detail-section.price-box ul.price-list{list-style:none;padding:0;margin:0;color:var(--foreground)}
-.detail-section.price-box .price-list li{margin:8px 0;font-weight:650;font-size:20px}
-.group-trip-page .detail-section.price-box ul{font-size:20px}
+/* Highlighted links on group trip pages (WhatsApp, international terms): bigger, brand colour, marker underline */
+.hl-link{font-size:1.25em;font-weight:800;line-height:1.6;color:var(--primary);text-decoration:none;padding:0 3px;background:linear-gradient(transparent 62%,color-mix(in oklch,var(--adventure) 38%,transparent) 62%)}
+.hl-link:hover{filter:brightness(.88)}
