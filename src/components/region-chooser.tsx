@@ -104,7 +104,7 @@ export function RegionChooser() {
           <div className="region-panel-head">
             <h2 className="region-switch">
               {boxes.map((b) => (
-                <button key={b.id} type="button" className="region-tab" aria-pressed={region === b.id} onClick={() => choose(b.id)}>
+                <button key={b.id} type="button" className={`region-tab region-tab-${b.id === "oman" ? "oman" : "intl"}`} aria-pressed={region === b.id} onClick={() => choose(b.id)}>
                   {b.title}
                 </button>
               ))}

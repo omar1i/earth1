@@ -1261,12 +1261,16 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 .hl-link{font-size:1.25em;font-weight:800;line-height:1.6;color:var(--primary);text-decoration:none;padding:0 3px;background:linear-gradient(transparent 62%,color-mix(in oklch,var(--adventure) 38%,transparent) 62%)}
 .hl-link:hover{filter:brightness(.88)}
 
-/* Oman / International switch next to the big title: the active title is big and green, the other one is small and faded.
-   Click it, or swipe sideways on the trips area, to switch. */
-.region-panel-head h2.region-switch{display:flex;align-items:baseline;justify-content:center;gap:clamp(16px,3vw,36px);white-space:nowrap}
-.region-tab{appearance:none;background:none;border:0;padding:0;margin:0;font:inherit;line-height:1.1;text-transform:inherit;cursor:pointer;transition:opacity .25s,font-size .25s,color .25s}
-.region-tab[aria-pressed=true]{color:var(--adventure);cursor:default}
+/* Oman / International switch next to the big title: the active title is big, green and always in the middle;
+   the other one is small and faded beside it. Click it, or swipe sideways on the trips area, to switch.
+   The International title sits after the Oman one in reading direction. */
+.region-panel-head h2.region-switch{display:grid;grid-template-columns:1fr auto 1fr;align-items:baseline;white-space:nowrap;max-width:100%}
+.region-tab{appearance:none;background:none;border:0;padding:0;margin:0;font:inherit;line-height:1.1;text-transform:inherit;cursor:pointer;grid-row:1;transition:opacity .25s,color .25s}
+.region-tab[aria-pressed=true]{grid-column:2;color:var(--adventure);cursor:default}
 .region-tab[aria-pressed=false]{color:var(--foreground);font-size:.5em;font-weight:600;opacity:.3}
+.region-tab-oman[aria-pressed=false]{grid-column:1;justify-self:end;padding-inline-end:clamp(14px,3vw,34px)}
+.region-tab-intl[aria-pressed=false]{grid-column:3;justify-self:start;padding-inline-start:clamp(14px,3vw,34px)}
 .region-tab[aria-pressed=false]:hover{opacity:.75}
 .region-tab:focus-visible{outline:3px solid var(--primary);outline-offset:4px;border-radius:6px}
+@media (max-width:720px){.region-panel-head h2.region-switch{font-size:30px;width:100%}}
 @media (prefers-reduced-motion:reduce){.region-tab{transition:none}}
