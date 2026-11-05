@@ -103,6 +103,7 @@ export type BoatSpec = {label:Bilingual; value:Bilingual};
 // "Our Boat" section of a private trip page. Everything is optional and editable in the admin dashboard.
 export type PrivateBoat = {name:Bilingual; tagline:Bilingual; description:Bilingual; image?:string; specs:BoatSpec[]; amenities:Bilingual[]};
 export type PrivateDestination = {
+  updatedAt?:string; // ISO date the trip was last edited (used for the sitemap)
   id:string; name:Bilingual; description:Bilingual; image:string;
   tag?:Bilingual;                 // short label printed on the card photo, e.g. "Fishing trip"
   price?:Bilingual;               // ready-to-show price text (only when a real price is set)
@@ -149,6 +150,7 @@ export const isMasirahTrip=(d:{id:string;name:Bilingual})=>/masirah|مصيرة|�
 export const privateTripWhatsapp=(name:string)=>`${whatsapp}&text=${encodeURIComponent('Hello! I would like to plan a private trip to '+name+'.')}`;
 
 export type GroupTrip = {
+  updatedAt?:string; // ISO date the trip was last edited (used for the sitemap)
   id:string; region?:'oman'|'international'; // region decides which tab of the home page shows the trip (default: oman)
   name:Bilingual; description:Bilingual; image:string;
   gallery?:string[]; // cover first, then the extra photos added in the admin (slideshow on the card and trip page)

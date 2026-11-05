@@ -17,7 +17,7 @@ export type TripRow = {
   group_size_en: string | null; group_size_ar: string | null; max_group: number | null;
   accommodation_en: string | null; accommodation_ar: string | null;
   price: number | null; price_type: 'fixed' | 'person' | 'group' | 'contact';
-  itinerary: string; inclusions: string; exclusions: string; requirements: string; terms: string; pricing?: string;
+  itinerary: string; inclusions: string; exclusions: string; requirements: string; terms: string; pricing?: string; updated_at?: string;
   is_sample: number; is_active: number; sort_order: number;
 };
 export type ScheduleRow = {
@@ -127,7 +127,7 @@ export function buildCatalog(rows: CatalogRows): Catalog {
 
     if (t.kind === 'private') {
       const d = parseDetails(t.details);
-      const dest: PrivateDestination = { id: t.slug, name, description, image: image ?? assetImages['coast']! };
+      const dest: PrivateDestination = { updatedAt: t.updated_at, id: t.slug, name, description, image: image ?? assetImages['coast']! };
       const tag = toBi(d.tag);
       if (hasText(tag)) dest.tag = tag;
       if (t.price !== null && t.price !== undefined && t.price_type !== 'contact') {
@@ -172,7 +172,7 @@ export function buildCatalog(rows: CatalogRows): Catalog {
         .map((x) => (typeof x === 'string' ? resolveImage(x) : undefined))
         .filter((x): x is string => !!x && x !== cover);
       groupTrips.push({
-        id: t.slug, region: t.region, name, description, image: cover, gallery: [cover, ...new Set(extra)],
+        updatedAt: t.updated_at, id: t.slug, region: t.region, name, description, image: cover, gallery: [cover, ...new Set(extra)],
         location: loc?.v ?? bi('', ''), duration: dur?.v ?? bi('', ''), groupSize: size?.v ?? bi('', ''),
         startDate: next?.date ?? '',
         date: next ? bi((sample ? 'Sample date: ' : '') + next.label.en, (sample ? 'تاريخ تجريبي: ' : '') + next.label.ar) : bi('Date to be announced', 'سيُعلن عن الموعد لاحقًا'),
