@@ -63,7 +63,6 @@ export function RegionPicker() {
 
 export function RegionChooser() {
   const { t, region, choose, boxes } = useRegion();
-  const { lang } = useLanguage();
   const { groupTrips, privateDestinations } = useCatalog();
   const omanGroupTrips = groupTrips.filter((g) => tripRegion(g) === "oman");
   const internationalGroupTrips = groupTrips.filter((g) => tripRegion(g) === "international");
@@ -85,8 +84,8 @@ export function RegionChooser() {
     const dx = p.clientX - s.x;
     const dy = p.clientY - s.y;
     if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
-    const towardsInternational = lang === "ar" ? dx > 0 : dx < 0;
-    choose(towardsInternational ? "international" : "oman");
+    // The other title peeks in from the edge: a swipe in either direction switches to it.
+    choose(region === "oman" ? "international" : "oman");
   };
 
   return (
