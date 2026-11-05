@@ -1270,3 +1270,7 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 .region-tab:focus-visible{outline:3px solid var(--primary);outline-offset:4px;border-radius:6px}
 @media (max-width:720px){.region-panel-head h2.region-switch{font-size:30px;width:100%}}
 @media (prefers-reduced-motion:reduce){.region-tab{transition:none}}
+
+/* Temporary: show only the chosen title ("Oman Trips" or "International Trips"); the other one is hidden.
+   To bring the faded second title back, delete this rule. */
+.region-tab[aria-pressed=false]{display:none}
