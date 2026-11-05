@@ -277,23 +277,8 @@ function galleryPicker(initial,opts){
 }
 /* shrink big photos in the browser so they fit comfortably in the database */
 function shrink(file){
-  return new Promise(function(resolve,reject){
-    if(file.size>12*1024*1024)return reject(new Error('That file is too large. Choose a photo under 12 MB.'));
-    var img=new Image();var url=URL.createObjectURL(file);
-    img.onload=function(){
-      var max=1200,w=img.naturalWidth,hh=img.naturalHeight,s=Math.min(1,max/Math.max(w,hh));
-      var c=document.createElement('canvas');c.width=Math.round(w*s);c.height=Math.round(hh*s);
-      var ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
-      var q=0.72,type='image/webp';(function attempt(){c.toBlob(function(b){
-        if(!b)return reject(new Error('Could not process this image.'));
-        if(type==='image/webp'&&b.type!=='image/webp'){type='image/jpeg';q=0.74;return attempt()}
-        if(b.size>1100000&&q>0.4){q-=0.15;return attempt()}
-        if(b.size>1100000)return reject(new Error('Image is still too large. Try a smaller picture.'));
-        resolve(b)},type,q)})();
-    };
-    img.onerror=function(){URL.revokeObjectURL(url);reject(new Error('This file is not a readable image.'))};
-    img.src=url;
-  });
+  if(file.size>12*1024*1024)return Promise.reject(new Error('That file is too large. Choose a photo under 12 MB.'));
+  return shrinkStrong(file);
 }
 /* ---------- About page pictures ---------- */
 var ABOUT_SLOTS=[
@@ -584,39 +569,63 @@ function bookingCard(b,reload){
     h('div',{class:'row mt'},save,cancel,resend,del),err);
 }
 
-/* ---------- photo optimizer: shrink the photos that are already stored (same address, smaller file) ---------- */
+/* ---------- photo optimizer: shrink the photos that are already stored ---------- */
+/* Stronger than the upload shrink: aims for about 130 KB per photo (max 1200 px wide), trying lower qualities until it fits. */
+function shrinkStrong(file){
+  return new Promise(function(resolve,reject){
+    var img=new Image();var url=URL.createObjectURL(file);
+    img.onload=function(){
+      var max=1200,w=img.naturalWidth,hh=img.naturalHeight,s=Math.min(1,max/Math.max(w,hh));
+      var c=document.createElement('canvas');c.width=Math.round(w*s);c.height=Math.round(hh*s);
+      var ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
+      var TARGET=130000,qs=[0.72,0.62,0.52,0.44,0.38],i=0,type='image/webp',best=null;
+      (function attempt(){c.toBlob(function(b){
+        if(!b)return reject(new Error('Could not process this image.'));
+        if(type==='image/webp'&&b.type!=='image/webp'){type='image/jpeg';return attempt()}
+        if(!best||b.size<best.size)best=b;
+        if(b.size<=TARGET||i>=qs.length-1)return resolve(best);
+        i++;attempt()},type,qs[i])})();
+    };
+    img.onerror=function(){URL.revokeObjectURL(url);reject(new Error('This file is not a readable image.'))};
+    img.src=url;
+  });
+}
 function photoOptimizer(){
-  var info=h('p',{class:'hint'},'Makes the photos already on the website smaller, so pages open faster. Every photo keeps the same address, so nothing else has to be changed. A photo is only replaced when the new version is clearly smaller. This cannot be undone.');
-  var out=h('div',{class:'hint mt'});var errs=h('div');
+  var info=h('p',{class:'hint'},'Makes the photos already on the website smaller (about 130 KB each, max 1200 px wide), so pages open faster. A photo that gets optimized receives a NEW address, and every trip / gallery / page that used it is updated automatically, so the change shows immediately. A photo is only replaced when the new version is clearly smaller. This cannot be undone. Close any open trip editor before running it, then reload the page afterwards.');
+  var out=h('div',{class:'hint mt'});var errs=h('div');var log=h('div',{class:'hint mt',style:'max-height:220px;overflow:auto'});
   var btn=h('button',{class:'btn',type:'button',on:{click:run}},'Optimize all photos');
   function mb(n){return (n/1048576).toFixed(2)+' MB'}
+  function kb(n){return Math.round(n/1024)+' KB'}
   function run(){
     if(!confirm('Replace the stored photos with smaller versions? This cannot be undone.'))return;
-    btn.disabled=true;errs.textContent='';out.textContent='Looking for photos…';
+    btn.disabled=true;errs.textContent='';log.textContent='';out.textContent='Looking for photos…';
     api('GET','/images').then(function(r){
       var all=r.images||[];
-      var todo=all.filter(function(x){return x.size_bytes>(x.mime==='image/png'?250000:120000)});
-      var done=0,saved=0,changed=0,failed=0;
+      var todo=all.filter(function(x){return x.size_bytes>(x.mime==='image/png'?150000:90000)});
+      var done=0,saved=0,changed=0,same=0,failed=0,lastErr='';
+      function note(t){log.appendChild(h('div',null,t))}
       function step(){
-        if(done>=todo.length){out.textContent='Finished. '+changed+' photo(s) made smaller, '+mb(saved)+' saved'+(failed?' ('+failed+' could not be processed).':'.');btn.disabled=false;return}
+        if(done>=todo.length){
+          out.textContent='Finished. '+changed+' photo(s) made smaller, '+mb(saved)+' saved'+(same?'; '+same+' already as small as possible':'')+(failed?'; '+failed+' could not be processed'+(lastErr?' ('+lastErr+')':''):'')+'.'+(changed?' Reload this page now.':'');
+          btn.disabled=false;return}
         var item=todo[done];
         out.textContent='Working… '+(done+1)+' / '+todo.length+' · saved so far: '+mb(saved);
-        fetch('/api/images/'+item.id,{credentials:'same-origin'}).then(function(res){if(!res.ok)throw new Error('download');return res.blob()})
-          .then(function(b){return shrink(b)})
+        fetch('/api/images/'+item.id,{credentials:'same-origin',cache:'no-store'}).then(function(res){if(!res.ok)throw new Error('download failed ('+res.status+')');return res.blob()})
+          .then(function(b){return shrinkStrong(b)})
           .then(function(blob){return api('PUT','/images/'+item.id,undefined,{body:blob,type:blob.type})})
-          .then(function(d){if(d.replaced){changed++;saved+=d.before-d.after}})
-          .catch(function(){failed++})
+          .then(function(d){if(d.replaced){changed++;saved+=d.before-d.after;note('✔ '+kb(d.before)+' → '+kb(d.after))}else{same++;note('• '+kb(d.before)+' kept (new version '+kb(d.after)+' was not smaller)')}})
+          .catch(function(e){failed++;lastErr=e&&e.message?e.message:'error';note('✖ '+item.id.slice(0,8)+'… '+lastErr)})
           .then(function(){done++;step()});
       }
       if(!todo.length){
         out.textContent=all.length
-          ?'Nothing to do. Found '+all.length+' stored photo(s); the largest is '+Math.round(all[0].size_bytes/1024)+' KB ('+all[0].mime.replace('image/','')+'), which is already small.'
-          :'The database has no stored photos (the pictures may be hosted somewhere else).';
+          ?'Nothing to do. Found '+all.length+' stored photo(s); the largest is '+kb(all[0].size_bytes)+', which is already small. If the website still loads big pictures, they are hosted on another website (https:// links) and must be uploaded again from the trip editor.'
+          :'The database has no stored photos (the pictures may be hosted somewhere else, as https:// links). Upload them again from the trip editor so they can be optimized.';
         btn.disabled=false;return}
       step();
     }).catch(function(e){out.textContent='';errs.appendChild(errBox(e));btn.disabled=false});
   }
-  return h('div',{class:'card',style:'max-width:560px;margin-top:16px'},h('h2',null,'Photo optimizer'),info,h('div',{class:'mt'},btn),out,errs);
+  return h('div',{class:'card',style:'max-width:560px;margin-top:16px'},h('h2',null,'Photo optimizer'),info,h('div',{class:'mt'},btn),out,log,errs);
 }
 
 /* ---------- account ---------- */

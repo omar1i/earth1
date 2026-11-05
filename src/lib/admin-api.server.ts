@@ -458,12 +458,38 @@ const replaceImage: Handler = async ({ db, request, params }) => {
   if (buf.byteLength > MAX_IMAGE_BYTES) return fail('Image is too large (max about 1.2 MB).', 413);
   const mime = sniffImage(buf);
   if (!mime) return fail('Only JPEG, PNG or WebP images are allowed.', 415);
-  const current = await db.prepare('SELECT size_bytes FROM images WHERE id = ?1').bind(params[0]).first<{ size_bytes: number }>();
+  const oldId = params[0]!;
+  const current = await db.prepare('SELECT size_bytes, length(data_base64) AS b64_len FROM images WHERE id = ?1').bind(oldId).first<{ size_bytes: number | null; b64_len: number | null }>();
   if (!current) return fail('Image not found.', 404);
+  // Real stored size (same rule as the list): the saved size_bytes can be missing or wrong on old rows.
+  const before = Math.max(Number(current.size_bytes) || 0, Math.round((Number(current.b64_len) || 0) * 0.75));
   // Never make a photo bigger: keep the original if the new version is not clearly smaller.
-  if (buf.byteLength >= current.size_bytes * 0.9) return json({ replaced: false, before: current.size_bytes, after: buf.byteLength });
-  await db.prepare('UPDATE images SET mime = ?1, data_base64 = ?2, size_bytes = ?3 WHERE id = ?4').bind(mime, toBase64(buf), buf.byteLength, params[0]).run();
-  return json({ replaced: true, before: current.size_bytes, after: buf.byteLength });
+  if (buf.byteLength >= before * 0.92) return json({ replaced: false, before, after: buf.byteLength });
+
+  // The new version gets a NEW address. Photos are cached for a year ("immutable") in visitors' browsers and
+  // on Cloudflare, so re-using the old address would keep showing the old big file. Every place that used the
+  // old address is switched to the new one in the same step.
+  const newId = [...crypto.getRandomValues(new Uint8Array(12))].map((b) => b.toString(16).padStart(2, '0')).join('');
+  const oldUrl = `/api/images/${oldId}`;
+  const newUrl = `/api/images/${newId}`;
+  await db.prepare('INSERT INTO images (id, mime, data_base64, size_bytes) VALUES (?1,?2,?3,?4)').bind(newId, mime, toBase64(buf), buf.byteLength).run();
+  await ensureExtraColumns(db);
+  const rewrite = async (table: string, column: string) => {
+    try {
+      await db.prepare(`UPDATE ${table} SET ${column} = REPLACE(${column}, ?1, ?2) WHERE instr(${column}, ?1) > 0`).bind(oldUrl, newUrl).run();
+    } catch { /* table may not exist yet (created on first use) */ }
+  };
+  await rewrite('trips', 'image');
+  await rewrite('trips', 'images');
+  await rewrite('trips', 'details');
+  await rewrite('gallery_photos', 'image');
+  await rewrite('site_images', 'value');
+  await db.prepare('DELETE FROM images WHERE id = ?1').bind(oldId).run();
+  try {
+    const cache = (globalThis as unknown as { caches?: { default?: { delete(r: Request): Promise<boolean> } } }).caches?.default;
+    await cache?.delete(new Request(`https://images.cache.invalid/${oldId}`));
+  } catch { /* optional */ }
+  return json({ replaced: true, before, after: buf.byteLength, id: newId });
 };
 
 // --- About-page pictures --------------------------------------------------------------------------
