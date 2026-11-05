@@ -1257,6 +1257,12 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 .itinerary .itinerary-meta b{color:var(--primary);font-weight:700}
 .itinerary p:not(.itinerary-meta) + .itinerary-meta{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}
 
-/* Highlighted links on group trip pages (WhatsApp, international terms): bigger, brand colour, marker underline */
-.hl-link{font-size:1.25em;font-weight:800;line-height:1.6;color:var(--primary);text-decoration:none;padding:0 3px;background:linear-gradient(transparent 62%,color-mix(in oklch,var(--adventure) 38%,transparent) 62%)}
-.hl-link:hover{filter:brightness(.88)}
+/* Oman / International switch next to the big title: the active title is big and green, the other one is small and faded.
+   Click it, or swipe sideways on the trips area, to switch. */
+.region-panel-head h2.region-switch{display:flex;align-items:baseline;justify-content:center;gap:clamp(16px,3vw,36px);white-space:nowrap}
+.region-tab{appearance:none;background:none;border:0;padding:0;margin:0;font:inherit;line-height:1.1;text-transform:inherit;cursor:pointer;transition:opacity .25s,font-size .25s,color .25s}
+.region-tab[aria-pressed=true]{color:var(--adventure);cursor:default}
+.region-tab[aria-pressed=false]{color:var(--foreground);font-size:.5em;font-weight:600;opacity:.3}
+.region-tab[aria-pressed=false]:hover{opacity:.75}
+.region-tab:focus-visible{outline:3px solid var(--primary);outline-offset:4px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){.region-tab{transition:none}}

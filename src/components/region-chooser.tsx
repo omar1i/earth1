@@ -1,3 +1,5 @@
+import { useRef } from "react";
+import type { TouchEvent } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { ArrowUpRight, Compass, Globe, MessageCircle } from "lucide-react";
 import { GroupTripsSection, PrivateTripsSection } from "@/components/trips-components";
@@ -60,10 +62,32 @@ export function RegionPicker() {
 }
 
 export function RegionChooser() {
-  const { t, region, boxes } = useRegion();
+  const { t, region, choose, boxes } = useRegion();
+  const { lang } = useLanguage();
   const { groupTrips, privateDestinations } = useCatalog();
   const omanGroupTrips = groupTrips.filter((g) => tripRegion(g) === "oman");
   const internationalGroupTrips = groupTrips.filter((g) => tripRegion(g) === "international");
+
+  // Swipe sideways on the trips area to switch between Oman and International. Swipes that start on a
+  // photo slideshow are left alone (they swipe the photos). The International title sits after the Oman
+  // title, so it is on the right in English and on the left in Arabic; dragging towards the other side
+  // reveals it.
+  const touch = useRef<{ x: number; y: number; skip: boolean } | null>(null);
+  const onTouchStart = (e: TouchEvent) => {
+    const p = e.touches[0];
+    touch.current = p ? { x: p.clientX, y: p.clientY, skip: !!(e.target as Element).closest?.('[class*="slider"]') } : null;
+  };
+  const onTouchEnd = (e: TouchEvent) => {
+    const s = touch.current;
+    touch.current = null;
+    const p = e.changedTouches[0];
+    if (!s || s.skip || !p) return;
+    const dx = p.clientX - s.x;
+    const dy = p.clientY - s.y;
+    if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+    const towardsInternational = lang === "ar" ? dx > 0 : dx < 0;
+    choose(towardsInternational ? "international" : "oman");
+  };
 
   return (
     <section className="section region-section" id="choose-trip">
@@ -74,9 +98,17 @@ export function RegionChooser() {
           role="region"
           aria-live="polite"
           aria-label={boxes.find((b) => b.id === region)?.title}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
         >
           <div className="region-panel-head">
-            <h2>{boxes.find((b) => b.id === region)?.title}</h2>
+            <h2 className="region-switch">
+              {boxes.map((b) => (
+                <button key={b.id} type="button" className="region-tab" aria-pressed={region === b.id} onClick={() => choose(b.id)}>
+                  {b.title}
+                </button>
+              ))}
+            </h2>
             {region === "oman" ? (
               <Link className="text-link" to="/destinations">
                 {t("View all trips", "عرض كل الرحلات")}

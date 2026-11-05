@@ -1261,9 +1261,12 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 .hl-link{font-size:1.25em;font-weight:800;line-height:1.6;color:var(--primary);text-decoration:none;padding:0 3px;background:linear-gradient(transparent 62%,color-mix(in oklch,var(--adventure) 38%,transparent) 62%)}
 .hl-link:hover{filter:brightness(.88)}
 
-/* Price box on group trip pages (shown before "What's included") */
-.detail-section.price-box{background:var(--accent);border:1px solid var(--border);border-inline-start:4px solid var(--adventure);border-radius:var(--radius);padding:24px 28px}
-.detail-section.price-box h2{margin-bottom:14px}
-.detail-section.price-box ul.price-list{list-style:none;padding:0;margin:0;color:var(--foreground)}
-.detail-section.price-box .price-list li{margin:8px 0;font-weight:650;font-size:20px}
-.group-trip-page .detail-section.price-box ul{font-size:20px}
+/* Oman / International switch next to the big title: the active title is big and green, the other one is small and faded.
+   Click it, or swipe sideways on the trips area, to switch. */
+.region-panel-head h2.region-switch{display:flex;align-items:baseline;justify-content:center;gap:clamp(16px,3vw,36px);white-space:nowrap}
+.region-tab{appearance:none;background:none;border:0;padding:0;margin:0;font:inherit;line-height:1.1;text-transform:inherit;cursor:pointer;transition:opacity .25s,font-size .25s,color .25s}
+.region-tab[aria-pressed=true]{color:var(--adventure);cursor:default}
+.region-tab[aria-pressed=false]{color:var(--foreground);font-size:.5em;font-weight:600;opacity:.3}
+.region-tab[aria-pressed=false]:hover{opacity:.75}
+.region-tab:focus-visible{outline:3px solid var(--primary);outline-offset:4px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){.region-tab{transition:none}}
