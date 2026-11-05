@@ -111,7 +111,7 @@ function GroupTripDetail() {
                 {international ? (
                   // International trips follow the Terms & Conditions for International Trips (page /terms).
                   <p>
-                    {t('Payment, cancellation and refund terms for international trips are set out in our ', 'شروط الدفع والإلغاء والاسترداد للرحلات الدولية موضحة في ')}
+                    {t('Payment, cancellation and refund terms for international trips are set out in our ', 'شروط الدفع والإلغاء والاسترجاع للرحلات الدولية موضحة في ')}
                     <Link className="text-link" to="/terms">{t('Terms & Conditions for International Trips', 'شروط وأحكام الرحلات الدولية')}</Link>.
                   </p>
                 ) : (
