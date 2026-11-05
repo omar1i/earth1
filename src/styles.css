@@ -1270,25 +1270,3 @@ html{scroll-padding-top:calc(var(--hdr-gap) + 104px)}
 .region-tab:focus-visible{outline:3px solid var(--primary);outline-offset:4px;border-radius:6px}
 @media (max-width:720px){.region-panel-head h2.region-switch{font-size:30px;width:100%}}
 @media (prefers-reduced-motion:reduce){.region-tab{transition:none}}
-
-/* Oman / International switch, "peek" version: the chosen title is big, green and on the content's start edge;
-   the other title sits right after it, faded and cut off by the edge (with a small nudge animation), so visitors
-   notice there is another section and can click it or swipe sideways. Mirrors automatically in Arabic (RTL). */
-.region-panel-head{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:20px;margin-bottom:56px}
-.region-panel-head h2.region-switch{display:flex;grid-template-columns:none;flex:1 1 auto;min-width:0;width:auto;max-width:none;overflow:hidden;gap:clamp(24px,4vw,56px);align-items:baseline;justify-self:auto;grid-column:auto;text-align:start;font-size:clamp(34px,5vw,64px);line-height:1.1;white-space:nowrap;
-  -webkit-mask-image:linear-gradient(to right,#000 0,#000 55%,transparent 100%);mask-image:linear-gradient(to right,#000 0,#000 55%,transparent 100%)}
-[dir=rtl] .region-panel-head h2.region-switch{-webkit-mask-image:linear-gradient(to left,#000 0,#000 55%,transparent 100%);mask-image:linear-gradient(to left,#000 0,#000 55%,transparent 100%)}
-.region-panel-head h2.region-switch .region-tab{flex:0 0 auto;grid-column:auto;justify-self:auto;padding:0;font-size:inherit;font-weight:inherit;text-transform:uppercase;line-height:inherit}
-.region-panel-head h2.region-switch .region-tab[aria-pressed=true]{order:0;color:var(--adventure);opacity:1}
-.region-panel-head h2.region-switch .region-tab[aria-pressed=false]{order:1;color:var(--foreground);opacity:.22;animation:region-nudge 2.6s ease-in-out infinite}
-.region-panel-head h2.region-switch .region-tab[aria-pressed=false]:hover{opacity:.5;animation-play-state:paused}
-.region-panel-head .text-link{flex:0 0 auto;grid-column:auto;justify-self:auto}
-@keyframes region-nudge{0%,60%,100%{transform:translateX(0)}30%{transform:translateX(-10px)}}
-[dir=rtl] .region-panel-head h2.region-switch .region-tab[aria-pressed=false]{animation-name:region-nudge-rtl}
-@keyframes region-nudge-rtl{0%,60%,100%{transform:translateX(0)}30%{transform:translateX(10px)}}
-@media (prefers-reduced-motion:reduce){.region-panel-head h2.region-switch .region-tab[aria-pressed=false]{animation:none}}
-@media (max-width:720px){
-  .region-panel-head{flex-direction:column;align-items:stretch;gap:10px;margin-bottom:32px}
-  .region-panel-head h2.region-switch{font-size:clamp(28px,8.5vw,36px);gap:22px}
-  .region-panel-head .text-link{align-self:flex-start}
-}
